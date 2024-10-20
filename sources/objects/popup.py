@@ -1,21 +1,18 @@
 import pygame as pg
-pg.init()
-class Pop_up:
-    def __init__(self, text, coord, font, width=200, height=100):
-        self.text = text
-        self.coord = coord
-        self.width = width
-        self.height = height
-        self.font = font
+from coord import Coord
 
-        
-        self.posx,self.posy =self.coord.get_pixel_perfect()
-        self.rect = pg.Rect(self.posx, self.posy, self.width, self.height)
-        self.text = self.font.render(self.text, True, (0, 0, 0))
+class Popup:
+    def __init__(self, text):
+        self.text : str = text
+
+        self.font = pg.font.SysFont(None,30,False,False)
+        self.text_surf = self.font.render(self.text, True, (0, 0, 0), (255,255,255))
+        self.rect = self.text_surf.get_rect()
+
+        self.lifetime : int = 120
+        #set centered coordinates
+        self.rect.y = 50
+        self.rect.x = (1920/2)-(self.rect.width/2)
 
     def draw(self, screen):
-        pg.draw.rect(screen, (200, 200, 200), self.rect)  #fond du popup
-
-
-        text_rect = self.text.get_rect(center=self.rect.center)
-        screen.blit(self.text, text_rect)
+        screen.blit(self.text_surf, self.rect)
