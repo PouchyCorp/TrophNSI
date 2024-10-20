@@ -35,6 +35,8 @@ while True:
                             current_room = R2
                         case 'R2_stairs':
                             current_room = R3
+                        case _:
+                            print('you should not be seeing this')
 
                             
 
