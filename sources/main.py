@@ -19,6 +19,8 @@ current_room = R1
 
 while True:
 
+    
+
     CLOCK.tick(60)
 
     for event in pg.event.get():
