@@ -9,7 +9,7 @@ class Popup:
         self.text_surf = self.font.render(self.text, True, (0, 0, 0), (255,255,255))
         self.rect = self.text_surf.get_rect()
 
-        self.lifetime : int = 120
+        self.lifetime : int = 60
         #set centered coordinates
         self.rect.y = 50
         self.rect.x = (1920/2)-(self.rect.width/2)

@@ -32,6 +32,18 @@ popups : list[Popup] = []
 
 while True:
     CLOCK.tick(60)
+    WIN.blit(current_room.bg_surf, (0,0))
+    pos = pg.mouse.get_pos()
+
+    for placeable in current_room.placed:
+        if placeable.rect.collidepoint(pos[0], pos[1]):
+            surf = placeable.surf
+            surf = pg.transform.scale_by(surf, 1.5)
+            surf_rect = surf.get_rect()
+            surf_rect.center = placeable.rect.center
+            surf.fill('white')
+            WIN.blit(surf, surf_rect)
+
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -39,7 +51,6 @@ while True:
             sys.exit()
 
         if event.type == pg.MOUSEBUTTONUP:
-            pos = pg.mouse.get_pos()
             for placeable in current_room.placed:
                 if placeable.rect.collidepoint(pos[0], pos[1]):
                     match placeable.name:
@@ -53,8 +64,6 @@ while True:
                             popups.append(Popup('bip boup erreur erreur'))
                             popup_active = True
 
-
-    WIN.blit(current_room.bg_surf, (0,0))
     WIN.blits([(placeable.surf, placeable.coord.xy) for placeable in current_room.placed])
     render_popups()
 
