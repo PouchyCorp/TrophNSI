@@ -16,7 +16,8 @@ def draw_grid():
                 pg.draw.rect(WIN,(70,70,70),pg.Rect(x*6,y*6,6,6))
 
 current_room = R1
-
+b = pg.image.load(current_room.bg_surf)
+bg = pg.transform.scale_by(b,6)
 while True:
 
     
@@ -45,6 +46,7 @@ while True:
 
     WIN.fill((50,50,50))
     draw_grid()
+    WIN.blit(bg,(0,0))
     WIN.blits([(placeable.surf, placeable.coord.xy) for placeable in current_room.placed])
-    
+
     pg.display.flip()
