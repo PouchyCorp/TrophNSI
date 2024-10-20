@@ -62,7 +62,6 @@ while True:
                             popups.append(Popup(str(CLOCK.get_fps())))
                         case _:
                             popups.append(Popup('bip boup erreur erreur'))
-                            popup_active = True
 
     WIN.blits([(placeable.surf, placeable.coord.xy) for placeable in current_room.placed])
     render_popups()
