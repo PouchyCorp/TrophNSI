@@ -36,12 +36,12 @@ while True:
     pos = pg.mouse.get_pos()
 
     for placeable in current_room.placed:
-        if placeable.rect.collidepoint(pos[0], pos[1]):
+
+        if placeable.rect.collidepoint(pos):
             surf = placeable.surf
-            surf = pg.transform.scale_by(surf, 1.5)
-            surf_rect = surf.get_rect()
-            surf_rect.center = placeable.rect.center
-            surf.fill('white')
+            surf = pg.transform.scale(surf, (int(placeable.rect.width + 6), int(placeable.rect.height +6)))
+            surf_rect = surf.get_rect(center=placeable.rect.center)
+            surf.fill("white")
             WIN.blit(surf, surf_rect)
 
 
