@@ -6,6 +6,9 @@ from pygame import Surface,image
 #R1
 R1 = Room(1,image.load("data/bg_test_1.png"))
 R1_stairs = Placeable('R1_stairs', Coord(1,(1600,500)), Surface((100,200)))
+test_place = Placeable("test",Coord(1,(100,500)), Surface((100,200))) 
+R1.blacklist.append(test_place)
+R1.placed.append(test_place)
 R1.placed.append(R1_stairs)
 R1.blacklist.append(R1_stairs)
 
