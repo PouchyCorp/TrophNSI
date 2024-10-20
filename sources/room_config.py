@@ -1,6 +1,6 @@
-from room import Room
-from coord import Coord 
-from placeable import Placeable
+from objects.coord import Coord 
+from objects.placeable import Placeable
+from objects.room import Room
 from pygame import Surface,image
 
 #R1
