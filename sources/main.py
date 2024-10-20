@@ -2,6 +2,7 @@ import pygame as pg
 import sys
 from objects.placeable import Placeable
 from objects.coord import Coord
+from objects.room_config import R1, R2, R3
 
 WIN = pg.display.set_mode((1920,1080))
 CLOCK = pg.time.Clock()
@@ -14,7 +15,7 @@ def draw_grid():
             elif x%2 != 0 and y%2 == 0:
                 pg.draw.rect(WIN,(70,70,70),pg.Rect(x*6,y*6,6,6))
 
-placeable_lst = [Placeable('placeholder', Coord(1,(600,600)),pg.Surface((50,100),masks='red'))]
+current_room = R1
 
 while True:
 
@@ -27,13 +28,19 @@ while True:
 
         if event.type == pg.MOUSEBUTTONUP:
             pos = pg.mouse.get_pos()
-            for placeable in placeable_lst:
+            for placeable in current_room.placed:
                 if placeable.rect.collidepoint(pos[0],pos[1]):
-                    print('uwu')
+                    match placeable.name:
+                        case 'R1_stairs':
+                            current_room = R2
+                        case 'R2_stairs':
+                            current_room = R3
+
+                            
 
 
     WIN.fill((50,50,50))
     draw_grid()
-    WIN.blits([(placeable.surf, placeable.coord.xy) for placeable in placeable_lst])
+    WIN.blits([(placeable.surf, placeable.coord.xy) for placeable in current_room.placed])
     
     pg.display.flip()

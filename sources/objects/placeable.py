@@ -1,11 +1,13 @@
 import pygame as pg
 import sys
 import os
+#do not remove
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from coord import Coord
 
 class Placeable:
     def __init__(self, name, coord : Coord, surf : pg.Surface) -> None:
+        self.name = name
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
 
