@@ -30,40 +30,41 @@ def render_popups():
 current_room = R1
 popups : list[Popup] = []
 
-while True:
-    CLOCK.tick(60)
-    WIN.blit(current_room.bg_surf, (0,0))
-    pos = pg.mouse.get_pos()
+if __name__ == '__main__':
+    while True:
+        CLOCK.tick(60)
+        WIN.blit(current_room.bg_surf, (0,0))
+        pos = pg.mouse.get_pos()
 
-    for placeable in current_room.placed:
+        for placeable in current_room.placed:
 
-        if placeable.rect.collidepoint(pos):
-            surf = placeable.surf
-            surf = pg.transform.scale(surf, (int(placeable.rect.width + 6), int(placeable.rect.height +6)))
-            surf_rect = surf.get_rect(center=placeable.rect.center)
-            surf.fill("white")
-            WIN.blit(surf, surf_rect)
+            if placeable.rect.collidepoint(pos):
+                surf = placeable.surf
+                surf = pg.transform.scale(surf, (int(placeable.rect.width + 6), int(placeable.rect.height +6)))
+                surf_rect = surf.get_rect(center=placeable.rect.center)
+                surf.fill("white")
+                WIN.blit(surf, surf_rect)
 
+                
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
 
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            pg.quit()
-            sys.exit()
+            if event.type == pg.MOUSEBUTTONUP:
+                for placeable in current_room.placed:
+                    if placeable.rect.collidepoint(pos[0], pos[1]):
+                        match placeable.name:
+                            case 'R1_stairs':
+                                current_room = R2
+                            case 'R2_stairs':
+                                current_room = R3
+                            case "test":
+                                popups.append(Popup(str(CLOCK.get_fps())))
+                            case _:
+                                popups.append(Popup('bip boup erreur erreur'))
 
-        if event.type == pg.MOUSEBUTTONUP:
-            for placeable in current_room.placed:
-                if placeable.rect.collidepoint(pos[0], pos[1]):
-                    match placeable.name:
-                        case 'R1_stairs':
-                            current_room = R2
-                        case 'R2_stairs':
-                            current_room = R3
-                        case "test":
-                            popups.append(Popup(str(CLOCK.get_fps())))
-                        case _:
-                            popups.append(Popup('bip boup erreur erreur'))
+        WIN.blits([(placeable.surf, placeable.coord.xy) for placeable in current_room.placed])
+        render_popups()
 
-    WIN.blits([(placeable.surf, placeable.coord.xy) for placeable in current_room.placed])
-    render_popups()
-
-    pg.display.flip()
+        pg.display.flip()
