@@ -23,7 +23,7 @@ class Coord:
         return str(self.__dict__)
 
 # tests
-if False:
+if __name__ == '__main__':
     coord = Coord(1, (650, 700))
     print(coord)
     assert coord.get_pixel_perfect() == (648, 696)

@@ -1,7 +1,11 @@
 import pygame as pg
 import sys
-from room_config import R1, R2, R3
+import objects.placeable
+from room_config import R0, R1, R2, R3
 from objects.popup import Popup
+from objects.placeable import Placeable
+from objects.inventory import Inventory
+from objects.coord import Coord
 
 pg.init()
 
@@ -27,10 +31,16 @@ def render_popups():
             popup.draw(WIN)
             popup.lifetime -= 1
 
-current_room = R1
-popups : list[Popup] = []
-
 if __name__ == '__main__':
+
+    current_room = R1
+    popups : list[Popup] = []
+    inventory : Inventory = Inventory()
+    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.Surface((60,60))))
+    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.Surface((60,60))))
+    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.Surface((60,60))))
+    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.Surface((60,60))))
+
     while True:
         CLOCK.tick(60)
         WIN.blit(current_room.bg_surf, (0,0))
@@ -45,7 +55,7 @@ if __name__ == '__main__':
                 surf.fill("white")
                 WIN.blit(surf, surf_rect)
 
-                
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
@@ -65,6 +75,7 @@ if __name__ == '__main__':
                                 popups.append(Popup('bip boup erreur erreur'))
 
         WIN.blits([(placeable.surf, placeable.coord.xy) for placeable in current_room.placed])
+        inventory.draw(WIN)
         render_popups()
 
         pg.display.flip()

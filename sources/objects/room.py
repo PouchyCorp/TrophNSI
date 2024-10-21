@@ -10,6 +10,9 @@ class Room:
         #permanent objects that can not be edited (still place in placed to render the object)
         self.blacklist : list[Placeable] = []
 
-    def in_native_placed(self, plcbl : Placeable) -> bool:
-        return (plcbl in self.native_placed)
+    def in_blacklist(self, plcbl : Placeable) -> bool:
+        return (plcbl in self.blacklist)
         
+# tests
+if __name__ == '__main__':
+    pass
