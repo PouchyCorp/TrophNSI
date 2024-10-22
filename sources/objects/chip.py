@@ -30,7 +30,17 @@ class Chip:
               self.heading == "left"
           elif self.heading == "down":
               self.heading == "right"
-
+              
+    def turn_r(self,val):
+        for k in range(360/val):
+          if self.heading == "right":
+              self.heading == "down"
+          elif self.heading == "left":
+              self.heading == "up"       
+          elif self.heading == "up":
+              self.heading == "right"
+          elif self.heading == "down":
+              self.heading == "left"
     
     def paint(self):
         for act, val in self.movement.items():
