@@ -8,25 +8,37 @@ class Chip:
         self.color : list = color
         self.position : Coord = position
         self.heading : str = "right"
-
-    def forward(tour):
-        for k in range(tour):
+    
+    def forward(self,val):
+        for k in range(val):
           if self.heading == "right":
               self.position.x += 1
-          if self.heading == "left":
+          elif self.heading == "left":
               self.position.x -= 1        
-          if self.heading == "up":
+          elif self.heading == "up":
               self.position.y += 1
-          if self.heading == "left":
+          elif self.heading == "down":
               self.position.y -= 1               
-        
+
+    def turn_l(self,val):
+        for k in range(360/val):
+          if self.heading == "right":
+              self.heading == "up"
+          elif self.heading == "left":
+              self.heading == "down"       
+          elif self.heading == "up":
+              self.heading == "left"
+          elif self.heading == "down":
+              self.heading == "right"
+
+    
     def paint(self):
-        for action, value in self.movement.items():
-            if action == "forward":
-                self.forward(value)
-            elif action == "turn left":
-                self.turn_l(value)
-            elif action == "turn right":
-                self.turn_r(value)
+        for act, val in self.movement.items():
+            if act == "forward":
+                self.forward(val)
+            elif act == "turn left":
+                self.turn_l(val)
+            elif act == "turn right":
+                self.turn_r(val)
     
     
