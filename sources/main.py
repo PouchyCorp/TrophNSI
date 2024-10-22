@@ -36,9 +36,9 @@ if __name__ == '__main__':
     current_room = R1
     popups : list[Popup] = []
     inventory : Inventory = Inventory()
-    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.Surface((60,60))))
-    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.Surface((60,60))))
-    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.Surface((60,60))))
+    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p1.png')))
+    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p2.png')))
+    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p3.png')))
     inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.Surface((60,60))))
 
     while True:
@@ -47,13 +47,13 @@ if __name__ == '__main__':
         pos = pg.mouse.get_pos()
 
         for placeable in current_room.placed:
-
             if placeable.rect.collidepoint(pos):
-                surf = placeable.surf
-                surf = pg.transform.scale(surf, (int(placeable.rect.width + 6), int(placeable.rect.height +6)))
-                surf_rect = surf.get_rect(center=placeable.rect.center)
-                surf.fill("white")
-                WIN.blit(surf, surf_rect)
+                mask = placeable.surf.copy()
+                #mask = pg.transform.scale(mask, (int(placeable.rect.width + 6), int(placeable.rect.height +6)))
+                mask = pg.transform.scale_by(mask, 2)
+                mask_rect = mask.get_rect(center=placeable.rect.center)
+                mask.fill((255,255,255,255),special_flags=pg.BLEND_RGBA_MULT)
+                WIN.blit(mask, mask_rect)
 
 
         for event in pg.event.get():

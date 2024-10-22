@@ -37,7 +37,7 @@ class Inventory:
         """return the index of the item selected
         returns -1 if no items"""
 
-        return -1
+        return
     
     def __repr__(self):
         return str(self.__dict__)
