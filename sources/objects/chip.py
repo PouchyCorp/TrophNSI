@@ -8,7 +8,7 @@ class Chip:
         self.color : list = color
         self.position : Coord = position
         self.heading : int = 0 
-    
+
     def forward(self,val):
         for k in range(val):
           if self.heading == 0:
@@ -20,7 +20,7 @@ class Chip:
           elif self.heading == 90:
               self.position.y -= 1               
 
-    def turn_l(self,val,dir):
+    def turn(self,val,dir):
         for k in range(360/val):
             if dir == "left":
                 self.heading -= 90
