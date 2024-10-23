@@ -1,4 +1,4 @@
-from pygame import Surface, Rect
+from pygame import Surface, Rect, transform, BLEND_RGBA_MAX
 import sys
 import os
 #do not remove
@@ -16,6 +16,16 @@ class Placeable:
         self.rect : Rect = self.surf.get_rect()
         self.rect.x, self.rect.y = self.coord.xy
         self.placed = placed
+
+    def draw(self,win):
+        win.blit(self.surf, self.rect)
+    
+    def draw_outline(self, win):
+        mask = self.surf.copy()
+        mask = transform.scale(mask, (self.rect.width + 10, self.rect.height + 12))
+        mask_rect = mask.get_rect(center=self.rect.center)
+        mask.fill((255,255,255,0),special_flags=BLEND_RGBA_MAX)
+        win.blit(mask, mask_rect)
 
     def __repr__(self) -> str:
         return str(self.__dict__)

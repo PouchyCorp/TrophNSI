@@ -12,6 +12,9 @@ class Room:
 
     def in_blacklist(self, plcbl : Placeable) -> bool:
         return (plcbl in self.blacklist)
+    
+    def draw_placed(self, win):
+        win.blits([(placeable.surf, placeable.coord.xy) for placeable in self.placed])
         
 # tests
 if __name__ == '__main__':

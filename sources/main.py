@@ -48,13 +48,11 @@ if __name__ == '__main__':
 
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(pos):
-                mask = placeable.surf.copy()
-                #mask = pg.transform.scale(mask, (int(placeable.rect.width + 6), int(placeable.rect.height +6)))
-                mask = pg.transform.scale_by(mask, 2)
-                mask_rect = mask.get_rect(center=placeable.rect.center)
-                mask.fill((255,255,255,255),special_flags=pg.BLEND_RGBA_MULT)
-                WIN.blit(mask, mask_rect)
-
+                placeable.draw_outline(WIN)
+                pg.mouse.set_system_cursor(pg.SYSTEM_CURSOR_HAND)
+            else:
+                #to optimize if needed
+                pg.mouse.set_system_cursor(pg.SYSTEM_CURSOR_ARROW)
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -74,7 +72,8 @@ if __name__ == '__main__':
                             case _:
                                 popups.append(Popup('bip boup erreur erreur'))
 
-        WIN.blits([(placeable.surf, placeable.coord.xy) for placeable in current_room.placed])
+        #use blits because more performant
+        current_room.draw_placed(WIN)
         inventory.draw(WIN)
         render_popups()
 
