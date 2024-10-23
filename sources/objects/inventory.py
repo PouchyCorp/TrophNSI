@@ -7,18 +7,19 @@ class Inventory:
         '''list of owned items'''
         self.lst : list[Placeable] = []
 
+        #showed placeables when opened
+        self.showed_objects : list[Placeable] = []
         #false if closed, true if opened
-        self.state = False
+        self.opened = False
         self._page = 0
 
-    def draw(self, win : Surface):
-        surfs_rects_to_blit : list[tuple] = []
+    def open(self):
+        self.showed_objects = self.lst[self._page*8:]
+        self.opened = True
 
-        for ind , obj in enumerate(self.lst):
+        for ind , obj in enumerate(self.showed_objects):
             #8 element at a time ( or else too big)
-            if ind >= 8:
-                return
-            
+          
             biggest_side = max([obj.rect.width, obj.rect.height])
             scale_ratio = 180/biggest_side
             minimized_surf = transform.scale_by(obj.surf, scale_ratio)
@@ -31,10 +32,19 @@ class Inventory:
                 minimized_rect.x = 50+180+20
 
             minimized_rect.y = 50+(200*(ind//2))
+            
+            self.showed_objects[ind] = Placeable(obj.name, Coord(obj.coord.room, minimized_rect.topleft), minimized_surf)
 
-            surfs_rects_to_blit.append((minimized_surf, minimized_rect))
+    def close(self):
+        #to optimize if needed
+        self.showed_objects = []
+        self.opened = True
 
-        win.blits(surfs_rects_to_blit)
+    def draw(self, win : Surface):
+        if self.opened:
+            win.blits([(plcb.surf, plcb.rect) for plcb in self.showed_objects])
+        else:
+            win.blit(Surface((60,60)), (0,60))
 
 
 

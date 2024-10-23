@@ -52,8 +52,21 @@ if __name__ == '__main__':
             else:
                 #to optimize if needed
                 pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
+        
+        events = pg.event.get()
+        keys = pg.key.get_pressed()
 
-        for event in pg.event.get():
+        if keys[pg.K_SPACE]:
+            #toggle inventory
+            print(inventory.opened)
+            if inventory.opened:
+                inventory.opened = False
+                inventory.close()                
+            else:
+                inventory.opened = True
+                inventory.open()
+
+        for event in events:
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
