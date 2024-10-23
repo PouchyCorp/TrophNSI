@@ -12,13 +12,16 @@ class Inventory:
         self._page = 0
 
     def draw(self, win : Surface):
+        surfs_rects_to_blit : list[tuple] = []
 
         for ind , obj in enumerate(self.lst):
             #8 element at a time ( or else too big)
             if ind >= 8:
                 return
             
-            minimized_surf = transform.scale(obj.surf, (180,180))
+            biggest_side = max([obj.rect.width, obj.rect.height])
+            scale_ratio = 180/biggest_side
+            minimized_surf = transform.scale_by(obj.surf, scale_ratio)
             minimized_rect = minimized_surf.get_rect()
 
             #placement
@@ -29,7 +32,9 @@ class Inventory:
 
             minimized_rect.y = 50+(200*(ind//2))
 
-            win.blit(minimized_surf, minimized_rect)
+            surfs_rects_to_blit.append((minimized_surf, minimized_rect))
+
+        win.blits(surfs_rects_to_blit)
 
 
 

@@ -1,5 +1,4 @@
 import pygame as pg
-from coord import Coord
 
 class Popup:
     def __init__(self, text):

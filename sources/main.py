@@ -13,7 +13,7 @@ WIN = pg.display.set_mode((1920, 1080))
 CLOCK = pg.time.Clock()
 
 
-
+'''
 def draw_grid():
     for x in range(320):
         for y in range(180):
@@ -21,7 +21,8 @@ def draw_grid():
                 pg.draw.rect(WIN, (70, 70, 70), pg.Rect(x * 6, y * 6, 6, 6))
             elif x % 2 != 0 and y % 2 == 0:
                 pg.draw.rect(WIN, (70, 70, 70), pg.Rect(x * 6, y * 6, 6, 6))
-
+'''
+                
 def render_popups():
     global popups
     for popup in popups:
@@ -39,20 +40,20 @@ if __name__ == '__main__':
     inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p1.png')))
     inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p2.png')))
     inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p3.png')))
-    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.Surface((60,60))))
 
     while True:
-        CLOCK.tick(60)
+        CLOCK.tick(30)
         WIN.blit(current_room.bg_surf, (0,0))
         pos = pg.mouse.get_pos()
 
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(pos):
                 placeable.draw_outline(WIN)
-                pg.mouse.set_system_cursor(pg.SYSTEM_CURSOR_HAND)
+                #test_cursor = pg.cursors.load_xbm('data/cursor_test.xbm','data/cursor_test.xbm')
+                pg.mouse.set_cursor(pg.SYSTEM_CURSOR_HAND)
             else:
                 #to optimize if needed
-                pg.mouse.set_system_cursor(pg.SYSTEM_CURSOR_ARROW)
+                pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -71,6 +72,9 @@ if __name__ == '__main__':
                                 popups.append(Popup(str(CLOCK.get_fps())))
                             case _:
                                 popups.append(Popup('bip boup erreur erreur'))
+
+        #fps counter
+        WIN.blit(Popup(str(round(CLOCK.get_fps()))).text_surf,(0,0))
 
         #use blits because more performant
         current_room.draw_placed(WIN)

@@ -24,7 +24,7 @@ class Placeable:
         mask = self.surf.copy()
         mask = transform.scale(mask, (self.rect.width + 10, self.rect.height + 12))
         mask_rect = mask.get_rect(center=self.rect.center)
-        mask.fill((255,255,255,0),special_flags=BLEND_RGBA_MAX)
+        mask.fill((200,200,255,0),special_flags=BLEND_RGBA_MAX)
         win.blit(mask, mask_rect)
 
     def __repr__(self) -> str:
