@@ -12,8 +12,9 @@ pg.init()
 WIN = pg.display.set_mode((1920, 1080))
 CLOCK = pg.time.Clock()
 
+a,b,c,d=pg.cursors.load_xbm('data/cursor_test2.xbm', 'data/cursor_test2masque.xbm')
 
-
+pg.mouse.set_cursor(a,b,c,d)
 def draw_grid():
     for x in range(320):
         for y in range(180):
