@@ -12,8 +12,6 @@ pg.init()
 WIN = pg.display.set_mode((1920, 1080))
 CLOCK = pg.time.Clock()
 
-a,b,c,d=pg.cursors.load_xbm('data/cursor_test2.xbm', 'data/cursor_test2masque.xbm')
-
 '''
 def draw_grid():
     for x in range(320):
@@ -50,7 +48,6 @@ if __name__ == '__main__':
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(pos):
                 placeable.draw_outline(WIN)
-                #test_cursor = pg.cursors.load_xbm('data/cursor_test.xbm','data/cursor_test.xbm')
                 pg.mouse.set_cursor(pg.SYSTEM_CURSOR_HAND)
             else:
                 #to optimize if needed
