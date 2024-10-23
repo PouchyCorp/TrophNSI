@@ -15,7 +15,6 @@ class Inventory:
 
     def open(self):
         self.showed_objects = self.lst[self._page*8:]
-        self.opened = True
 
         for ind , obj in enumerate(self.showed_objects):
             #8 element at a time ( or else too big)
@@ -38,20 +37,32 @@ class Inventory:
     def close(self):
         #to optimize if needed
         self.showed_objects = []
-        self.opened = True
 
-    def draw(self, win : Surface):
+    def toggle(self):
+        self.opened = not self.opened
+
         if self.opened:
+            self.open()               
+        else:
+            self.close()
+
+    def draw(self, win : Surface, mouse_pos : Coord):
+        if self.opened:
+            self.mouse_highlight(win, mouse_pos)
             win.blits([(plcb.surf, plcb.rect) for plcb in self.showed_objects])
         else:
             win.blit(Surface((60,60)), (0,60))
+    
+    def mouse_highlight(self, win : Surface, mouse_pos : Coord):
+        for placeable in self.showed_objects:
+            if placeable.rect.collidepoint(mouse_pos.xy):
+                placeable.draw_outline(win)
 
 
-
-    def select_item(self, xy : Coord) -> int:
-        """return the index of the item selected
+    def select_item(self, xy : Coord) -> str | None:
+        """return the name of the item selected
         returns -1 if no items"""
-
+        
         return
     
     def __repr__(self):

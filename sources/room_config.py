@@ -19,6 +19,9 @@ R1.blacklist.append(R1_stairs)
 #R2
 R2 = Room(2,image.load("data/bg_test_2.png"))
 R2_stairs = Placeable('R2_stairs', Coord(1,(1200,300)), Surface((200,300)))
+test_canva = Placeable('test_canva', Coord(1,(100,100)), Surface((48*6,64*6)))
+
+R2.placed.append(test_canva)
 R2.placed.append(R2_stairs)
 R2.blacklist.append(R2_stairs)
 

@@ -43,10 +43,10 @@ if __name__ == '__main__':
     while True:
         CLOCK.tick(30)
         WIN.blit(current_room.bg_surf, (0,0))
-        pos = pg.mouse.get_pos()
+        mouse_pos : Coord = Coord(current_room.num , pg.mouse.get_pos())
 
         for placeable in current_room.placed:
-            if placeable.rect.collidepoint(pos):
+            if placeable.rect.collidepoint(mouse_pos.xy):
                 placeable.draw_outline(WIN)
                 pg.mouse.set_cursor(pg.SYSTEM_CURSOR_HAND)
             else:
@@ -56,24 +56,19 @@ if __name__ == '__main__':
         events = pg.event.get()
         keys = pg.key.get_pressed()
 
-        if keys[pg.K_SPACE]:
-            #toggle inventory
-            print(inventory.opened)
-            if inventory.opened:
-                inventory.opened = False
-                inventory.close()                
-            else:
-                inventory.opened = True
-                inventory.open()
-
         for event in events:
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
+            
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:
+                    inventory.toggle()
+                    print(inventory.opened)
 
             if event.type == pg.MOUSEBUTTONUP:
                 for placeable in current_room.placed:
-                    if placeable.rect.collidepoint(pos[0], pos[1]):
+                    if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
                         match placeable.name:
                             case 'R1_stairs':
                                 current_room = R2
@@ -83,13 +78,13 @@ if __name__ == '__main__':
                                 popups.append(Popup(str(CLOCK.get_fps())))
                             case _:
                                 popups.append(Popup('bip boup erreur erreur'))
-
+        
         #fps counter
         WIN.blit(Popup(str(round(CLOCK.get_fps()))).text_surf,(0,0))
 
         #use blits because more performant
         current_room.draw_placed(WIN)
-        inventory.draw(WIN)
+        inventory.draw(WIN, mouse_pos)
         render_popups()
 
         pg.display.flip()
