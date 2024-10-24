@@ -22,7 +22,7 @@ class Build_mode():
         win.blits([(hologram_rect_surf, pixel_perfect_mouse_pos), (hologram, pixel_perfect_mouse_pos)])
 
     def place(self, mouse_pos : Coord) -> Placeable:
-        self.selected_placeable.coord = mouse_pos
+        self.selected_placeable.move(mouse_pos)
         self.selected_placeable.placed = True
         self.in_build_mode = False
         return self.selected_placeable

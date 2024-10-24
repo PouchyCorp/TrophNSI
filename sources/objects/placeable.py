@@ -12,6 +12,7 @@ class Placeable:
         self.coord.xy = self.coord.get_pixel_perfect()
 
         self.surf = surf
+        #self.pixelise()
 
         self.rect : Rect = self.surf.get_rect()
         self.rect.x, self.rect.y = self.coord.xy
@@ -27,6 +28,11 @@ class Placeable:
         mask.fill((200,200,255,0),special_flags=BLEND_RGBA_MAX)
         win.blit(mask, mask_rect)
     
+    def move(self, coord : Coord):
+        self.coord = coord
+        self.coord.xy = coord.get_pixel_perfect()
+        self.rect.topleft = self.coord.xy
+
     def pixelise(self):
         """makeshift pixel art shader for 6*6 pixels"""
         self.surf = transform.scale_by(self.surf, 1/6)

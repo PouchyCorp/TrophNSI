@@ -67,8 +67,13 @@ if __name__ == '__main__':
                 sys.exit()
             
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:
-                    inventory.toggle()
+                match event.key:
+                    case pg.K_SPACE:
+                        inventory.toggle()
+                    case pg.K_UP:
+                        current_room = eval('R'+str(current_room.num+1))
+                    case pg.K_DOWN:
+                        current_room = eval('R'+str(current_room.num-1))
 
             if event.type == pg.MOUSEBUTTONUP:
                 
