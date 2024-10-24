@@ -38,12 +38,12 @@ if __name__ == '__main__':
     popups : list[Popup] = []
     
     inventory : Inventory = Inventory()
-    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p1.png')))
-    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p2.png')))
-    inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p3.png')))
+    inventory.inv.append(Placeable('654564231',Coord(1,(121,50)),pg.image.load('data/p1.png')))
+    inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)),pg.image.load('data/p2.png')))
+    inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)),pg.image.load('data/p3.png')))
     
     build_mode : Build_mode = Build_mode(Placeable('R1_stairs', Coord(1,(1000,300)), pg.transform.scale_by(pg.image.load("data/p3.png"),6)))
-    build_mode.in_build_mode = True
+    #build_mode.in_build_mode = True
 
     while True:
         CLOCK.tick (30)
@@ -69,15 +69,25 @@ if __name__ == '__main__':
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     inventory.toggle()
-                    print(inventory.opened)
 
             if event.type == pg.MOUSEBUTTONUP:
                 
+                #to keep before the inventory click check
                 if build_mode.in_build_mode:
                     current_room.placed.append(build_mode.place(mouse_pos))
 
+                if inventory.is_open:
+                    clicked_obj_name = inventory.select_item(mouse_pos)
+                    if clicked_obj_name:
+                        
+                        clicked_obj = inventory.search_by_name(clicked_obj_name) 
+                        build_mode.selected_placeable = clicked_obj
+
+                        inventory.is_open = False
+                        build_mode.in_build_mode = True
+
                 for placeable in current_room.placed:
-                    if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y) and not build_mode.in_build_mode:
+                    if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y) and not (build_mode.in_build_mode or inventory.is_open):
                         match placeable.name:
                             case 'R1_stairs':
                                 current_room = R2

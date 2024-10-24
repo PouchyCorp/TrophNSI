@@ -5,16 +5,16 @@ from pygame import Surface, transform
 class Inventory:
     def __init__(self) -> None:
         '''list of owned items'''
-        self.lst : list[Placeable] = []
+        self.inv : list[Placeable] = []
 
         #showed placeables when opened
         self.showed_objects : list[Placeable] = []
         #false if closed, true if opened
-        self.opened = False
+        self.is_open = False
         self._page = 0
 
     def open(self):
-        self.showed_objects = self.lst[self._page*8:]
+        self.showed_objects = self.inv[self._page*8:]
 
         for ind , obj in enumerate(self.showed_objects):
             #8 element at a time ( or else too big)
@@ -45,15 +45,15 @@ class Inventory:
         self.showed_objects = []
 
     def toggle(self):
-        self.opened = not self.opened
+        self.is_open = not self.is_open
 
-        if self.opened:
+        if self.is_open:
             self.open()               
         else:
             self.close()
 
     def draw(self, win : Surface, mouse_pos : Coord):
-        if self.opened:
+        if self.is_open:
             self.mouse_highlight(win, mouse_pos)
             win.blits([(plcb.surf, plcb.rect) for plcb in self.showed_objects])
         else:
@@ -72,6 +72,12 @@ class Inventory:
             if placeable.rect.collidepoint(mouse_pos.xy):
                 return placeable.name
         return None
+    
+    def search_by_name(self, name : str) -> Placeable:
+        '''returns the first placeable matching the name'''
+        for obj in self.inv:
+            if obj.name == name:
+                return obj
 
     def __repr__(self):
         return str(self.__dict__)

@@ -24,4 +24,5 @@ class Build_mode():
     def place(self, mouse_pos : Coord) -> Placeable:
         self.selected_placeable.coord = mouse_pos
         self.selected_placeable.placed = True
+        self.in_build_mode = False
         return self.selected_placeable
