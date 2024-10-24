@@ -1,17 +1,19 @@
 import pygame as pg
 import sys
-import objects.placeable
+import time
+
+pg.init()
+
+WIN = pg.display.set_mode((1920, 1080))
+CLOCK = pg.time.Clock()
+
+import objects.sprite as sprite
 from room_config import R0, R1, R2, R3
 from objects.popup import Popup
 from objects.placeable import Placeable
 from objects.inventory import Inventory
 from objects.coord import Coord
 from objects.build_mode import Build_mode
-
-pg.init()
-
-WIN = pg.display.set_mode((1920, 1080))
-CLOCK = pg.time.Clock()
 
 '''
 def draw_grid():
@@ -38,9 +40,9 @@ if __name__ == '__main__':
     popups : list[Popup] = []
     
     inventory : Inventory = Inventory()
-    inventory.inv.append(Placeable('654564231',Coord(1,(121,50)),pg.image.load('data/p1.png')))
-    inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)),pg.image.load('data/p2.png')))
-    inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)),pg.image.load('data/p3.png')))
+    inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
+    inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
+    inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), sprite.P3))
     
     build_mode : Build_mode = Build_mode(Placeable('R1_stairs', Coord(1,(1000,300)), pg.transform.scale_by(pg.image.load("data/p3.png"),6)))
     #build_mode.in_build_mode = True
@@ -102,7 +104,9 @@ if __name__ == '__main__':
                                 popups.append(Popup(str(CLOCK.get_fps())))
                             case _:
                                 popups.append(Popup('bip boup erreur erreur'))
-        
+
+        cntr = time.time()
+
         #fps counter
         WIN.blit(Popup(str(round(CLOCK.get_fps()))).text_surf,(0,0))
 
@@ -117,5 +121,6 @@ if __name__ == '__main__':
 
         #drawed last
         render_popups()
-
         pg.display.flip()
+
+        print(time.time()-cntr)
