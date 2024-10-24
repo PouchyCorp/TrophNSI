@@ -6,6 +6,7 @@ from objects.popup import Popup
 from objects.placeable import Placeable
 from objects.inventory import Inventory
 from objects.coord import Coord
+from objects.build_mode import Build_mode
 
 pg.init()
 
@@ -35,10 +36,14 @@ if __name__ == '__main__':
 
     current_room = R1
     popups : list[Popup] = []
+    
     inventory : Inventory = Inventory()
     inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p1.png')))
     inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p2.png')))
     inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p3.png')))
+    
+    build_mode : Build_mode = Build_mode(Placeable('R1_stairs', Coord(1,(1000,300)), pg.transform.scale_by(pg.image.load("data/p3.png"),6)))
+    build_mode.in_build_mode = True
 
     while True:
         CLOCK.tick (30)
@@ -67,8 +72,12 @@ if __name__ == '__main__':
                     print(inventory.opened)
 
             if event.type == pg.MOUSEBUTTONUP:
+                
+                if build_mode.in_build_mode:
+                    current_room.placed.append(build_mode.place(mouse_pos))
+
                 for placeable in current_room.placed:
-                    if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
+                    if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y) and not build_mode.in_build_mode:
                         match placeable.name:
                             case 'R1_stairs':
                                 current_room = R2
@@ -82,9 +91,16 @@ if __name__ == '__main__':
         #fps counter
         WIN.blit(Popup(str(round(CLOCK.get_fps()))).text_surf,(0,0))
 
+        
         #use blits because more performant
         current_room.draw_placed(WIN)
+
         inventory.draw(WIN, mouse_pos)
+
+        if build_mode.in_build_mode:
+            build_mode.show_hologram(WIN, mouse_pos)
+
+        #drawed last
         render_popups()
 
         pg.display.flip()
