@@ -21,6 +21,7 @@ class Inventory:
           
             biggest_side = max([obj.rect.width, obj.rect.height])
             scale_ratio = 180/biggest_side
+
             minimized_surf = transform.scale_by(obj.surf, scale_ratio)
             minimized_rect = minimized_surf.get_rect()
 
@@ -32,7 +33,12 @@ class Inventory:
 
             minimized_rect.y = 50+(200*(ind//2))
             
-            self.showed_objects[ind] = Placeable(obj.name, Coord(obj.coord.room, minimized_rect.topleft), minimized_surf)
+            minimized_placeable = Placeable(obj.name, Coord(obj.coord.room, minimized_rect.topleft), minimized_surf)
+            minimized_placeable.pixelise()
+
+            self.showed_objects[ind] = minimized_placeable
+
+            
 
     def close(self):
         #to optimize if needed
@@ -59,12 +65,14 @@ class Inventory:
                 placeable.draw_outline(win)
 
 
-    def select_item(self, xy : Coord) -> str | None:
+    def select_item(self, mouse_pos : Coord) -> str | None:
         """return the name of the item selected
-        returns -1 if no items"""
-        
-        return
-    
+        returns None if no items"""
+        for placeable in self.showed_objects:
+            if placeable.rect.collidepoint(mouse_pos.xy):
+                return placeable.name
+        return None
+
     def __repr__(self):
         return str(self.__dict__)
 

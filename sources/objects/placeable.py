@@ -26,6 +26,11 @@ class Placeable:
         mask_rect = mask.get_rect(center=self.rect.center)
         mask.fill((200,200,255,0),special_flags=BLEND_RGBA_MAX)
         win.blit(mask, mask_rect)
+    
+    def pixelise(self):
+        """makeshift pixel art shader for 6*6 pixels"""
+        self.surf = transform.scale_by(self.surf, 1/6)
+        self.surf = transform.scale_by(self.surf, 6)
 
     def __repr__(self) -> str:
         return str(self.__dict__)

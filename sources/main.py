@@ -41,7 +41,7 @@ if __name__ == '__main__':
     inventory.lst.append(Placeable('1',Coord(1,(121,50)),pg.image.load('data/p3.png')))
 
     while True:
-        CLOCK.tick(30)
+        CLOCK.tick (30)
         WIN.blit(current_room.bg_surf, (0,0))
         mouse_pos : Coord = Coord(current_room.num , pg.mouse.get_pos())
 
