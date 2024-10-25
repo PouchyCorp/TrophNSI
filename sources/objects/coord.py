@@ -4,7 +4,7 @@ class Coord:
         self.room = room
         self.xy = xy
         self.x, self.y = xy
-        self.pixelSize = 6
+        self.__pixelSize = 6
 
     def get_pixel_perfect(self, flag : int = 0) -> tuple[int]:
         '''Rounds down the coords to match with the pixel art 6*6 pixel size
@@ -12,11 +12,11 @@ class Coord:
         >>> Coord(x = 1900, y = 631).get_pixel_perfect
         (1896,630)'''
         if flag:
-            x = self.x - (self.x % self.pixelSize) + self.pixelSize
-            y = self.y - (self.y % self.pixelSize) + self.pixelSize
+            x = self.x - (self.x % self.__pixelSize) + self.__pixelSize
+            y = self.y - (self.y % self.__pixelSize) + self.__pixelSize
         else:
-            x = self.x - (self.x % self.pixelSize)
-            y = self.y - (self.y % self.pixelSize)
+            x = self.x - (self.x % self.__pixelSize)
+            y = self.y - (self.y % self.__pixelSize)
         return (x, y)
     
     def __repr__(self):

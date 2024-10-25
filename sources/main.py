@@ -105,7 +105,7 @@ if __name__ == '__main__':
                             case _:
                                 popups.append(Popup('bip boup erreur erreur'))
 
-        cntr = time.time()
+        #cntr = time.time()
 
         #fps counter
         WIN.blit(Popup(str(round(CLOCK.get_fps()))).text_surf,(0,0))
@@ -123,4 +123,4 @@ if __name__ == '__main__':
         render_popups()
         pg.display.flip()
 
-        print(time.time()-cntr)
+        #print(time.time()-cntr)

@@ -7,6 +7,7 @@ class Build_mode():
     def __init__(self, selected_placeable) -> None:
         self.selected_placeable : Placeable = selected_placeable
         self.in_build_mode : bool = False
+        
 
     def show_hologram(self, win : Surface, mouse_pos : Coord):
         pixel_perfect_mouse_pos = mouse_pos.get_pixel_perfect()

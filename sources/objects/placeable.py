@@ -10,6 +10,7 @@ class Placeable:
         self.name = name
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
+        self.coord.x, self.coord.y = self.coord.xy
 
         self.surf = surf
         #self.pixelise()

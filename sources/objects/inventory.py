@@ -1,6 +1,6 @@
 from placeable import Placeable
 from coord import Coord
-from pygame import Surface, transform
+from pygame import Surface, transform, BLEND_RGB_MIN, font
 
 class Inventory:
     def __init__(self) -> None:
@@ -12,8 +12,10 @@ class Inventory:
         #false if closed, true if opened
         self.is_open = False
         self._page = 0
+        self.font = font.SysFont(None,30,False,False)
 
     def open(self):
+        """initialise all objects for rendering"""
         self.showed_objects = self.inv[self._page*8:]
 
         for ind , obj in enumerate(self.showed_objects):
@@ -22,21 +24,38 @@ class Inventory:
             biggest_side = max([obj.rect.width, obj.rect.height])
             scale_ratio = 180/biggest_side
 
-            minimized_surf = transform.scale_by(obj.surf, scale_ratio)
-            minimized_rect = minimized_surf.get_rect()
+            thumbnail_surf = transform.scale_by(obj.surf, scale_ratio)
+            thumbnail_rect = thumbnail_surf.get_rect()
+
+            #greyscale placed objects
+            if obj.placed == True:
+                thumbnail_surf.fill((50,50,50), special_flags=BLEND_RGB_MIN)
+
+            """ marche pas
+            #label
+            label_text = obj.name
+            label_surf = self.font.render(label_text,True,"black")
+
+            #blit label on thumbnail
+            thumbnail_surf.blit(label_surf, (0,180))
+            thumbnail_rect = thumbnail_surf.get_rect()
+            """
 
             #placement
             if ind % 2 == 0:
-                minimized_rect.x = 50
+                thumbnail_rect.x = 50
             else:
-                minimized_rect.x = 50+180+20
-
-            minimized_rect.y = 50+(200*(ind//2))
+                thumbnail_rect.x = 50+180+20
+            thumbnail_rect.y = 50+(220*(ind//2))
             
-            minimized_placeable = Placeable(obj.name, Coord(obj.coord.room, minimized_rect.topleft), minimized_surf)
-            minimized_placeable.pixelise()
+            #create placeable
+            thumbnail_placeable = Placeable(obj.name, Coord(obj.coord.room, thumbnail_rect.topleft), thumbnail_surf)
+            thumbnail_placeable.pixelise()
 
-            self.showed_objects[ind] = minimized_placeable
+            print(thumbnail_placeable)
+
+            #update list
+            self.showed_objects[ind] = thumbnail_placeable
 
             
 
@@ -55,7 +74,7 @@ class Inventory:
     def draw(self, win : Surface, mouse_pos : Coord):
         if self.is_open:
             self.mouse_highlight(win, mouse_pos)
-            win.blits([(plcb.surf, plcb.rect) for plcb in self.showed_objects])
+            win.blits([(plcb.surf, plcb.rect.topleft) for plcb in self.showed_objects])
         else:
             win.blit(Surface((60,60)), (0,60))
     
