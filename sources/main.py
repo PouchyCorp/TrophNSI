@@ -86,12 +86,15 @@ if __name__ == '__main__':
                 if inventory.is_open:
                     clicked_obj_name = inventory.select_item(mouse_pos)
                     if clicked_obj_name:
-                        
                         clicked_obj = inventory.search_by_name(clicked_obj_name) 
-                        build_mode.selected_placeable = clicked_obj
+                        
+                        #check if object already placed
+                        if not clicked_obj.placed:
 
-                        inventory.is_open = False
-                        build_mode.in_build_mode = True
+                            #enter build mode
+                            build_mode.selected_placeable = clicked_obj
+                            inventory.is_open = False
+                            build_mode.in_build_mode = True
                 
                 #to improve
                 if destruction_mode.in_destruction_mode:
