@@ -22,11 +22,11 @@ class Placeable:
     def draw(self,win):
         win.blit(self.surf, self.rect)
     
-    def draw_outline(self, win):
+    def draw_outline(self, win : Surface, color : tuple):
         mask = self.surf.copy()
         mask = transform.scale(mask, (self.rect.width + 10, self.rect.height + 12))
         mask_rect = mask.get_rect(center=self.rect.center)
-        mask.fill((200,200,255,0),special_flags=BLEND_RGBA_MAX)
+        mask.fill(color+tuple([0]),special_flags=BLEND_RGBA_MAX)
         win.blit(mask, mask_rect)
     
     def move(self, coord : Coord):

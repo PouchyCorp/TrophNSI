@@ -4,8 +4,8 @@ from coord import Coord
 from pygame import Surface, BLEND_RGBA_ADD
 
 class Build_mode():
-    def __init__(self, selected_placeable) -> None:
-        self.selected_placeable : Placeable = selected_placeable
+    def __init__(self) -> None:
+        self.selected_placeable : Placeable = None
         self.in_build_mode : bool = False
         
 
@@ -27,3 +27,15 @@ class Build_mode():
         self.selected_placeable.placed = True
         self.in_build_mode = False
         return self.selected_placeable
+    
+class Destruction_mode():
+    def __init__(self) -> None:
+        self.in_destruction_mode : bool = False
+
+    def remove_from_room(self, placeable : Placeable, room : Room):
+        """removes the placeable in the room"""
+        placeable.placed = False
+        room.placed.remove(placeable)
+    
+    def toggle(self):
+        self.in_destruction_mode = not self.in_destruction_mode

@@ -1,7 +1,7 @@
 class Coord:
-    def __init__(self, room : int, xy : tuple[int]) -> None:
+    def __init__(self, room_num : int, xy : tuple[int]) -> None:
         '''coordinate system for all objects'''
-        self.room = room
+        self.room_num = room_num
         self.xy = xy
         self.x, self.y = xy
         self.__pixelSize = 6

@@ -13,7 +13,7 @@ from objects.popup import Popup
 from objects.placeable import Placeable
 from objects.inventory import Inventory
 from objects.coord import Coord
-from objects.build_mode import Build_mode
+from objects.build_mode import Build_mode, Destruction_mode
 
 '''
 def draw_grid():
@@ -44,7 +44,8 @@ if __name__ == '__main__':
     inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
     inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), sprite.P3))
     
-    build_mode : Build_mode = Build_mode(Placeable('R1_stairs', Coord(1,(1000,300)), pg.transform.scale_by(pg.image.load("data/p3.png"),6)))
+    build_mode : Build_mode = Build_mode()
+    destruction_mode : Destruction_mode = Destruction_mode()
     #build_mode.in_build_mode = True
 
     while True:
@@ -54,11 +55,8 @@ if __name__ == '__main__':
 
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
-                placeable.draw_outline(WIN)
-                pg.mouse.set_cursor(pg.SYSTEM_CURSOR_HAND)
-            else:
-                #to optimize if needed
-                pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
+                color = (150,150,255) if not destruction_mode.in_destruction_mode else (255,0,0)
+                placeable.draw_outline(WIN, color)
         
         events = pg.event.get()
         keys = pg.key.get_pressed()
@@ -72,6 +70,8 @@ if __name__ == '__main__':
                 match event.key:
                     case pg.K_SPACE:
                         inventory.toggle()
+                    case pg.K_BACKSPACE:
+                        destruction_mode.toggle()
                     case pg.K_UP:
                         current_room = eval('R'+str(current_room.num+1))
                     case pg.K_DOWN:
@@ -92,9 +92,15 @@ if __name__ == '__main__':
 
                         inventory.is_open = False
                         build_mode.in_build_mode = True
+                
+                #to improve
+                if destruction_mode.in_destruction_mode:
+                    for placeable in current_room.placed:
+                        if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
+                            destruction_mode.remove_from_room(placeable, current_room)
 
                 for placeable in current_room.placed:
-                    if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y) and not (build_mode.in_build_mode or inventory.is_open):
+                    if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y) and not (build_mode.in_build_mode or inventory.is_open or destruction_mode.in_destruction_mode):
                         match placeable.name:
                             case 'R1_stairs':
                                 current_room = R2

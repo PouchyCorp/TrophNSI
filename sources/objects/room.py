@@ -13,7 +13,14 @@ class Room:
     def in_blacklist(self, plcbl : Placeable) -> bool:
         return (plcbl in self.blacklist)
     
+    """
+    def check_coords(self, placeable : Placeable):
+        '''removes object if it's room number doesn't match with the room'''
+        if placeable.coord.room_num != self.num:
+            self.placed.remove(placeable)
+    """
     def draw_placed(self, win):
+        #map(self.check_coords, self.placed)
         win.blits([(placeable.surf, placeable.coord.xy) for placeable in self.placed])
         
 # tests

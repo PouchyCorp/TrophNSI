@@ -49,10 +49,10 @@ class Inventory:
             thumbnail_rect.y = 50+(220*(ind//2))
             
             #create placeable
-            thumbnail_placeable = Placeable(obj.name, Coord(obj.coord.room, thumbnail_rect.topleft), thumbnail_surf)
+            thumbnail_placeable = Placeable(obj.name, Coord(obj.coord.room_num, thumbnail_rect.topleft), thumbnail_surf)
             thumbnail_placeable.pixelise()
 
-            print(thumbnail_placeable)
+            #print(thumbnail_placeable)
 
             #update list
             self.showed_objects[ind] = thumbnail_placeable
@@ -81,7 +81,7 @@ class Inventory:
     def mouse_highlight(self, win : Surface, mouse_pos : Coord):
         for placeable in self.showed_objects:
             if placeable.rect.collidepoint(mouse_pos.xy):
-                placeable.draw_outline(win)
+                placeable.draw_outline(win,(150,150,255))
 
 
     def select_item(self, mouse_pos : Coord) -> str | None:
