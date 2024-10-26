@@ -10,9 +10,8 @@ class Inventory:
         #showed placeables when opened
         self.showed_objects : list[Placeable] = []
         #false if closed, true if opened
-        self.is_open = False
         self._page = 0
-        self.font = font.SysFont(None,30,False,False)
+        #self.font = font.SysFont(None,30,False,False)
 
     def open(self):
         """initialise all objects for rendering"""
@@ -57,12 +56,7 @@ class Inventory:
             #update list
             self.showed_objects[ind] = thumbnail_placeable
 
-            
-
-    def close(self):
-        #to optimize if needed
-        self.showed_objects = []
-
+    '''
     def toggle(self):
         self.is_open = not self.is_open
 
@@ -70,9 +64,9 @@ class Inventory:
             self.open()               
         else:
             self.close()
-
-    def draw(self, win : Surface, mouse_pos : Coord):
-        if self.is_open:
+    '''
+    def draw(self, win : Surface, mouse_pos : Coord, is_open : bool):
+        if is_open:
             self.mouse_highlight(win, mouse_pos)
             win.blits([(plcb.surf, plcb.rect.topleft) for plcb in self.showed_objects])
         else:

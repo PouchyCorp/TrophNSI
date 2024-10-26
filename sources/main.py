@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 import time
+from enum import Enum, auto
 
 pg.init()
 
@@ -34,20 +35,28 @@ def render_popups():
             popup.draw(WIN)
             popup.lifetime -= 1
 
+
+class State(Enum):
+    INTERACTION = auto()
+    BUILD = auto()
+    DESTRUCTION = auto()
+    INVENTORY = auto()
+
+
+
+current_room = R1
+gui_state = State.INTERACTION
+popups : list[Popup] = []
+
+inventory : Inventory = Inventory()
+inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
+inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
+inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), sprite.P3))
+
+build_mode : Build_mode = Build_mode()
+destruction_mode : Destruction_mode = Destruction_mode()
+
 if __name__ == '__main__':
-
-    current_room = R1
-    popups : list[Popup] = []
-    
-    inventory : Inventory = Inventory()
-    inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
-    inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
-    inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), sprite.P3))
-    
-    build_mode : Build_mode = Build_mode()
-    destruction_mode : Destruction_mode = Destruction_mode()
-    #build_mode.in_build_mode = True
-
     while True:
         CLOCK.tick (30)
         WIN.blit(current_room.bg_surf, (0,0))
@@ -69,63 +78,72 @@ if __name__ == '__main__':
             if event.type == pg.KEYDOWN:
                 match event.key:
                     case pg.K_SPACE:
-                        inventory.toggle()
+                        if gui_state is State.INTERACTION:
+                            gui_state = State.INVENTORY
+                            inventory.open()
+                        else:
+                            gui_state = State.INTERACTION
+
                     case pg.K_BACKSPACE:
-                        destruction_mode.toggle()
+                        if gui_state is State.INTERACTION:
+                            gui_state = State.DESTRUCTION
+                        else:
+                            gui_state = State.INTERACTION
+
                     case pg.K_UP:
                         current_room = eval('R'+str(current_room.num+1))
+
                     case pg.K_DOWN:
                         current_room = eval('R'+str(current_room.num-1))
 
             if event.type == pg.MOUSEBUTTONUP:
                 
                 #to keep before the inventory click check
-                if build_mode.in_build_mode:
-                    current_room.placed.append(build_mode.place(mouse_pos))
+                match gui_state:
+                    case State.BUILD:
+                        if build_mode.can_place(mouse_pos, current_room):
+                            current_room.placed.append(build_mode.place(mouse_pos))
+                            gui_state = State.INTERACTION
 
-                if inventory.is_open:
-                    clicked_obj_name = inventory.select_item(mouse_pos)
-                    if clicked_obj_name:
-                        clicked_obj = inventory.search_by_name(clicked_obj_name) 
-                        
-                        #check if object already placed
-                        if not clicked_obj.placed:
+                    case State.INVENTORY:
+                        clicked_obj_name = inventory.select_item(mouse_pos)
+                        if clicked_obj_name:
+                            clicked_obj = inventory.search_by_name(clicked_obj_name) 
+                            
+                            #check if object already placed
+                            if not clicked_obj.placed:
 
-                            #enter build mode
-                            build_mode.selected_placeable = clicked_obj
-                            inventory.is_open = False
-                            build_mode.in_build_mode = True
+                                #enter build mode
+                                build_mode.selected_placeable = clicked_obj
+                                gui_state = State.BUILD
+                                
+
+                    case State.DESTRUCTION:
+                        for placeable in current_room.placed:
+                            if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
+                                destruction_mode.remove_from_room(placeable, current_room)
                 
-                #to improve
-                if destruction_mode.in_destruction_mode:
-                    for placeable in current_room.placed:
-                        if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
-                            destruction_mode.remove_from_room(placeable, current_room)
-
-                for placeable in current_room.placed:
-                    if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y) and not (build_mode.in_build_mode or inventory.is_open or destruction_mode.in_destruction_mode):
-                        match placeable.name:
-                            case 'R1_stairs':
-                                current_room = R2
-                            case 'R2_stairs':
-                                current_room = R3
-                            case "test":
-                                popups.append(Popup(str(CLOCK.get_fps())))
-                            case _:
-                                popups.append(Popup('bip boup erreur erreur'))
+                    case State.INTERACTION:
+                        for placeable in current_room.placed:
+                            if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
+                                match placeable.name:
+                                    case 'R1_stairs':
+                                        current_room = R2
+                                    case 'R2_stairs':
+                                        current_room = R3
+                                    case _:
+                                        popups.append(Popup('bip boup erreur erreur'))
 
         #cntr = time.time()
 
         #fps counter
-        WIN.blit(Popup(str(round(CLOCK.get_fps()))).text_surf,(0,0))
+        WIN.blit(Popup(f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())}').text_surf,(0,0))
 
-        
+        inventory.draw(WIN, mouse_pos, gui_state == State.INVENTORY)
         #use blits because more performant
         current_room.draw_placed(WIN)
 
-        inventory.draw(WIN, mouse_pos)
-
-        if build_mode.in_build_mode:
+        if gui_state is State.BUILD:
             build_mode.show_hologram(WIN, mouse_pos)
 
         #drawed last
