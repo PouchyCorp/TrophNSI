@@ -43,8 +43,9 @@ class Destruction_mode():
 
     def remove_from_room(self, placeable : Placeable, room : Room):
         """removes the placeable in the room"""
-        placeable.placed = False
-        room.placed.remove(placeable)
+        if placeable not in room.blacklist:
+            placeable.placed = False
+            room.placed.remove(placeable)
     
     def toggle(self):
         self.in_destruction_mode = not self.in_destruction_mode
