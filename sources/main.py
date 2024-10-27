@@ -145,6 +145,7 @@ if __name__ == '__main__':
 
         if gui_state is State.BUILD:
             build_mode.show_hologram(WIN, mouse_pos)
+            build_mode.show_room_holograms(WIN, current_room)
 
         #drawed last
         render_popups()

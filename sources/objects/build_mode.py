@@ -7,6 +7,19 @@ class Build_mode():
     def __init__(self) -> None:
         self.selected_placeable : Placeable = None
         #self.in_build_mode : bool = False
+    
+    def show_room_holograms(self, win : Surface, room : Room):
+        room_rects = [placeable.rect for placeable in room.placed]
+        rect_surfs = []
+        for rect in room_rects:
+            hologram_rect_surf : Surface = Surface((rect.width, rect.height))
+            hologram_rect_surf.set_alpha(50)        
+            hologram_rect_surf.fill((0,0,200,50))
+            rect_surfs.append(hologram_rect_surf)
+        
+        assert len(room_rects) == len(rect_surfs)
+        win.blits((rect_surfs[i], room_rects[i]) for i in range(len(room_rects)))
+
         
 
     def show_hologram(self, win : Surface, mouse_pos : Coord):
