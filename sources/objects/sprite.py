@@ -16,3 +16,5 @@ P2 = load_image('data/p2.png')
 P3 = load_image('data/p3.png')
 
 ICON_1 = load_image('data/icon_inventaire.png')
+
+CHIP = load_image('data/chip.png')
