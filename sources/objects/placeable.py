@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from coord import Coord
 
 class Placeable:
-    def __init__(self, name, coord : Coord, surf : Surface, placed : bool = False) -> None:
+    def __init__(self, name, coord : Coord, surf : Surface, y_constraint : int | None = None, placed : bool = False) -> None:
         self.name = name
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
@@ -17,6 +17,9 @@ class Placeable:
 
         self.rect : Rect = self.surf.get_rect()
         self.rect.x, self.rect.y = self.coord.xy
+        
+        #snap to x axis
+        self.y_constraint = y_constraint
         self.placed = placed
 
     def draw(self,win):

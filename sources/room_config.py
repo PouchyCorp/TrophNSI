@@ -10,11 +10,11 @@ canva = Placeable('canva', Coord(1,(1200,50)), Surface((700,1000)))
 
 #R1
 R1 = Room(1,sprite.BG1)
-R1_stairs = Placeable('R1_stairs', Coord(1,(1000,300)), sprite.P1)
+#R1_stairs = Placeable('R1_stairs', Coord(1,(1000,300)), sprite.P1)
 #test_place = Placeable("test",Coord(1,(200,200)), Surface((180,180))) 
 
-R1.placed.append(R1_stairs)
-R1.blacklist.append(R1_stairs)
+#R1.placed.append(R1_stairs)
+#R1.blacklist.append(R1_stairs)
 
 
 #R2
