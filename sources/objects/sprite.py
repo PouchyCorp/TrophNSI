@@ -1,12 +1,17 @@
-from pygame import image, Surface
+from pygame import image, Surface, transform
 
-BG1 = image.load("data/bg_test_1.png").convert()
+def load_image(path : str):
+    sprite = image.load(path).convert()
+    sized_sprite = transform.scale_by(sprite, 6)
+    return sized_sprite
 
-BG2 = image.load("data/bg_test_2.png").convert()
+BG1 = load_image("data/bg_test_1.png")
 
-P1 = image.load('data/p1.png').convert_alpha()
+BG2 = load_image("data/bg_test_2.png")
 
-P2 = image.load('data/p2.png').convert_alpha()
+P1 = load_image('data/p1.png')
+
+P2 = load_image('data/p2.png')
  
-P3 = image.load('data/p3.png').convert_alpha()
+P3 = load_image('data/p3.png')
 

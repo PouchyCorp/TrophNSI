@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
         #cntr = time.time()
 
-        #fps counter
+        #fps counter / state debug
         WIN.blit(Popup(f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())}').text_surf,(0,0))
 
         inventory.draw(WIN, mouse_pos, gui_state == State.INVENTORY)
