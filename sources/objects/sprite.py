@@ -1,9 +1,9 @@
 from pygame import image, Surface, transform
 
 def load_image(path : str):
-    sprite = image.load(path).convert()
+    sprite = image.load(path)
     sized_sprite = transform.scale_by(sprite, 6)
-    return sized_sprite
+    return sized_sprite.convert_alpha()
 
 BG1 = load_image("data/bg_test_1.png")
 

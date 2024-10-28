@@ -49,9 +49,9 @@ gui_state = State.INTERACTION
 popups : list[Popup] = []
 
 inventory : Inventory = Inventory()
-inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
-inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
-inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), sprite.P3))
+#inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
+#inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
+inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), sprite.P3, 600))
 
 build_mode : Build_mode = Build_mode()
 destruction_mode : Destruction_mode = Destruction_mode()
@@ -101,8 +101,8 @@ if __name__ == '__main__':
                 #to keep before the inventory click check
                 match gui_state:
                     case State.BUILD:
-                        if build_mode.can_place(mouse_pos, current_room):
-                            current_room.placed.append(build_mode.place(mouse_pos))
+                        if build_mode.can_place(current_room):
+                            current_room.placed.append(build_mode.place(current_room.num))
                             gui_state = State.INTERACTION
 
                     case State.INVENTORY:
