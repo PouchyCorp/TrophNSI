@@ -1,6 +1,7 @@
 from placeable import Placeable
 from coord import Coord
 from pygame import Surface, transform, BLEND_RGB_MIN, font
+from sprite import ICON_1
 
 class Inventory:
     def __init__(self) -> None:
@@ -70,7 +71,7 @@ class Inventory:
             self.mouse_highlight(win, mouse_pos)
             win.blits([(plcb.surf, plcb.rect.topleft) for plcb in self.showed_objects])
         else:
-            win.blit(Surface((60,60)), (0,60))
+            win.blit(ICON_1, (0,60))
     
     def mouse_highlight(self, win : Surface, mouse_pos : Coord):
         for placeable in self.showed_objects:
