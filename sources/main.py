@@ -15,6 +15,7 @@ from objects.placeable import Placeable
 from objects.inventory import Inventory
 from objects.coord import Coord
 from objects.build_mode import Build_mode, Destruction_mode
+from objects.bot import Bot, Hivemind
 
 '''
 def draw_grid():
@@ -47,6 +48,10 @@ class State(Enum):
 current_room = R1
 gui_state = State.INTERACTION
 popups : list[Popup] = []
+
+#test hivemind
+hivemind = Hivemind(60,1800)
+hivemind.add_bot()
 
 inventory : Inventory = Inventory()
 #inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
@@ -95,6 +100,12 @@ if __name__ == '__main__':
 
                     case pg.K_DOWN:
                         current_room = eval('R'+str(current_room.num-1))
+                    
+                    case pg.K_b:
+                        hivemind.add_bot()
+                    
+                    case pg.K_n:
+                        hivemind.free_last_bot()
 
             if event.type == pg.MOUSEBUTTONUP:
                 
@@ -146,6 +157,16 @@ if __name__ == '__main__':
         if gui_state is State.BUILD:
             build_mode.show_hologram(WIN, mouse_pos)
             build_mode.show_room_holograms(WIN, current_room)
+        
+        """
+        for x in hivemind.x_lookup_table:
+            rect = sprite.P3.get_rect()
+            rect.x = x
+            pg.draw.rect(WIN, "red", rect)
+        """
+        hivemind.order_bots()
+        hivemind.update_bot_orders()
+        hivemind.draw(WIN)
 
         #drawed last
         render_popups()
