@@ -5,9 +5,7 @@ def load_image(path : str):
     sized_sprite = transform.scale_by(sprite, 6)
     return sized_sprite.convert_alpha()
 
-BG1 = load_image("data/bg_test_1.png")
-
-BG2 = load_image("data/bg_test_2.png")
+BG1 = load_image("data/bg_test_approfondis.png")
 
 P1 = load_image('data/p1.png')
 
