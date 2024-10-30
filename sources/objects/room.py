@@ -6,7 +6,7 @@ class Room:
         self.sizePx = (320,180)
         self.num = num
         self.placed : list[Placeable] = []
-        self.bg_surf = pg.transform.scale_by(bg_surf, 6)
+        self.bg_surf = bg_surf
         #permanent objects that can not be edited (still place in placed to render the object)
         self.blacklist : list[Placeable] = []
 
