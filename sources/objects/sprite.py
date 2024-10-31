@@ -5,7 +5,7 @@ def load_image(path : str):
     sized_sprite = transform.scale_by(sprite, 6)
     return sized_sprite.convert_alpha()
 
-def nine_slice_scaling(surf : Surface, size : tuple[int], border : int):
+def nine_slice_scaling(surf : Surface, size : tuple[int], border : int) -> Surface:
     original_rect = surf.get_rect()
     target_surf = Surface(size, flags=SRCALPHA)
     target_rect = target_surf.get_rect()
@@ -53,31 +53,6 @@ def nine_slice_scaling(surf : Surface, size : tuple[int], border : int):
         #blit all slices together
         target_surf.blits([(top_slice, (0,0)), (middle_slice, (0, border)), (bottom_slice, (0,border+middle_slice_new_height))])
     
-    return target_surf
-
-
-    """
-    #background
-    scaled_surf = transform.smoothscale(surf, size)
-    new_surf.blit(scaled_surf, (0,0))
-    
-    #unscaled corners
-    top_left_corner_rect = (0,0,border, border)
-    top_left_blit_pos = new_rect.topleft
-    new_surf.blit(surf, top_left_blit_pos, top_left_corner_rect)
-
-    top_right_corner_rect = (original_rect.topright[0]-border, original_rect.topright[1] ,border, border)
-    top_right_blit_pos = (new_rect.topright[0]-border, new_rect.topright[1])
-    new_surf.blit(surf, top_right_blit_pos, top_right_corner_rect)
-
-    bottom_left_corner_rect = (original_rect.bottomleft[0], original_rect.bottomleft[1]-border, border, border)
-    bottom_left_blit_pos = (new_rect.bottomleft[0], new_rect.bottomleft[1]-border)
-    new_surf.blit(surf, bottom_left_blit_pos, bottom_left_corner_rect)
-
-    bottom_right_corner_rect = (original_rect.bottomright[0]-border, original_rect.bottomright[1]-border, border, border)
-    bottom_right_blit_pos = (new_rect.bottomright[0]-border, new_rect.bottomright[1]-border)
-    new_surf.blit(surf, bottom_right_blit_pos, bottom_right_corner_rect)
-    """
     return target_surf
 
 BG1 = load_image("data/bg_test_approfondis.png")
