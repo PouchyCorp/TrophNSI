@@ -108,11 +108,13 @@ if __name__ == '__main__':
                             current_room = eval('R'+str(current_room.num-1))
 
                     case pg.K_LEFT:
+                        former_room = current_room
                         current_room = P
                         test_painting = Painting()
 
                     case pg.K_RIGHT:
-                        current_room = R0
+                        if current_room == P:
+                            current_room = former_room
                     
                     case pg.K_b:
                         hivemind.add_bot()

@@ -33,4 +33,4 @@ R3 = Room(3,sprite.BG1)
 
 
 #P
-P = Room(666, sprite.BG1)
+P = Room(666, sprite.BG2)

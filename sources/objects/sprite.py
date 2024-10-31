@@ -57,6 +57,8 @@ def nine_slice_scaling(surf : Surface, size : tuple[int], border : int) -> Surfa
 
 BG1 = load_image("data/bg_test_approfondis.png")
 
+BG2 = load_image("data/bg_test_paint.png")
+
 P1 = load_image('data/p1.png')
 
 P2 = load_image('data/p2.png')
