@@ -158,12 +158,9 @@ if __name__ == '__main__':
             build_mode.show_hologram(WIN, mouse_pos)
             build_mode.show_room_holograms(WIN, current_room)
         
-        """
-        for x in hivemind.x_lookup_table:
-            rect = sprite.P3.get_rect()
-            rect.x = x
-            pg.draw.rect(WIN, "red", rect)
-        """
+        #temporary test
+        WIN.blit(sprite.ROUNDED_WINDOW_TEST, (500, 500))
+
         hivemind.order_bots()
         hivemind.update_bot_orders()
         hivemind.draw(WIN)
