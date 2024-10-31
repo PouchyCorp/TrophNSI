@@ -45,6 +45,7 @@ class State(Enum):
     BUILD = auto()
     DESTRUCTION = auto()
     INVENTORY = auto()
+    PAINTING = auto()
 
 
 

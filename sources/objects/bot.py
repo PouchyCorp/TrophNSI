@@ -1,6 +1,7 @@
 from enum import Enum, auto
 from coord import Coord
 from pygame import Surface
+from random import choice
 import sprite
 
 class Bot_states(Enum):
@@ -24,21 +25,21 @@ class Hivemind:
         self.x_lookup_table = [(step*i)+self.line_start for i in range(len(self.bots))]
 
         self.queued_bot_movement : dict[Bot: int] = {}
-    
+
     def add_bot(self):
         if self.bots[0] is Bot:
             print("can't add another bot")
             return
         else:
             self.bots[0] = Bot(Coord(1, (self.line_start,700)))
-    
+
     def free_last_bot(self):
         self.bots[-1] = "empty"
     
     def update_bot_orders(self):
         for bot in self.queued_bot_movement:
             bot.move_to(self.queued_bot_movement[bot])
-        
+
     def order_bots(self):
         #print(self.bots)
         for i in range(len(self.bots)-1):
@@ -46,7 +47,7 @@ class Hivemind:
                 print(f"moving bot to {self.x_lookup_table[i+1]}")
                 self.queued_bot_movement[self.bots[i]] = self.x_lookup_table[i+1]
                 self.bots[i], self.bots[i+1] = self.bots[i+1], self.bots[i]
-    
+
     def draw(self, win : Surface):
         for bot in self.bots:
             if type(bot) == Bot:
@@ -59,7 +60,7 @@ class Bot:
         self.state = Bot_states.WAIT_INLINE
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
-        self.sprite = sprite.P3
+        self.sprite = choice([sprite.P4,sprite.P5])
         pass
 
     def logic(self, other_bots_inline, current_room):

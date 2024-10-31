@@ -21,7 +21,6 @@ class Chip:
                     drawing = False
                 if drawing and self.patern[y][x] != "":
                     canva.pixels[y][x] = self.patern[y][x]
-                win.blit(room.bg_surf, (0,0))
-                canva.draw(win)
-                self.draw(win)
+        canva.draw(win)
+        self.draw(win)
 
