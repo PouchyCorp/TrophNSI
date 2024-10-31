@@ -12,11 +12,12 @@ class Painting:
         for y,line in enumerate(self.pixels):
             for x,row in enumerate(line):
                 if True:
-                    surf = pg.Surface((12,12))
+                    pxl = 12
                 else:
-                    surf = pg.Surface((6,6))
+                    pxl = 6
+                surf = pg.Surface((pxl,pxl))
                 surf.fill(row)
-                win.blit(surf,(x*2+200,y*2+30))
+                win.blit(surf,(x*pxl+600,y*pxl+60))
 
 
 

@@ -6,11 +6,15 @@ class Coord:
         self.x, self.y = xy
         self.__pixelSize = 6
 
-    def get_pixel_perfect(self, flag : int = 0) -> tuple[int]:
+    def get_pixel_perfect(self, flag : int = 0, pxl : int = 0) -> tuple[int]:
         '''Rounds down the coords to match with the pixel art 6*6 pixel size
         Use optional attribute flag = 1 to round up
         >>> Coord(x = 1900, y = 631).get_pixel_perfect
         (1896,630)'''
+        if pxl == 12:
+            x = self.x - (self.x % 12)
+            y = self.y - (self.y % 12)
+            return (x, y)
         if flag:
             x = self.x - (self.x % self.__pixelSize) + self.__pixelSize
             y = self.y - (self.y % self.__pixelSize) + self.__pixelSize

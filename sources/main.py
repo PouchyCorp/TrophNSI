@@ -108,13 +108,17 @@ if __name__ == '__main__':
                             current_room = eval('R'+str(current_room.num-1))
 
                     case pg.K_LEFT:
+                        gui_state = State.PAINTING
                         former_room = current_room
                         current_room = P
                         test_painting = Painting()
+                        from random import randint, choice
+                        ch = Chip([[choice([("#"+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))),""]) for k in range(randint(3,9))] for k in range(randint(5,7))])
 
                     case pg.K_RIGHT:
                         if current_room == P:
                             current_room = former_room
+                            gui_state = State.INTERACTION
                     
                     case pg.K_b:
                         hivemind.add_bot()
@@ -160,9 +164,14 @@ if __name__ == '__main__':
                                     case _:
                                         popups.append(Popup('bip boup erreur erreur'))
                     
+                    case State.PAINTING:
+                        if test_painting.coord.x <= mouse_pos.x <= test_painting.coord.x+576 and test_painting.coord.y <= mouse_pos.y <= test_painting.coord.y+768:
+                            print(ch.patern)
+                            ch.paint(Coord(666,(mouse_pos.x-test_painting.coord.x, mouse_pos.y-test_painting.coord.y)),test_painting,WIN)
+                            ch.draw(WIN)
 
         #cntr = time.time()
-
+ 
         #fps counter / state debug
         WIN.blit(Popup(f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())}').text_surf,(0,0))
 
@@ -174,8 +183,12 @@ if __name__ == '__main__':
             build_mode.show_hologram(WIN, mouse_pos)
             build_mode.show_room_holograms(WIN, current_room)
         
+        if gui_state is State.PAINTING:
+            test_painting.draw(WIN)
+            ch.draw(WIN)
+
         #temporary test
-        WIN.blit(sprite.ROUNDED_WINDOW_TEST, (500, 500))
+        #WIN.blit(sprite.ROUNDED_WINDOW_TEST, (500, 500))
 
         hivemind.order_bots()
         hivemind.update_bot_orders()
