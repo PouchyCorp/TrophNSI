@@ -1,13 +1,27 @@
 from coord import Coord
 import pygame as pg
 from sprite import CHIP
+from canva import Painting
 
 class Chip:
-    def __init__(self, patern, color, coord, surface,start):
+    def __init__(self, patern, coord,):
         self.patern : list = patern
-        self.color : list = color
         self.coord : Coord = coord
-        self.start : Coord = start
-        self.surface : pg.Surface = surface 
-        self.rect : pg.Rect = self.surf.get_rect()
         self.sprite = CHIP
+
+    def draw(self,win):
+        win.blit(self.sprite,self.coord.xy)
+    
+    def paint(self, clic : Coord, canva : Painting,win,room):
+        drawing = True
+        for y, line in enumerate(canva.pixels):
+            for x, row in enumerate(line):
+                self.coord.xy = (x-2,y-3)
+                if y == 2 or x == 3:
+                    drawing = False
+                if drawing and self.patern[y][x] != "":
+                    canva.pixels[y][x] = self.patern[y][x]
+                win.blit(room.bg_surf, (0,0))
+                canva.draw(win)
+                self.draw(win)
+

@@ -30,3 +30,7 @@ R2.blacklist.append(R2_stairs)
 
 #R3
 R3 = Room(3,sprite.BG1)
+
+
+#P
+P = Room(666, sprite.BG1)

@@ -9,13 +9,16 @@ WIN = pg.display.set_mode((1920, 1080))
 CLOCK = pg.time.Clock()
 
 import objects.sprite as sprite
-from room_config import R0, R1, R2, R3
+from room_config import R0, R1, R2, R3, P
 from objects.popup import Popup
 from objects.placeable import Placeable
 from objects.inventory import Inventory
 from objects.coord import Coord
 from objects.build_mode import Build_mode, Destruction_mode
 from objects.bot import Bot, Hivemind
+from objects.canva import Painting
+from objects.chip import Chip
+
 
 '''
 def draw_grid():
@@ -96,10 +99,19 @@ if __name__ == '__main__':
                             gui_state = State.INTERACTION
 
                     case pg.K_UP:
-                        current_room = eval('R'+str(current_room.num+1))
+                        if current_room != P:
+                            current_room = eval('R'+str(current_room.num+1))
 
                     case pg.K_DOWN:
-                        current_room = eval('R'+str(current_room.num-1))
+                        if current_room != P and current_room != R0:
+                            current_room = eval('R'+str(current_room.num-1))
+
+                    case pg.K_LEFT:
+                        current_room = P
+                        test_painting = Painting()
+
+                    case pg.K_RIGHT:
+                        current_room = R0
                     
                     case pg.K_b:
                         hivemind.add_bot()
@@ -144,6 +156,7 @@ if __name__ == '__main__':
                                         current_room = R3
                                     case _:
                                         popups.append(Popup('bip boup erreur erreur'))
+                    
 
         #cntr = time.time()
 
