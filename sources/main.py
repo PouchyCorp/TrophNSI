@@ -46,6 +46,7 @@ class State(Enum):
     DESTRUCTION = auto()
     INVENTORY = auto()
     PAINTING = auto()
+    PLACING_CHIP = auto()
 
 
 
@@ -64,6 +65,8 @@ inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), sprite.P3, 600))
 
 build_mode : Build_mode = Build_mode()
 destruction_mode : Destruction_mode = Destruction_mode()
+
+test_painting = Painting()
 
 if __name__ == '__main__':
     while True:
@@ -108,13 +111,14 @@ if __name__ == '__main__':
                             current_room = eval('R'+str(current_room.num-1))
 
                     case pg.K_LEFT:
-                        gui_state = State.PAINTING
-                        former_room = current_room
-                        current_room = P
-                        test_painting = Painting()
-                        from random import randint, choice
-                        ch = Chip([[choice([("#"+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))),""]) for k in range(randint(3,9))] for k in range(randint(5,7))])
-
+                        if current_room != P:
+                            gui_state = State.PAINTING
+                            former_room = current_room
+                            current_room = P
+                            # TESTING
+                            test_surf = pg.Surface((100,100))
+                            test_surf.fill("blue")
+                                            
                     case pg.K_RIGHT:
                         if current_room == P:
                             current_room = former_room
@@ -165,10 +169,15 @@ if __name__ == '__main__':
                                         popups.append(Popup('bip boup erreur erreur'))
                     
                     case State.PAINTING:
+                        if 50 <= mouse_pos.x <= 150 and 50 <= mouse_pos.x <= 150:
+                            gui_state = State.PLACING_CHIP
+
+                    
+                    case State.PLACING_CHIP:
                         if test_painting.coord.x <= mouse_pos.x <= test_painting.coord.x+576 and test_painting.coord.y <= mouse_pos.y <= test_painting.coord.y+768:
-                            print(ch.patern)
+                            ch = Chip([["#000000" for k in range(4)] for k in range(4)])
                             ch.paint(Coord(666,(mouse_pos.x-test_painting.coord.x, mouse_pos.y-test_painting.coord.y)),test_painting,WIN)
-                            ch.draw(WIN)
+                            gui_state = State.PAINTING 
 
         #cntr = time.time()
  
@@ -183,9 +192,9 @@ if __name__ == '__main__':
             build_mode.show_hologram(WIN, mouse_pos)
             build_mode.show_room_holograms(WIN, current_room)
         
-        if gui_state is State.PAINTING:
+        if gui_state is State.PAINTING or gui_state is State.PLACING_CHIP:
             test_painting.draw(WIN)
-            ch.draw(WIN)
+            WIN.blit(test_surf,(50,50))
 
         #temporary test
         #WIN.blit(sprite.ROUNDED_WINDOW_TEST, (500, 500))

@@ -18,9 +18,10 @@ class Chip:
     
     def paint(self, clic : Coord, canva : Painting,win):
         clic.xy = clic.get_pixel_perfect(0,12)
-        print(clic.xy)
+        clic.x,clic.y = clic.xy
         X,Y = 0,0
         self.patern_line, self.patern_col = len(self.patern), len(self.patern[0])
+
         for y in range(63):
             for x in range(47):
                 self.check(clic,canva,x,y,X,Y)
@@ -31,6 +32,7 @@ class Chip:
                 Y += 1
                 if self.patern_col != 0:
                     self.patern_col = 0
+                    self.drawing = False
             X = 0
     
     def check(self,clic,canva,x,y,X,Y):
@@ -39,7 +41,6 @@ class Chip:
             self.start = True
 
         if self.start:
-            print(clic.x, x*12, self.patern_line)
             if clic.x == x*12 and self.patern_line != 0:
                 self.drawing = True
                 Y = 0
@@ -53,7 +54,7 @@ class Chip:
                 self.patern_col -= 1
 
             if self.patern_col == 0:
-                self.patern_col = len(self.patern[self.patern_line-1])
+                self.patern_col = len(self.patern[0])
                 self.patern_line -= 1
                 self.drawing = False
             
