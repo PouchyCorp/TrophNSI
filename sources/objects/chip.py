@@ -2,7 +2,6 @@ from coord import Coord
 import pygame as pg
 from sprite import CHIP
 from canva import Painting
-from time import sleep
 
 class Chip:
     def __init__(self, patern):
@@ -25,7 +24,6 @@ class Chip:
         for y in range(63):
             for x in range(47):
                 self.check(clic,canva,x,y,X,Y)
-                #sleep(0.0016)
                 if self.drawing:
                     X += 1
             if self.drawing:
