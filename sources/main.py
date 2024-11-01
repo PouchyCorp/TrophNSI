@@ -113,17 +113,7 @@ if __name__ == '__main__':
                             current_room = eval('R'+str(current_room.num+1))
                         except:
                             popups.append(Popup("you can't go up anymore"))
-
-                    case pg.K_UP:
-                        try:
-                            #exit painting mode
-                            if current_room == R0:
-                                gui_state = State.INTERACTION
-
-                            current_room = eval('R'+str(current_room.num+1))
-                        except:
-                            popups.append(Popup("you can't go up anymore"))
-
+                            
                     case pg.K_DOWN:
                         try:
                             current_room = eval('R'+str(current_room.num-1))
@@ -191,7 +181,7 @@ if __name__ == '__main__':
                         if test_painting.coord.x <= mouse_pos.x <= test_painting.coord.x+576 and test_painting.coord.y <= mouse_pos.y <= test_painting.coord.y+768:
                             ch = Chip([["#000000" for k in range(4)] for k in range(4)])
                             ch.paint(Coord(666,(mouse_pos.x-test_painting.coord.x, mouse_pos.y-test_painting.coord.y)),test_painting,WIN)
-                            gui_state = State.PAINTING 
+                            gui_state = State.PAINTING
 
         #cntr = time.time()
  
