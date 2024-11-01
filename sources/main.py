@@ -133,10 +133,6 @@ if __name__ == '__main__':
                                 gui_state = State.PAINTING
                         except:
                             popups.append(Popup("you can't go down anymore"))
-
-                    case pg.K_RIGHT:
-                        if gui_state == State.PAINTING:
-                            gui_state = State.INTERACTION
                     
                     case pg.K_b:
                         hivemind.add_bot()
