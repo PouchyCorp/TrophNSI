@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from coord import Coord
 from pygame import Surface
-from random import choice
+from random import choice, randint
 import sprite
 
 class Bot_states(Enum):
@@ -31,7 +31,7 @@ class Hivemind:
             print("can't add another bot")
             return
         else:
-            self.bots[0] = Bot(Coord(1, (self.line_start,700)))
+            self.bots[0] = Bot(Coord(1, (self.line_start,700+randint(-50,50))))
 
     def free_last_bot(self):
         self.bots[-1] = "empty"
@@ -44,24 +44,44 @@ class Hivemind:
         #print(self.bots)
         for i in range(len(self.bots)-1):
             if type(self.bots[i]) == Bot and type(self.bots[i+1]) != Bot:
-                print(f"moving bot to {self.x_lookup_table[i+1]}")
-                self.queued_bot_movement[self.bots[i]] = self.x_lookup_table[i+1]
+                #print(f"moving bot to {self.x_lookup_table[i+1]}")
+                self.queued_bot_movement[self.bots[i]] = self.x_lookup_table[i+1]+randint(-100,100)
                 self.bots[i], self.bots[i+1] = self.bots[i+1], self.bots[i]
 
     def draw(self, win : Surface):
-        for bot in self.bots:
-            if type(bot) == Bot:
-                bot.draw(win)
+        #list of background bots
+        list_of_bots = [bot for bot in self.bots if type(bot) == Bot]
+        sorted_bots = self.sorted_bot_by_y(list_of_bots)
+
+        #draw bots in background first
+        for bot in sorted_bots:
+            bot.draw(win)
+    
+    def sorted_bot_by_y(self, bots : list):
+        sorted_bots : list[Bot] = bots
+        for k in range(len(sorted_bots)):
+            val = sorted_bots[k].coord.y
+
+            for i in range(k,len(sorted_bots)):
+                if sorted_bots[i].coord.y < val:
+                    val = sorted_bots[i].coord.y
+                    sorted_bots[k], sorted_bots[i] = sorted_bots[i], sorted_bots[k]
+
+        return sorted_bots
 
 class Bot:
-    def __init__(self, coord) -> None:
+    def __init__(self, coord : Coord) -> None:
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
         self.state = Bot_states.WAIT_INLINE
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
         self.sprite = choice([sprite.P4,sprite.P5])
-        pass
+
+        if self.coord.y < 700:
+            self.background = True
+        else: 
+            self.background = False
 
     def logic(self, other_bots_inline, current_room):
         '''finite state machine (FSM) implementation for bot ai'''

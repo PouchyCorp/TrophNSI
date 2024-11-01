@@ -5,7 +5,7 @@ import objects.sprite as sprite
 from pygame import Surface,image,transform
 
 #R0
-R0 = Room(0,sprite.BG1)
+R0 = Room(0,sprite.BG2)
 canva = Placeable('canva', Coord(1,(1200,50)), Surface((700,1000)))
 
 #R1
@@ -30,7 +30,3 @@ R2.blacklist.append(R2_stairs)
 
 #R3
 R3 = Room(3,sprite.BG1)
-
-
-#P
-P = Room(666, sprite.BG2)
