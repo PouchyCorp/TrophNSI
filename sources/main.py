@@ -114,7 +114,7 @@ if __name__ == '__main__':
                         except:
                             popups.append(Popup("you can't go up anymore"))
 
-                                        case pg.K_UP:
+                    case pg.K_UP:
                         try:
                             #exit painting mode
                             if current_room == R0:
@@ -183,7 +183,7 @@ if __name__ == '__main__':
                                         popups.append(Popup('bip boup erreur erreur'))
                     
                     case State.PAINTING:
-                        if 50 <= mouse_pos.x <= 150 and 50 <= mouse_pos.x <= 150:
+                        if 500 <= mouse_pos.x <= 600 and 400 <= mouse_pos.y <= 500:
                             gui_state = State.PLACING_CHIP
 
                     
@@ -206,9 +206,9 @@ if __name__ == '__main__':
             build_mode.show_hologram(WIN, mouse_pos)
             build_mode.show_room_holograms(WIN, current_room)
         
-        if gui_state is State.PAINTING:
+        if gui_state is State.PAINTING or gui_state is State.PLACING_CHIP:
             test_painting.draw(WIN)
-            ch.draw(WIN)
+            WIN.blit(test_surf,(500,400))
 
         #temporary test
         #WIN.blit(sprite.ROUNDED_WINDOW_TEST, (500, 500))
