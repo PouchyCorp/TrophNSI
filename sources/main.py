@@ -9,7 +9,7 @@ WIN = pg.display.set_mode((1920, 1080))
 CLOCK = pg.time.Clock()
 
 import objects.sprite as sprite
-from room_config import R0, R1, R2, R3, P
+from room_config import R0, R1, R2, R3
 from objects.popup import Popup
 from objects.placeable import Placeable
 from objects.inventory import Inventory
