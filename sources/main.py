@@ -114,21 +114,28 @@ if __name__ == '__main__':
                         except:
                             popups.append(Popup("you can't go up anymore"))
 
+                                        case pg.K_UP:
+                        try:
+                            #exit painting mode
+                            if current_room == R0:
+                                gui_state = State.INTERACTION
+
+                            current_room = eval('R'+str(current_room.num+1))
+                        except:
+                            popups.append(Popup("you can't go up anymore"))
+
                     case pg.K_DOWN:
                         try:
                             current_room = eval('R'+str(current_room.num-1))
-
-                    case pg.K_LEFT:
-                        gui_state = State.PAINTING
-                        former_room = current_room
-                        current_room = P
-                        test_painting = Painting()
-                        from random import randint, choice
-                        ch = Chip([[choice([("#"+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))),""]) for k in range(randint(3,9))] for k in range(randint(5,7))])
+                            
+                            #enter painting mode
+                            if current_room == R0:
+                                gui_state = State.PAINTING
+                        except:
+                            popups.append(Popup("you can't go down anymore"))
 
                     case pg.K_RIGHT:
-                        if current_room == P:
-                            current_room = former_room
+                        if gui_state == State.PAINTING:
                             gui_state = State.INTERACTION
                     
                     case pg.K_b:
