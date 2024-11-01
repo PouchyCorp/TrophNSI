@@ -55,7 +55,7 @@ gui_state = State.INTERACTION
 popups : list[Popup] = []
 
 #test hivemind
-hivemind = Hivemind(60,1800)
+hivemind = Hivemind(60,1200)
 hivemind.add_bot()
 
 inventory : Inventory = Inventory()
@@ -67,6 +67,8 @@ build_mode : Build_mode = Build_mode()
 destruction_mode : Destruction_mode = Destruction_mode()
 
 test_painting = Painting()
+test_surf = pg.Surface((100,100))
+test_surf.fill("blue")
 
 if __name__ == '__main__':
     while True:
@@ -103,25 +105,27 @@ if __name__ == '__main__':
                             gui_state = State.INTERACTION
 
                     case pg.K_UP:
-                        if current_room != P:
+                        try:
+                            #exit painting mode
+                            if current_room == R0:
+                                gui_state = State.INTERACTION
+
                             current_room = eval('R'+str(current_room.num+1))
+                        except:
+                            popups.append(Popup("you can't go up anymore"))
 
                     case pg.K_DOWN:
-                        if current_room != P and current_room != R0:
+                        try:
                             current_room = eval('R'+str(current_room.num-1))
-
-                    case pg.K_LEFT:
-                        if current_room != P:
-                            gui_state = State.PAINTING
-                            former_room = current_room
-                            current_room = P
-                            # TESTING
-                            test_surf = pg.Surface((100,100))
-                            test_surf.fill("blue")
+                            
+                            #enter painting mode
+                            if current_room == R0:
+                                gui_state = State.PAINTING
+                        except:
+                            popups.append(Popup("you can't go down anymore"))
                                             
                     case pg.K_RIGHT:
-                        if current_room == P:
-                            current_room = former_room
+                        if gui_state == State.PAINTING:
                             gui_state = State.INTERACTION
                     
                     case pg.K_b:
