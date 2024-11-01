@@ -117,15 +117,18 @@ if __name__ == '__main__':
                     case pg.K_DOWN:
                         try:
                             current_room = eval('R'+str(current_room.num-1))
-                            
-                            #enter painting mode
-                            if current_room == R0:
-                                gui_state = State.PAINTING
-                        except:
-                            popups.append(Popup("you can't go down anymore"))
-                                            
+
+                    case pg.K_LEFT:
+                        gui_state = State.PAINTING
+                        former_room = current_room
+                        current_room = P
+                        test_painting = Painting()
+                        from random import randint, choice
+                        ch = Chip([[choice([("#"+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))+str(randint(0,9))),""]) for k in range(randint(3,9))] for k in range(randint(5,7))])
+
                     case pg.K_RIGHT:
-                        if gui_state == State.PAINTING:
+                        if current_room == P:
+                            current_room = former_room
                             gui_state = State.INTERACTION
                     
                     case pg.K_b:
@@ -196,9 +199,9 @@ if __name__ == '__main__':
             build_mode.show_hologram(WIN, mouse_pos)
             build_mode.show_room_holograms(WIN, current_room)
         
-        if gui_state is State.PAINTING or gui_state is State.PLACING_CHIP:
+        if gui_state is State.PAINTING:
             test_painting.draw(WIN)
-            WIN.blit(test_surf,(50,50))
+            ch.draw(WIN)
 
         #temporary test
         #WIN.blit(sprite.ROUNDED_WINDOW_TEST, (500, 500))
