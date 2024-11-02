@@ -30,6 +30,7 @@ def draw_grid():
                 pg.draw.rect(WIN, (70, 70, 70), pg.Rect(x * 6, y * 6, 6, 6))
 '''
                 
+                
 def render_popups():
     global popups
     for popup in popups:
