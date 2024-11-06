@@ -1,10 +1,34 @@
 class Coord:
-    def __init__(self, room_num : int, xy : tuple[int]) -> None:
+    def __init__(self, room_num : int, xy : tuple[int] = (0,0)) -> None:
         '''coordinate system for all objects'''
         self.room_num = room_num
-        self.xy = xy
-        self.x, self.y = xy
+        self._x, self._y = xy
         self.__pixelSize = 6
+
+    @property
+    def x(self):
+        return self._x
+    
+    @x.setter
+    def x(self, value):
+        self._x = value
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, value):
+        self._y = value
+    
+    @property
+    def xy(self):
+        return (self._x, self._y)
+
+    @xy.setter
+    def xy(self, value):
+        self._x, self._y = value
+
 
     def get_pixel_perfect(self, flag : int = 0, pxl : int = 0) -> tuple[int]:
         '''Rounds down the coords to match with the pixel art 6*6 pixel size
@@ -32,3 +56,7 @@ if __name__ == '__main__':
     print(coord)
     assert coord.get_pixel_perfect() == (648, 696)
     assert coord.get_pixel_perfect(1) == (654, 702)
+
+    coord.y, coord.x = (20,30)
+    coord.xy = (0,8)
+    assert coord.x == 0 and coord.y == 8

@@ -27,12 +27,12 @@ class Hivemind:
         self.queued_bot_movement : dict[Bot: int] = {}
 
     def add_bot(self):
-        if self.bots[0] is Bot:
+        if type(self.bots[0]) == Bot:
             print("can't add another bot")
             return
         else:
             self.bots[0] = Bot(Coord(1, (self.line_start,700+randint(-50,50))))
-
+    
     def free_last_bot(self):
         self.bots[-1] = "empty"
     
@@ -78,11 +78,6 @@ class Bot:
         self.move_dir = "RIGHT"
         self.sprite = choice([sprite.P4,sprite.P5])
 
-        if self.coord.y < 700:
-            self.background = True
-        else: 
-            self.background = False
-
     def logic(self, other_bots_inline, current_room):
         '''finite state machine (FSM) implementation for bot ai'''
         match self.state:
@@ -97,7 +92,7 @@ class Bot:
 
     def wait_inline(self, other_bots_inline : list):
         pass
-
+    
     def move_to(self, target_x):
         target_x -= target_x%6
 
