@@ -18,6 +18,7 @@ from objects.build_mode import Build_mode, Destruction_mode
 from objects.bot import Bot, Hivemind
 from objects.canva import Painting
 from objects.chip import Chip
+from objects.anim import Spritesheet, Animation
 
 
 '''
@@ -59,10 +60,13 @@ popups : list[Popup] = []
 hivemind = Hivemind(60,1200)
 hivemind.add_bot()
 
+spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (16, 48))
+anim = Animation(spritesheet, 0, 7)
+
 inventory : Inventory = Inventory()
 #inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
 #inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
-inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), sprite.P3, 600))
+inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), spritesheet.get_img((0,0)), 600))
 
 build_mode : Build_mode = Build_mode()
 destruction_mode : Destruction_mode = Destruction_mode()
