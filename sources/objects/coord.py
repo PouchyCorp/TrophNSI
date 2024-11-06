@@ -2,32 +2,32 @@ class Coord:
     def __init__(self, room_num : int, xy : tuple[int] = (0,0)) -> None:
         '''coordinate system for all objects'''
         self.room_num = room_num
-        self._x, self._y = xy
+        self.__x, self.__y = xy
         self.__pixelSize = 6
 
     @property
-    def x(self):
-        return self._x
+    def x(self) -> int:
+        return self.__x
     
     @x.setter
-    def x(self, value):
-        self._x = value
+    def x(self, value : int):
+        self.__x = value
 
     @property
-    def y(self):
-        return self._y
+    def y(self) -> int:
+        return self.__y
 
     @y.setter
-    def y(self, value):
-        self._y = value
+    def y(self, value: int):
+        self.__y = value
     
     @property
-    def xy(self):
-        return (self._x, self._y)
+    def xy(self) -> tuple[int]:
+        return (self.__x, self.__y)
 
     @xy.setter
-    def xy(self, value):
-        self._x, self._y = value
+    def xy(self, value : tuple[int]):
+        self.__x, self.__y = value
 
 
     def get_pixel_perfect(self, flag : int = 0, pxl : int = 0) -> tuple[int]:
@@ -46,6 +46,9 @@ class Coord:
             x = self.x - (self.x % self.__pixelSize)
             y = self.y - (self.y % self.__pixelSize)
         return (x, y)
+    
+    def copy(self):
+        return Coord(self.room_num, self.xy)
     
     def __repr__(self):
         return str(self.__dict__)
