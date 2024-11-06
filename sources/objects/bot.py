@@ -36,19 +36,19 @@ class Hivemind:
     def free_last_bot(self):
         if type(self.inline_bots[-1]) == Bot:
             self.inline_bots[-1].is_inline == False
-            self.inline_bots[-1].target_coord = Coord(1,(0,0))
+            self.inline_bots[-1].target_coord = Coord(2,(0,0))
             self.liberated_bots.append(self.inline_bots[-1])
             self.inline_bots[-1] = 'empty'
         
     
-    def update_bot_orders(self):
+    def update_bots_ai(self):
         for bot in [bot for bot in self.inline_bots if type(bot) == Bot]:
             bot.logic()
 
         for bot in self.liberated_bots:
             bot.logic()
 
-    def order_bots(self):
+    def order_inline_bots(self):
         #print(self.bots)
         for i in range(len(self.inline_bots)-1):
             if type(self.inline_bots[i]) == Bot and type(self.inline_bots[i+1]) != Bot:
@@ -56,14 +56,15 @@ class Hivemind:
                 self.inline_bots[i].target_coord.x = self.x_lookup_table[i+1]+randint(-100,100)
                 self.inline_bots[i], self.inline_bots[i+1] = self.inline_bots[i+1], self.inline_bots[i]
 
-    def draw(self, win : Surface): 
+    def draw(self, win : Surface, current_room_num : int): 
         #list of background bots
         list_of_bots = [bot for bot in self.inline_bots if type(bot) == Bot] + self.liberated_bots
         sorted_bots = self.sorted_bot_by_y(list_of_bots)
 
         #draw bots in background first
         for bot in sorted_bots:
-            bot.draw(win)
+            if bot.coord.room_num == current_room_num:
+                bot.draw(win)
     
     def sorted_bot_by_y(self, bots : list):
         sorted_bots : list[Bot] = bots
@@ -89,6 +90,8 @@ class Bot:
         self.move_dir = "RIGHT"
         self.sprite = choice([sprite.P4,sprite.P5])
 
+        self.door_x = 1716
+
     def logic(self):
         '''finite state machine (FSM) implementation for bot ai'''
         match self.state, self.is_inline:
@@ -100,7 +103,7 @@ class Bot:
                 if self.coord.x == self.target_coord.x:
                     self.state = Bot_states.IDLE
 
-                self.move_to(self.target_coord.x)
+                self.move_to(self.target_coord.copy())
                 #print(f'walking to x = {self.target_coord.x}')
 
             case Bot_states.IDLE, False:
@@ -111,7 +114,7 @@ class Bot:
                 if self.coord.x == self.target_coord.x:
                     self.state = Bot_states.IDLE
 
-                self.move_to(self.target_coord.x)
+                self.move_to(self.target_coord.copy())
                 #print(f'walking to x = {self.target_coord.x}')
 
             case _:
@@ -120,16 +123,28 @@ class Bot:
     def wait_inline(self, other_bots_inline : list):
         pass
     
-    def move_to(self, target_x):
-        target_x -= target_x%6
-        assert target_x%6 == 0, "destination not pixel-perfect"
+    def move_to(self, target : Coord):
+        target.x -= target.x%6
+        assert target.x%6 == 0, "destination not pixel-perfect"
+
+        #change floor
+        if self.coord.room_num < target.room_num:
+            if self.coord.x == self.door_x:
+                self.coord.room_num += 1
+            else:
+                target.x = self.door_x
+        elif self.coord.room_num > target.room_num:
+            if self.coord.x == self.door_x:
+                self.coord.room_num -= 1
+            else:
+                target.x = self.door_x
 
         if self.__move_cntr >= 0:
-            if self.coord.x < target_x:
+            if self.coord.x < target.x:
                 self.move_dir = "RIGHT"
                 self.coord.x += 6
 
-            elif self.coord.x > target_x:
+            elif self.coord.x > target.x:
                 self.move_dir = "LEFT"
                 self.coord.x -= 6
 

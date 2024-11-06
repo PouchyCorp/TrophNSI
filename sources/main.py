@@ -183,7 +183,7 @@ if __name__ == '__main__':
         #cntr = time.time()
  
         #fps counter / state debug
-        WIN.blit(Popup(f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())}').text_surf,(0,0))
+        WIN.blit(Popup(f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy}').text_surf,(0,0))
 
         inventory.draw(WIN, mouse_pos, gui_state == State.INVENTORY)
         #use blits because more performant
@@ -200,9 +200,9 @@ if __name__ == '__main__':
         #temporary test
         #WIN.blit(sprite.ROUNDED_WINDOW_TEST, (500, 500))
 
-        hivemind.order_bots()
-        hivemind.update_bot_orders()
-        hivemind.draw(WIN)
+        hivemind.order_inline_bots()
+        hivemind.update_bots_ai()
+        hivemind.draw(WIN, current_room_num=current_room.num)
 
         #drawed last
         render_popups()
