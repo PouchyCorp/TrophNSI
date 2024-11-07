@@ -3,27 +3,38 @@ import sys
 import os
 #do not remove
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from coord import Coord
+from anim import Animation
 
 class Placeable:
-    def __init__(self, name, coord : Coord, surf : Surface, y_constraint : int | None = None, placed : bool = False) -> None:
+    def __init__(self, name, coord : Coord, surf : Surface, anim : Animation | None = None,y_constraint : int | None = None) -> None:
         self.name = name
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
         self.coord.x, self.coord.y = self.coord.xy
 
-        self.surf = surf
-        #self.pixelise()
+        if anim:
+            self.surf = anim.get_frame()
+        else:
+            self.surf = surf
+        
+        self.anim = anim
+
 
         self.rect : Rect = self.surf.get_rect()
         self.rect.x, self.rect.y = self.coord.xy
         
         #snap to x axis
         self.y_constraint = y_constraint
-        self.placed = placed
+        self.placed = False
 
     def draw(self,win):
         win.blit(self.surf, self.rect)
+    
+    def update_anim(self):
+        if self.anim:
+            self.surf = self.anim.get_frame()
     
     def draw_outline(self, win : Surface, color : tuple):
         mask = self.surf.copy()

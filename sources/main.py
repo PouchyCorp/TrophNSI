@@ -60,13 +60,13 @@ popups : list[Popup] = []
 hivemind = Hivemind(60,1200)
 hivemind.add_bot()
 
-spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (16, 48))
+spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48, 48))
 anim = Animation(spritesheet, 0, 7)
 
 inventory : Inventory = Inventory()
 #inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
 #inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
-inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)), spritesheet.get_img((0,0)), 600))
+inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)),sprite.P3, anim, 600))
 
 build_mode : Build_mode = Build_mode()
 destruction_mode : Destruction_mode = Destruction_mode()
@@ -77,7 +77,7 @@ test_surf.fill("blue")
 
 if __name__ == '__main__':
     while True:
-        CLOCK.tick (30)
+        CLOCK.tick(30)
         WIN.blit(current_room.bg_surf, (0,0))
         mouse_pos : Coord = Coord(current_room.num , pg.mouse.get_pos())
 
@@ -184,7 +184,11 @@ if __name__ == '__main__':
                             ch.paint(Coord(666,(mouse_pos.x-test_painting.coord.x, mouse_pos.y-test_painting.coord.y)),test_painting,WIN)
                             gui_state = State.PAINTING
 
-        #cntr = time.time()
+        #anim:
+
+        for placeable in current_room.placed:
+            placeable.update_anim()
+
  
         #fps counter / state debug
         WIN.blit(Popup(f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy}').text_surf,(0,0))
@@ -201,9 +205,6 @@ if __name__ == '__main__':
             test_painting.draw(WIN)
             WIN.blit(test_surf,(500,400))
 
-        #temporary test
-        #WIN.blit(sprite.ROUNDED_WINDOW_TEST, (500, 500))
-
         hivemind.order_inline_bots()
         hivemind.update_bots_ai()
         hivemind.draw(WIN, current_room_num=current_room.num)
@@ -211,5 +212,3 @@ if __name__ == '__main__':
         #drawed last
         render_popups()
         pg.display.flip()
-
-        #print(time.time()-cntr)
