@@ -60,7 +60,7 @@ popups : list[Popup] = []
 hivemind = Hivemind(60,1200)
 hivemind.add_bot()
 
-spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48, 48))
+spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48*6, 48*6))
 anim = Animation(spritesheet, 0, 7)
 
 inventory : Inventory = Inventory()
@@ -69,7 +69,7 @@ inventory : Inventory = Inventory()
 inventory.inv.append(Placeable('6gqeeqd4231',Coord(1,(121,50)),sprite.P3, anim, 600))
 
 build_mode : Build_mode = Build_mode()
-destruction_mode : Destruction_mode = Destruction_mode()
+destruction_mode : Destruction_mode = Destruction_mode() 
 
 test_painting = Painting()
 test_surf = pg.Surface((100,100))

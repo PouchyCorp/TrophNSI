@@ -1,4 +1,4 @@
-from pygame import Surface, Rect, transform, BLEND_RGBA_MAX
+from pygame import Surface, Rect, transform, BLEND_RGBA_MAX, BLEND_RGBA_MIN, SRCALPHA
 import sys
 import os
 #do not remove
@@ -35,13 +35,21 @@ class Placeable:
     def update_anim(self):
         if self.anim:
             self.surf = self.anim.get_frame()
-    
+
+
     def draw_outline(self, win : Surface, color : tuple):
-        mask = self.surf.copy()
-        mask = transform.scale(mask, (self.rect.width + 10, self.rect.height + 12))
-        mask_rect = mask.get_rect(center=self.rect.center)
-        mask.fill(color+tuple([0]),special_flags=BLEND_RGBA_MAX)
-        win.blit(mask, mask_rect)
+        outline_width = 5
+
+        width, height = self.surf.get_size()
+        outline_surface = Surface((width + outline_width * 2, height + outline_width * 2), SRCALPHA)
+
+        for dx in range(-outline_width, outline_width + 1):
+            for dy in range(-outline_width, outline_width + 1):
+                if abs(dx) + abs(dy) == outline_width:
+                    outline_surface.blit(self.surf, (dx + outline_width, dy + outline_width))
+
+        outline_surface.fill(color+tuple([0]), special_flags=BLEND_RGBA_MAX)
+        win.blit(outline_surface, (self.rect.x-5, self.rect.y-5))
     
     def move(self, coord : Coord):
         self.coord = coord

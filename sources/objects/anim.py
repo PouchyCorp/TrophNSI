@@ -7,10 +7,10 @@ class Spritesheet:
         self.img_size = img_size
 
     def get_img(self, coord : tuple[int]) -> Surface:
-        surf = Surface((self.img_size[0] *6, self.img_size[1] *6), flags=SRCALPHA)
+        surf = Surface((self.img_size[0], self.img_size[1]), flags=SRCALPHA)
         coord_x_px = coord[0]*self.img_size[0]
         coord_y_py = coord[1]*self.img_size[1]
-        surf.blit(self.spritesheet, (0,0), (coord_x_px, coord_y_py, self.img_size[0]*6, self.img_size[1]*6))
+        surf.blit(self.spritesheet, (0,0), (coord_x_px, coord_y_py, self.img_size[0], self.img_size[1]))
         return surf
 
 
