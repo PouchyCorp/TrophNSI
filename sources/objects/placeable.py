@@ -8,7 +8,7 @@ from coord import Coord
 from anim import Animation
 
 class Placeable:
-    def __init__(self, name, coord : Coord, surf : Surface, anim : Animation | None = None,y_constraint : int | None = None) -> None:
+    def __init__(self, name : str, coord : Coord, surf : Surface, anim : Animation | None = None,y_constraint : int | None = None) -> None:
         self.name = name
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()

@@ -13,6 +13,12 @@ class Room:
     def in_blacklist(self, plcbl : Placeable) -> bool:
         return (plcbl in self.blacklist)
     
+    def name_exists_in_placed(self, name : str) -> bool:
+        for obj in self.placed:
+            if obj.name == name:
+                return True
+        return False
+    
     """
     def check_coords(self, placeable : Placeable):
         '''removes object if it's room number doesn't match with the room'''
