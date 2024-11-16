@@ -17,7 +17,7 @@ from objects.build_mode import Build_mode, Destruction_mode
 from objects.coord import Coord
 from objects.inventory import Inventory
 from objects.popup import Popup
-from room_config import R0, R1, R2, R3
+from room_config import R0, R1, R2, R3, ROOMS
 import objects.sprite as sprite
 
 
@@ -54,8 +54,7 @@ anim = Animation(spritesheet, 0, 7)
 inventory: Inventory = Inventory()
 # inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
 # inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
-inventory.inv.append(
-    Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim, 600))
+inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim, y_constraint=600))
 
 build_mode: Build_mode = Build_mode()
 destruction_mode: Destruction_mode = Destruction_mode()
@@ -212,7 +211,7 @@ if __name__ == '__main__':
                 hivemind.create_last_bot_clickable()
 
         hivemind.order_inline_bots()
-        hivemind.update_bots_ai()
+        hivemind.update_bots_ai(ROOMS)
         hivemind.draw(WIN, current_room_num=current_room.num)
 
         # drawed last

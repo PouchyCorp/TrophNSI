@@ -1,8 +1,9 @@
 from enum import Enum, auto
 from coord import Coord
-from pygame import Surface
+from pygame import Surface, draw
 from placeable import Placeable
 from random import choice, randint
+from room import Room
 from room_config import R1
 import sprite
 
@@ -43,12 +44,12 @@ class Hivemind:
             self.inline_bots[-1] = 'empty'
         
     
-    def update_bots_ai(self):
+    def update_bots_ai(self, rooms):
         for bot in [bot for bot in self.inline_bots if type(bot) == Bot]:
-            bot.logic()
+            bot.logic(rooms)
 
         for bot in self.liberated_bots:
-            bot.logic()
+            bot.logic(rooms)
 
     def order_inline_bots(self):
         #print(self.bots)
@@ -89,13 +90,14 @@ class Hivemind:
 
     def create_last_bot_clickable(self):
         #"not R1.name_exists('bot_placeable')" checks if bot placeable already exists
-        if self.check_last_bot_idle():
-            if not R1.name_exists_in_placed('bot_placeable'):
-                last_bot : Bot = self.inline_bots[-1]
-                assert type(last_bot) == Bot
-                bot_placeable = Placeable('bot_placeable', last_bot.coord, last_bot.surf)
-                R1.placed.append(bot_placeable)
-                R1.blacklist.append(bot_placeable)
+        if self.check_last_bot_idle() and not R1.name_exists_in_placed('bot_placeable'):
+            last_bot : Bot = self.inline_bots[-1]
+            assert type(last_bot) == Bot
+
+            #creat a clickable to let robots enter
+            bot_placeable = Placeable('bot_placeable', last_bot.coord, last_bot.surf)
+            R1.placed.append(bot_placeable)
+            R1.blacklist.append(bot_placeable)
         
 
 class Bot:
@@ -124,25 +126,28 @@ class Bot:
         #makes sure that target coord is reachable
         self.__target_coord.x -= self.__target_coord.x%6
 
-    def logic(self):
+    def logic(self, rooms : frozenset[Room]):
         '''finite state machine (FSM) implementation for bot ai'''
-        match self.state, self.is_inline:
-            case Bot_states.IDLE, True:
+        match self.state:
+            case Bot_states.IDLE:
+                draw.rect(self.surf, "red", (0,0,10,10))
+
+                #search for objects to walk to
+                potential_destinations : list[Coord] = []
+                for room in rooms:
+                    for placeable in room.placed:
+                        if placeable.tag == "decoration":
+                            potential_destinations.append(placeable.coord.copy())
+
+                print(potential_destinations)
+                self.target_coord = choice(potential_destinations)
+
                 if self.coord.x != self.target_coord.x:
                     self.state = Bot_states.WALK
 
-            case Bot_states.WALK ,True:
-                if self.coord.x == self.target_coord.x:
-                    self.state = Bot_states.IDLE
+            case Bot_states.WALK:
+                draw.rect(self.surf, "blue", (0,0,10,10))
 
-                self.move_to_target_coord()
-                #print(f'walking to x = {self.target_coord.x}')
-
-            case Bot_states.IDLE, False:
-                if self.coord.x != self.target_coord.x:
-                    self.state = Bot_states.WALK
-
-            case Bot_states.WALK ,False:
                 if self.coord.x == self.target_coord.x:
                     self.state = Bot_states.IDLE
 
@@ -152,9 +157,6 @@ class Bot:
             case _:
                 raise Exception('bot should not have this state')
 
-    def wait_inline(self, other_bots_inline : list):
-        pass
-    
     def move_to_target_coord(self):
 
         #to keep final target coord during pathfinding modifications
