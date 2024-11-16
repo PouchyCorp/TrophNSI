@@ -68,7 +68,7 @@ money_per_robot = 10
 
 if __name__ == '__main__':
     while True:
-        CLOCK.tick(30)
+        CLOCK.tick(60)
         WIN.blit(current_room.bg_surf, (0, 0))
         mouse_pos: Coord = Coord(current_room.num, pg.mouse.get_pos())
 

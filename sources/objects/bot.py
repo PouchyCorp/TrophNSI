@@ -38,7 +38,7 @@ class Hivemind:
     
     def free_last_bot(self):
         if type(self.inline_bots[-1]) == Bot:
-            self.inline_bots[-1].is_inline == False
+            self.inline_bots[-1].is_inline = False
             self.inline_bots[-1].target_coord = Coord(2,(0,0))
             self.liberated_bots.append(self.inline_bots[-1])
             self.inline_bots[-1] = 'empty'
@@ -132,15 +132,18 @@ class Bot:
             case Bot_states.IDLE:
                 draw.rect(self.surf, "red", (0,0,10,10))
 
-                #search for objects to walk to
-                potential_destinations : list[Coord] = []
-                for room in rooms:
-                    for placeable in room.placed:
-                        if placeable.tag == "decoration":
-                            potential_destinations.append(placeable.coord.copy())
+                print(self.is_inline)
 
-                print(potential_destinations)
-                self.target_coord = choice(potential_destinations)
+                #search for objects to walk to if not inline
+                if not self.is_inline:
+                    potential_destinations : list[Coord] = []
+                    for room in rooms:
+                        for placeable in room.placed:
+                            if placeable.tag == "decoration":
+                                potential_destinations.append(placeable.coord.copy())
+
+                    print(potential_destinations)
+                    self.target_coord = choice(potential_destinations)
 
                 if self.coord.x != self.target_coord.x:
                     self.state = Bot_states.WALK
@@ -163,7 +166,7 @@ class Bot:
         target_buffer = self.target_coord.copy()
 
         #change floor
-        if self.coord.room_num < self.target_coord.room_num:
+        if self.coord.room_num != self.target_coord.room_num:
             if self.coord.x == self.door_x:
                 self.coord.room_num = self.target_coord.room_num
             else:
