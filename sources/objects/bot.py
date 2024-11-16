@@ -102,7 +102,7 @@ class Bot:
     def __init__(self, coord : Coord) -> None:
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
-        self.target_coord = self.coord.copy()
+        self.__target_coord = self.coord.copy()
 
         self.is_inline = True
         self.state = Bot_states.IDLE
@@ -111,6 +111,18 @@ class Bot:
         self.surf = choice([sprite.P4,sprite.P5])
 
         self.door_x = 1716
+
+    @property
+    def target_coord(self):
+        #makes sure that target coord is reachable
+        self.__target_coord.x -= self.__target_coord.x%6
+        return self.__target_coord
+    
+    @target_coord.setter
+    def target_coord(self, value : Coord):
+        self.__target_coord = value.copy()
+        #makes sure that target coord is reachable
+        self.__target_coord.x -= self.__target_coord.x%6
 
     def logic(self):
         '''finite state machine (FSM) implementation for bot ai'''
@@ -144,34 +156,26 @@ class Bot:
         pass
     
     def move_to_target_coord(self):
-        """ @property
-         def target_coord(self):
-        #makes sure that target coord is reachable
-        
-        return self.target_coord"""
-        self.target_coord.x -= self.target_coord.x%6
-        assert self.target_coord.x%6 == 0, "destination not pixel-perfect"
 
+        #to keep final target coord during pathfinding modifications
         target_buffer = self.target_coord.copy()
 
         #change floor
         if self.coord.room_num < self.target_coord.room_num:
             if self.coord.x == self.door_x:
-                self.coord.room_num += 1
+                self.coord.room_num = self.target_coord.room_num
             else:
-                self.target_coord.x = self.door_x
-        elif self.coord.room_num > self.target_coord.room_num:
-            if self.coord.x == self.door_x:
-                self.coord.room_num -= 1
-            else:
-                self.target_coord.x = self.door_x
+                #if not on door, change target_buffer to door
+                target_buffer.x = self.door_x
 
+
+        #movement
         if self.__move_cntr >= 0:
-            if self.coord.x < self.target_coord.x:
+            if self.coord.x < target_buffer.x:
                 self.move_dir = "RIGHT"
                 self.coord.x += 6
 
-            elif self.coord.x > self.target_coord.x:
+            elif self.coord.x > target_buffer.x:
                 self.move_dir = "LEFT"
                 self.coord.x -= 6
 
