@@ -19,15 +19,6 @@ from objects.inventory import Inventory
 from objects.popup import Popup
 from room_config import R0, R1, R2, R3
 import objects.sprite as sprite
-'''
-def draw_grid():
-    for x in range(320):
-        for y in range(180):
-            if x % 2 == 0 and y % 2 != 0:
-                pg.draw.rect(WIN, (70, 70, 70), pg.Rect(x * 6, y * 6, 6, 6))
-            elif x % 2 != 0 and y % 2 == 0:
-                pg.draw.rect(WIN, (70, 70, 70), pg.Rect(x * 6, y * 6, 6, 6))
-'''
 
 
 def render_popups():
@@ -72,6 +63,9 @@ destruction_mode: Destruction_mode = Destruction_mode()
 test_painting = Painting()
 test_surf = pg.Surface((100, 100))
 test_surf.fill("blue")
+
+moulaga = 0
+money_per_robot = 10
 
 if __name__ == '__main__':
     while True:
@@ -173,6 +167,7 @@ if __name__ == '__main__':
                                         current_room = R3
                                     case 'bot_placeable':
                                         hivemind.free_last_bot()
+                                        moulaga += money_per_robot
                                         current_room.placed.remove(placeable)
                                         current_room.blacklist.remove(placeable)
                                     case _:
@@ -198,7 +193,7 @@ if __name__ == '__main__':
 
         # fps counter / state debug
         WIN.blit(Popup(
-            f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy}').text_surf, (0, 0))
+            f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy} / $ : {moulaga}').text_surf, (0, 0))
 
         inventory.draw(WIN, mouse_pos, gui_state == State.INVENTORY)
         # use blits because more performant
