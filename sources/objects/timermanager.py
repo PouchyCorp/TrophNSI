@@ -1,7 +1,7 @@
 #test file
 from time import time
 
-class Timer_manager:
+class _Timer_manager:
     def __init__(self):
         self.timers : list[dict] = []
     
@@ -23,8 +23,10 @@ class Timer_manager:
                 
                 if not timer['repeat']:
                     new_list.remove(timer)
+                else:
+                    timer['creation_time'] = current_time
 
         self.timers = new_list
              
 
-TIMER = Timer_manager()
+TIMER = _Timer_manager()
