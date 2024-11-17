@@ -173,13 +173,12 @@ if __name__ == '__main__':
                                             Popup('bip boup erreur erreur'))
 
                     case State.PAINTING:
-                        if test_surf.get_rect().collidepoint(event.pos):
-                            print("t")
+                        if test_surf.get_rect().collidepoint(mouse_pos.xy):
                             gui_state = State.PLACING_CHIP
                             test_chip = Chip(sprite.Patern_test, [pg.Color(255,255,0)])
 
                     case State.PLACING_CHIP:
-                        if test_painting.rect.collidepoint(event.pos):
+                        if test_painting.rect.collidepoint(mouse_pos.xy):
                             test_chip.draw(WIN)
                             test_chip.paint(Coord(666,(mouse_pos.x,mouse_pos.y)),test_painting)
                             gui_state = State.PAINTING
