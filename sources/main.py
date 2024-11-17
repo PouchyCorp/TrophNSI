@@ -11,7 +11,7 @@ CLOCK = pg.time.Clock()
 from objects.placeable import Placeable
 from objects.anim import Spritesheet, Animation
 from objects.chip import Chip
-from objects.canva import Painting
+from objects.canva import Canva
 from objects.bot import Bot, Hivemind
 from objects.build_mode import Build_mode, Destruction_mode
 from objects.coord import Coord
@@ -59,7 +59,7 @@ inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, an
 build_mode: Build_mode = Build_mode()
 destruction_mode: Destruction_mode = Destruction_mode()
 
-test_painting = Painting()
+test_painting = Canva()
 test_surf = pg.Surface((100, 100))
 test_surf.fill("blue")
 
@@ -173,15 +173,14 @@ if __name__ == '__main__':
                                             Popup('bip boup erreur erreur'))
 
                     case State.PAINTING:
-                        if 500 <= mouse_pos.x <= 600 and 400 <= mouse_pos.y <= 500:
+                        if test_surf.get_rect().collidepoint(mouse_pos.xy):
                             gui_state = State.PLACING_CHIP
+                            test_chip = Chip(sprite.Patern_test, [pg.Color(255,255,0)])
 
                     case State.PLACING_CHIP:
-                        if test_painting.coord.x <= mouse_pos.x <= test_painting.coord.x+576 and test_painting.coord.y <= mouse_pos.y <= test_painting.coord.y+768:
-                            ch = Chip([["#000000" for k in range(4)]
-                                      for k in range(4)])
-                            ch.paint(Coord(666, (mouse_pos.x-test_painting.coord.x,
-                                     mouse_pos.y-test_painting.coord.y)), test_painting, WIN)
+                        if test_painting.rect.collidepoint(mouse_pos.xy):
+                            test_chip.draw(WIN)
+                            test_chip.paint(Coord(666,(mouse_pos.x,mouse_pos.y)),test_painting)
                             gui_state = State.PAINTING
 
         # anim:
