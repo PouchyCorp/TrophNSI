@@ -47,7 +47,6 @@ popups: list[Popup] = []
 
 # test hivemind
 hivemind = Hivemind(60, 600)
-hivemind.add_bot()
 
 spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48*6, 48*6))
 anim = Animation(spritesheet, 0, 7)
@@ -65,6 +64,7 @@ test_surf = pg.Surface((100, 100))
 test_surf.fill("blue")
 
 TIMER.create_timer(2, hivemind.free_last_bot, repeat= True)
+TIMER.create_timer(1, hivemind.add_bot, repeat= True)
 
 moulaga = 0
 money_per_robot = 10
@@ -188,7 +188,8 @@ if __name__ == '__main__':
 
         #timer update
         TIMER.update()
-        print(TIMER.timers)
+        #print(TIMER.timers)
+        
 
         # anim:
         for placeable in current_room.placed:
