@@ -155,7 +155,6 @@ class Bot:
                 if (self.coord.x, self.coord.room_num) == (self.target_coord.x, self.target_coord.room_num):
                     self.state = Bot_states.IDLE
                     #print(f"changed state to {self.state}")
-
                 self.move_to_target_coord()
                 
 
