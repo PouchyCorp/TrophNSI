@@ -25,9 +25,9 @@ class Animation:
         if self.counter == self.length:
             self.counter = 0
 
-        new_surf = self.spritesheet.get_img((self.counter, self.line))
+        new_surf = self.spritesheet.get_img((round(self.counter), self.line))
 
-        self.counter += 1
+        self.counter += 0.25
 
         return new_surf
     
