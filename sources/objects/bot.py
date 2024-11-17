@@ -128,11 +128,11 @@ class Bot:
 
     def logic(self, rooms : frozenset[Room]):
         '''finite state machine (FSM) implementation for bot ai'''
+
         match self.state:
             case Bot_states.IDLE:
                 draw.rect(self.surf, "red", (0,0,10,10))
-
-                print(self.is_inline)
+                
 
                 #search for objects to walk to if not inline
                 if not self.is_inline:
@@ -142,20 +142,22 @@ class Bot:
                             if placeable.tag == "decoration":
                                 potential_destinations.append(placeable.coord.copy())
 
-                    print(potential_destinations)
                     self.target_coord = choice(potential_destinations)
 
-                if self.coord.x != self.target_coord.x:
+                if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
                     self.state = Bot_states.WALK
+                    #print(f'walking to x = {self.target_coord}')
+                    #print(f"changed state to {self.state}")
 
             case Bot_states.WALK:
                 draw.rect(self.surf, "blue", (0,0,10,10))
 
-                if self.coord.x == self.target_coord.x:
+                if (self.coord.x, self.coord.room_num) == (self.target_coord.x, self.target_coord.room_num):
                     self.state = Bot_states.IDLE
+                    #print(f"changed state to {self.state}")
 
                 self.move_to_target_coord()
-                #print(f'walking to x = {self.target_coord.x}')
+                
 
             case _:
                 raise Exception('bot should not have this state')

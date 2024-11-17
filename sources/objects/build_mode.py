@@ -56,6 +56,7 @@ class Build_mode():
     def place(self, room_num) -> Placeable:
         self.selected_placeable.move(Coord(room_num, self.ghost_rect.topleft))
         self.selected_placeable.placed = True
+        #print(self.selected_placeable)
         return self.selected_placeable
     
 class Destruction_mode():

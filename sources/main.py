@@ -54,7 +54,7 @@ anim = Animation(spritesheet, 0, 7)
 inventory: Inventory = Inventory()
 # inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P1))
 # inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
-inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim, y_constraint=600))
+inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim, y_constraint=600, tag="decoration"))
 
 build_mode: Build_mode = Build_mode()
 destruction_mode: Destruction_mode = Destruction_mode()
@@ -74,8 +74,7 @@ if __name__ == '__main__':
 
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
-                color = (150, 150, 255) if not destruction_mode.in_destruction_mode else (
-                    255, 0, 0)
+                color = (150, 150, 255) if not destruction_mode.in_destruction_mode else (255, 0, 0)
                 placeable.draw_outline(WIN, color)
 
         events = pg.event.get()

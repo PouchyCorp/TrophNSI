@@ -47,6 +47,11 @@ class Coord:
             y = self.y - (self.y % self.__pixelSize)
         return (x, y)
     
+    def __eq__(self, value):
+        if self.xy == value.xy and self.room_num == value.room_num:
+            return True
+        return False
+
     def copy(self):
         return Coord(self.room_num, self.xy)
     
