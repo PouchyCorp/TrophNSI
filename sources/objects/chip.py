@@ -5,9 +5,9 @@ from objects.canva import Canva
 from random import choice
 
 class Chip:
-    def __init__(self, patern, colors):
+    def __init__(self, pattern, colors):
         self.colors : list = colors
-        self.patern : pg.Surface = self.patern_init(patern)
+        self.pattern : pg.Surface = self.pattern_init(pattern)
         self.sprite = CHIP
         self.coord = Coord(0,((0,0)))
         self.drawing = False
@@ -16,13 +16,13 @@ class Chip:
         win.blit(self.sprite,self.coord.xy)
     
     def paint(self, clic : Coord, canva : Canva):
-        canva.surf.blit(self.patern,(clic.x-600,clic.y-60))
+        canva.surf.blit(self.pattern,(clic.x-600,clic.y-60))
     
-    def patern_init(self,patern):
+    def pattern_init(self,pattern):
         color = choice(self.colors)
-        new_patern = pg.Surface(patern.get_size())
-        new_patern.fill(color)
-        patern.set_colorkey(pg.Color(0,0,0))
-        new_patern.blit(patern, (0,0))
-        return new_patern
+        new_pattern = pg.Surface(pattern.get_size())
+        new_pattern.fill(color)
+        pattern.set_colorkey(pg.Color(0,0,0))
+        new_pattern.blit(pattern, (0,0))
+        return new_pattern
 
