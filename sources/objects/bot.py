@@ -30,10 +30,8 @@ class Hivemind:
         self.x_lookup_table = [(step*i)+self.line_start for i in range(len(self.inline_bots))]
 
     def add_bot(self):
-        if type(self.inline_bots[0]) == Bot:
-            print("can't add another bot")
-            return
-        else:
+        #checks if last place is empty
+        if not type(self.inline_bots[0]) == Bot:
             self.inline_bots[0] = Bot(Coord(1, (self.line_start,700+randint(-50,50))))
     
     def free_last_bot(self):

@@ -18,6 +18,7 @@ from objects.coord import Coord
 from objects.inventory import Inventory
 from objects.popup import Popup
 from room_config import R0, R1, R2, R3, ROOMS
+from objects.timermanager import TIMER
 import objects.sprite as sprite
 
 
@@ -46,7 +47,6 @@ popups: list[Popup] = []
 
 # test hivemind
 hivemind = Hivemind(60, 600)
-hivemind.add_bot()
 
 spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48*6, 48*6))
 anim = Animation(spritesheet, 0, 7)
@@ -62,6 +62,9 @@ destruction_mode: Destruction_mode = Destruction_mode()
 test_painting = Canva()
 test_surf = pg.Surface((100, 100))
 test_surf.fill("blue")
+
+TIMER.create_timer(2, hivemind.free_last_bot, repeat= True)
+TIMER.create_timer(1, hivemind.add_bot, repeat= True)
 
 moulaga = 0
 money_per_robot = 10
@@ -183,8 +186,12 @@ if __name__ == '__main__':
                             test_chip.paint(Coord(666,(mouse_pos.x,mouse_pos.y)),test_painting)
                             gui_state = State.PAINTING
 
-        # anim:
+        #timer update
+        TIMER.update()
+        #print(TIMER.timers)
+        
 
+        # anim:
         for placeable in current_room.placed:
             placeable.update_anim()
 
