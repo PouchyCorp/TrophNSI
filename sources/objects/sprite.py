@@ -80,3 +80,5 @@ ROUNDED_WINDOW_TEST = image.load('data/rounded_window.png').convert_alpha()
 ROUNDED_WINDOW_TEST = nine_slice_scaling(ROUNDED_WINDOW_TEST, (600, 400), 70)
 
 PATTERN_1 = load_image('data/pattern_storage/pattern_test.png')
+
+PATTERN_LIST = [PATTERN_1 for k in range(7)]

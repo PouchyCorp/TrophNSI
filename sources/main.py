@@ -16,6 +16,7 @@ from objects.bot import Bot, Hivemind
 from objects.build_mode import Build_mode, Destruction_mode
 from objects.coord import Coord
 from objects.inventory import Inventory
+from objects.chip_inv import Chip_inv
 from objects.popup import Popup
 from room_config import R0, R1, R2, R3, ROOMS
 from objects.timermanager import TIMER
@@ -56,12 +57,12 @@ inventory: Inventory = Inventory()
 # inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P2))
 inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim, y_constraint=600, tag="decoration"))
 
+chip_inventory : Chip_inv = Chip_inv()
+
 build_mode: Build_mode = Build_mode()
 destruction_mode: Destruction_mode = Destruction_mode()
 
 test_painting = Canva()
-test_surf = pg.Surface((100, 100))
-test_surf.fill("blue")
 
 TIMER.create_timer(2, hivemind.free_last_bot, repeat= True)
 TIMER.create_timer(1, hivemind.add_bot, repeat= True)
@@ -94,7 +95,7 @@ if __name__ == '__main__':
                         if gui_state is State.INTERACTION:
                             gui_state = State.INVENTORY
                             inventory.open()
-                        else:
+                        elif gui_state is State.INVENTORY:
                             gui_state = State.INTERACTION
 
                     case pg.K_BACKSPACE:
@@ -176,14 +177,12 @@ if __name__ == '__main__':
                                             Popup('bip boup erreur erreur'))
 
                     case State.PAINTING:
-                        if test_surf.get_rect().collidepoint(mouse_pos.xy):
-                            gui_state = State.PLACING_CHIP
-                            test_chip = Chip(sprite.Patern_test, [pg.Color(255,255,0)])
+                        chip = chip_inventory.select_chip(mouse_pos)
 
                     case State.PLACING_CHIP:
                         if test_painting.rect.collidepoint(mouse_pos.xy):
-                            test_chip.draw(WIN)
-                            test_chip.paint(Coord(666,(mouse_pos.x,mouse_pos.y)),test_painting)
+                            chip.draw(WIN)
+                            chip.paint(Coord(666,(mouse_pos.x,mouse_pos.y)),test_painting)
                             gui_state = State.PAINTING
 
         #timer update
@@ -209,8 +208,8 @@ if __name__ == '__main__':
                 build_mode.show_room_holograms(WIN, current_room)
 
             case w if w in (State.PAINTING, State.PLACING_CHIP):
+                chip_inventory.draw(WIN)
                 test_painting.draw(WIN)
-                WIN.blit(test_surf, (500, 400))
             
             case State.INTERACTION:
                 hivemind.create_last_bot_clickable()
