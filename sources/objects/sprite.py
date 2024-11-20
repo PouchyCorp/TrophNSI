@@ -75,8 +75,8 @@ CHIP = load_image('data/chip.png')
 
 SPRITESHEET_TEST = load_image('data/test_robot.png')
 
-Patern_test = load_image('data/patern_test.png')
-
 ROUNDED_WINDOW_TEST = image.load('data/rounded_window.png').convert_alpha()
 #ROUNDED_WINDOW_TEST = transform.smoothscale(ROUNDED_WINDOW_TEST,(600 ,ROUNDED_WINDOW_TEST.get_rect().height))
 ROUNDED_WINDOW_TEST = nine_slice_scaling(ROUNDED_WINDOW_TEST, (600, 400), 70)
+
+PATTERN_1 = load_image('data/pattern_storage/pattern_test.png')
