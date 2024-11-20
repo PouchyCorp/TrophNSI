@@ -8,6 +8,7 @@ class Canva:
         self.surf = pg.Surface((600,900))
         self.surf.fill(pg.Color(255,255,255))
         self.rect = self.surf.get_rect()
+        self.rect.x, self.rect.y = self.coord.xy
         self.name = None
 
     def draw(self,win):

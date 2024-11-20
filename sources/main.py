@@ -177,14 +177,19 @@ if __name__ == '__main__':
                                             Popup('bip boup erreur erreur'))
 
                     case State.PAINTING:
-                        chip = chip_inventory.select_chip(mouse_pos)
+                        try:
+                            chip = Chip(chip_inventory.select_chip(mouse_pos),["black"])
+                        except:
+                            pass
+                        if chip != None:
+                            gui_state = State.PLACING_CHIP
 
                     case State.PLACING_CHIP:
                         if test_painting.rect.collidepoint(mouse_pos.xy):
                             chip.draw(WIN)
                             chip.paint(Coord(666,(mouse_pos.x,mouse_pos.y)),test_painting)
                             gui_state = State.PAINTING
-
+                            chip = None
         #timer update
         TIMER.update()
         #print(TIMER.timers)
