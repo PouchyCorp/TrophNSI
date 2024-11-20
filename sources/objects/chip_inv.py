@@ -15,14 +15,14 @@ class Pattern:
 class Chip_inv:
     def __init__(self) -> None:
         self.inv = []
-        x,y = 50, 50
+        x,y = 100, 100
         for p in PATTERN_LIST:
             self.inv.append(Pattern(p,Coord(0,(x,y))))
-            if x < 450:
-                x += 100
+            if x < 400:
+                x += 150
             else:
-                y += 100
-                x = 50
+                y += 150
+                x = 100
 
 
     def draw(self, win : Surface):
