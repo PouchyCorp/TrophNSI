@@ -172,7 +172,7 @@ class Bot:
                         self.state = Bot_states.IDLE
                     else:
                         self.state = Bot_states.WATCH
-                        TIMER.create_timer(5, self.change_state, False, arguments=[Bot_states.IDLE])
+                        TIMER.create_timer(5, self.set_attribute, False, arguments=('state', Bot_states.IDLE))
 
                 self.move_to_target_coord()
             
@@ -192,9 +192,11 @@ class Bot:
                     potential_destinations.append((placeable.coord.copy(), placeable.id))
         return potential_destinations
     
-    def change_state(self,state):
-        """intended to be use with a timer"""
-        self.state = state
+    def set_attribute(self, attribute_name, value):
+        if hasattr(self, attribute_name):  # check if the attribute exists
+            setattr(self, attribute_name, value)  # dynamically set the attribute
+        else:
+            raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attribute_name}'")
 
     def move_to_target_coord(self):
 

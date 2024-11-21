@@ -106,25 +106,24 @@ if __name__ == '__main__':
                             gui_state = State.INTERACTION
 
                     case pg.K_UP:
-                        try:
+                        if current_room.num+1 < len(ROOMS): 
                             # exit painting mode
                             if current_room == R0:
                                 gui_state = State.INTERACTION
 
-                            current_room = eval('R'+str(current_room.num+1))
-                        except:
+                            current_room = ROOMS[current_room.num+1]
+                        else:
                             popups.append(Popup("you can't go up anymore"))
 
                     case pg.K_DOWN:
-                        try:
-                            current_room = eval('R'+str(current_room.num-1))
+                        if current_room.num-1 >= 0: 
+                            current_room = ROOMS[current_room.num-1]
 
                             # enter painting mode
                             if current_room == R0:
                                 gui_state = State.PAINTING
-                        except:
+                        else:
                             popups.append(Popup("you can't go down anymore"))
-
                     case pg.K_b:
                         hivemind.add_bot()
 

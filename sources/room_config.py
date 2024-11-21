@@ -33,4 +33,4 @@ R2.blacklist.append(R2_stairs)
 R3 = Room(3,sprite.BG1)
 
 
-ROOMS : frozenset[Room] = frozenset((R0, R1, R2, R3))
+ROOMS : list[Room] = [R0, R1, R2, R3]
