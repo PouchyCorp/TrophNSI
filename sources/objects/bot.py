@@ -145,15 +145,17 @@ class Bot:
 
                 #search for objects to walk to if not inline
                 if not self.is_inline:
+                    #if not inline, search for valid destination
+                    #criteria : placeable have the tag "decoration"
+                    #           placeable wasn't already visited
                     potential_dests = self.get_potential_destinations(rooms)
                     if potential_dests:
                         destination = choice(potential_dests)
-                        print(destination)
                         self.target_coord = destination[0]
                         self.visited_placeable_id.append(destination[1])
                     
                     else:
-                        #already visited all decorations -> leave
+                        #no valid destination -> leave
                         self.is_leaving = True
                         self.target_coord = self.exit_coords
                         
