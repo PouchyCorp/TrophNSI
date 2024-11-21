@@ -51,6 +51,12 @@ class Coord:
         if self.xy == value.xy and self.room_num == value.room_num:
             return True
         return False
+    
+    def bot_movement_compare(self, value):
+        """only compares floor and x axis"""
+        if self.x == value.x and self.room_num == value.room_num:
+            return True
+        return False
 
     def copy(self):
         return Coord(self.room_num, self.xy)

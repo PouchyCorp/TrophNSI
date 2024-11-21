@@ -47,9 +47,15 @@ class Hivemind:
     def update_bots_ai(self, rooms, TIMER):
         for bot in [bot for bot in self.inline_bots if type(bot) == Bot]:
             bot.logic(rooms, TIMER)
-
+        
+        new_liberated_bots = self.liberated_bots.copy()
         for bot in self.liberated_bots:
             bot.logic(rooms, TIMER)
+            #if bot not leaving and on exit, don't remove it
+            if bot.is_leaving and bot.coord.bot_movement_compare(bot.exit_coords):
+                new_liberated_bots.remove(bot)
+        self.liberated_bots = new_liberated_bots
+            
 
     def order_inline_bots(self):
         #print(self.bots)
@@ -108,12 +114,14 @@ class Bot:
         self.visited_placeable_id : list[int] = []
 
         self.is_inline = True
+        self.is_leaving = False
         self.state = Bot_states.IDLE
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
-        self.surf = choice([sprite.P4,sprite.P5])
+        self.surf = choice([sprite.P4,sprite.P5]).copy()
 
         self.door_x = 1716
+        self.exit_coords = Coord(1, (0,0))
 
     @property
     def target_coord(self):
@@ -143,7 +151,12 @@ class Bot:
                         print(destination)
                         self.target_coord = destination[0]
                         self.visited_placeable_id.append(destination[1])
-
+                    
+                    else:
+                        #already visited all decorations -> leave
+                        self.is_leaving = True
+                        self.target_coord = self.exit_coords
+                        
                 if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
                     self.state = Bot_states.WALK
                     #print(f'walking to x = {self.target_coord}')
@@ -152,7 +165,7 @@ class Bot:
             case Bot_states.WALK:
                 draw.rect(self.surf, "blue", (0,0,10,10))
 
-                if (self.coord.x, self.coord.room_num) == (self.target_coord.x, self.target_coord.room_num):
+                if self.coord.bot_movement_compare(self.target_coord):
                     if self.is_inline:
                         self.state = Bot_states.IDLE
                     else:
