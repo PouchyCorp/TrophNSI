@@ -142,10 +142,10 @@ if __name__ == '__main__':
                             gui_state = State.INTERACTION
 
                     case State.INVENTORY:
-                        clicked_obj_name = inventory.select_item(mouse_pos)
-                        if clicked_obj_name:
-                            clicked_obj = inventory.search_by_name(
-                                clicked_obj_name)
+                        clicked_showed_obj_id = inventory.select_item(mouse_pos)
+                        if clicked_showed_obj_id:
+                            clicked_obj = inventory.search_by_id(
+                                clicked_showed_obj_id)
 
                             # check if object already placed
                             if not clicked_obj.placed:

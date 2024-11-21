@@ -16,7 +16,7 @@ class Inventory:
 
     def open(self):
         """initialise all objects for rendering"""
-        self.showed_objects = self.inv[self._page*8:]
+        self.showed_objects = self.inv[self._page*8:(self._page+1)*8]
 
         for ind , obj in enumerate(self.showed_objects):
             #8 element at a time ( or else too big)
@@ -50,6 +50,9 @@ class Inventory:
             
             #create placeable
             thumbnail_placeable = Placeable(obj.name, Coord(obj.coord.room_num, thumbnail_rect.topleft), thumbnail_surf)
+            #important
+            thumbnail_placeable.id = obj.id
+
             thumbnail_placeable.pixelise()
 
             #print(thumbnail_placeable)
@@ -80,17 +83,17 @@ class Inventory:
 
 
     def select_item(self, mouse_pos : Coord) -> str | None:
-        """return the name of the item selected
+        """return the id of the item selected
         returns None if no items"""
         for placeable in self.showed_objects:
             if placeable.rect.collidepoint(mouse_pos.xy):
-                return placeable.name
+                return placeable.id
         return None
     
-    def search_by_name(self, name : str) -> Placeable:
-        '''returns the first placeable matching the name'''
+    def search_by_id(self, id : int) -> Placeable:
+        '''returns the first placeable matching the id'''
         for obj in self.inv:
-            if obj.name == name:
+            if obj.id == id:
                 return obj
 
     def __repr__(self):

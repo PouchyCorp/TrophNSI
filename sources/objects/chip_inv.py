@@ -39,7 +39,7 @@ class Chip_inv:
     def select_chip(self, mouse_pos : Coord) -> str | None:
         for button in self.inv:
             if button.rect.collidepoint(mouse_pos.xy):
-                return button.surf
+                return button.surf.copy()
         return None
     
 
