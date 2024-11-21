@@ -6,11 +6,13 @@ from random import choice, randint
 from room import Room
 from room_config import R1
 import sprite
+from timermanager import _Timer_manager
 
 
 class Bot_states(Enum):
     IDLE = auto()
     WALK = auto()
+    WATCH = auto()
 
 possible_reaction = ['waw', 'bof', 'uwu', 'owo', 'noob']
 
@@ -42,12 +44,12 @@ class Hivemind:
             self.inline_bots[-1] = 'empty'
         
     
-    def update_bots_ai(self, rooms):
+    def update_bots_ai(self, rooms, TIMER):
         for bot in [bot for bot in self.inline_bots if type(bot) == Bot]:
-            bot.logic(rooms)
+            bot.logic(rooms, TIMER)
 
         for bot in self.liberated_bots:
-            bot.logic(rooms)
+            bot.logic(rooms, TIMER)
 
     def order_inline_bots(self):
         #print(self.bots)
@@ -103,6 +105,7 @@ class Bot:
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
         self.__target_coord = self.coord.copy()
+        self.visited_placeable_id : list[int] = []
 
         self.is_inline = True
         self.state = Bot_states.IDLE
@@ -124,7 +127,7 @@ class Bot:
         #makes sure that target coord is reachable
         self.__target_coord.x -= self.__target_coord.x%6
 
-    def logic(self, rooms : frozenset[Room]):
+    def logic(self, rooms : frozenset[Room], TIMER : _Timer_manager):
         '''finite state machine (FSM) implementation for bot ai'''
 
         match self.state:
@@ -134,13 +137,12 @@ class Bot:
 
                 #search for objects to walk to if not inline
                 if not self.is_inline:
-                    potential_destinations : list[Coord] = []
-                    for room in rooms:
-                        for placeable in room.placed:
-                            if placeable.tag == "decoration":
-                                potential_destinations.append(placeable.coord.copy())
-
-                    self.target_coord = choice(potential_destinations)
+                    potential_dests = self.get_potential_destinations(rooms)
+                    if potential_dests:
+                        destination = choice(potential_dests)
+                        print(destination)
+                        self.target_coord = destination[0]
+                        self.visited_placeable_id.append(destination[1])
 
                 if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
                     self.state = Bot_states.WALK
@@ -151,13 +153,33 @@ class Bot:
                 draw.rect(self.surf, "blue", (0,0,10,10))
 
                 if (self.coord.x, self.coord.room_num) == (self.target_coord.x, self.target_coord.room_num):
-                    self.state = Bot_states.IDLE
-                    #print(f"changed state to {self.state}")
+                    if self.is_inline:
+                        self.state = Bot_states.IDLE
+                    else:
+                        self.state = Bot_states.WATCH
+                        TIMER.create_timer(5, self.change_state, False, arguments=[Bot_states.IDLE])
+
                 self.move_to_target_coord()
+            
+            case Bot_states.WATCH:
+                draw.rect(self.surf, "green", (0,0,10,10))
                 
 
             case _:
                 raise Exception('bot should not have this state')
+
+    def get_potential_destinations(self, rooms : list[Room]) -> list[tuple[Coord, str]]:
+        """returns a list of potential destinations for the robot according to some criteria"""
+        potential_destinations = []
+        for room in rooms:
+            for placeable in room.placed:
+                if placeable.tag == "decoration" and placeable.id not in self.visited_placeable_id:
+                    potential_destinations.append((placeable.coord.copy(), placeable.id))
+        return potential_destinations
+    
+    def change_state(self,state):
+        """intended to be use with a timer"""
+        self.state = state
 
     def move_to_target_coord(self):
 

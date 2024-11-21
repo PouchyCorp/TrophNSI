@@ -1,6 +1,7 @@
 from pygame import Surface, Rect, transform, BLEND_RGBA_MAX, BLEND_RGBA_MIN, SRCALPHA
 import sys
 import os
+from random import randint
 #do not remove
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -10,6 +11,7 @@ from anim import Animation
 class Placeable:
     def __init__(self, name : str, coord : Coord, surf : Surface, tag : str | None = None, anim : Animation | None = None, y_constraint : int | None = None) -> None:
         self.name = name
+        self.id = randint(0,10000000)
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
         self.coord.x, self.coord.y = self.coord.xy

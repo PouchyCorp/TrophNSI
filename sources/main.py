@@ -19,7 +19,7 @@ from objects.inventory import Inventory
 from objects.chip_inv import Chip_inv
 from objects.popup import Popup
 from room_config import R0, R1, R2, R3, ROOMS
-from objects.timermanager import TIMER
+from objects.timermanager import _Timer_manager
 import objects.sprite as sprite
 
 
@@ -41,6 +41,7 @@ class State(Enum):
     PAINTING = auto()
     PLACING_CHIP = auto()
 
+TIMER = _Timer_manager()
 
 current_room = R1
 gui_state = State.INTERACTION
@@ -64,8 +65,8 @@ destruction_mode: Destruction_mode = Destruction_mode()
 
 test_painting = Canva()
 
-TIMER.create_timer(2, hivemind.free_last_bot, repeat= True)
-TIMER.create_timer(1, hivemind.add_bot, repeat= True)
+#TIMER.create_timer(2, hivemind.free_last_bot, repeat= True)
+#TIMER.create_timer(1, hivemind.add_bot, repeat= True)
 
 moulaga = 0
 money_per_robot = 10
@@ -220,8 +221,9 @@ if __name__ == '__main__':
                 hivemind.create_last_bot_clickable()
 
         hivemind.order_inline_bots()
-        hivemind.update_bots_ai(ROOMS)
+        hivemind.update_bots_ai(ROOMS, TIMER)
         hivemind.draw(WIN, current_room_num=current_room.num)
+
 
         # drawed last
         render_popups()
