@@ -7,7 +7,7 @@ from room import Room
 from room_config import R1
 import sprite
 from timermanager import _Timer_manager
-
+from objects.anim import Spritesheet, Animation
 
 class Bot_states(Enum):
     IDLE = auto()
@@ -100,7 +100,7 @@ class Hivemind:
             last_bot : Bot = self.inline_bots[-1]
             assert type(last_bot) == Bot
 
-            #creat a clickable to let robots enter
+            #create a clickable to let robots enter
             bot_placeable = Placeable('bot_placeable', last_bot.coord, last_bot.surf)
             R1.placed.append(bot_placeable)
             R1.blacklist.append(bot_placeable)
@@ -119,6 +119,10 @@ class Bot:
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
         self.surf = choice([sprite.P4,sprite.P5]).copy()
+        
+        spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48*6, 48*6))
+        anim = Animation(spritesheet, 0, 7)
+        self.anim_idle = anim
 
         self.door_x = 1716
         self.exit_coords = Coord(1, (0,0))
@@ -137,6 +141,7 @@ class Bot:
 
     def logic(self, rooms : list[Room], TIMER : _Timer_manager):
         '''finite state machine (FSM) implementation for bot ai'''
+
         match self.state:
             case Bot_states.IDLE:
                 draw.rect(self.surf, "red", (0,0,10,10))
@@ -158,8 +163,10 @@ class Bot:
                         self.is_leaving = True
                         self.target_coord = self.exit_coords
                         
-                if not self.coord.bot_movement_compare(self.target_coord):
+                if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
                     self.state = Bot_states.WALK
+                    #print(f'walking to x = {self.target_coord}')
+                    #print(f"changed state to {self.state}")
 
             case Bot_states.WALK:
                 draw.rect(self.surf, "blue", (0,0,10,10))
@@ -172,7 +179,7 @@ class Bot:
                         TIMER.create_timer(5, self.set_attribute, False, arguments=('state', Bot_states.IDLE))
 
                 self.move_to_target_coord()
-            
+                self.surf = self.anim_idle.get_frame()
             case Bot_states.WATCH:
                 draw.rect(self.surf, "green", (0,0,10,10))
                 
