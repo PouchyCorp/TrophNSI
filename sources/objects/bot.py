@@ -17,24 +17,24 @@ class Bot_states(Enum):
 possible_reaction = ['waw', 'bof', 'uwu', 'owo', 'noob']
 
 class Hivemind:
-    def __init__(self, line_start, line_stop) -> None:
+    def __init__(self, line_start : int, line_stop : int) -> None:
         """supreme entity governing the bots
             All hail the hivemind,
             All hail the hivemind !"""
         self.inline_bots : list[Bot | str] = ["empty","empty","empty","empty", "empty", "empty"]
         self.liberated_bots : list[Bot] = []
-        self.line_start = line_start
-        self.line_stop = line_stop
+        self.line_start_x = line_start
+        self.line_stop_x = line_stop
         
-        assert self.line_stop > self.line_start, "stop before start"
+        assert self.line_stop_x > self.line_start_x, "stop before start"
 
-        step = (self.line_stop - self.line_start) // len(self.inline_bots)
-        self.x_lookup_table = [(step*i)+self.line_start for i in range(len(self.inline_bots))]
+        step = (self.line_stop_x - self.line_start_x) // len(self.inline_bots)
+        self.x_lookup_table = [(step*i)+self.line_start_x for i in range(len(self.inline_bots))]
 
     def add_bot(self):
         #checks if last place is empty
         if not type(self.inline_bots[0]) == Bot:
-            self.inline_bots[0] = Bot(Coord(1, (self.line_start,700+randint(-50,50))))
+            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,700+randint(-50,50))))
     
     def free_last_bot(self):
         if type(self.inline_bots[-1]) == Bot:
@@ -135,9 +135,8 @@ class Bot:
         #makes sure that target coord is reachable
         self.__target_coord.x -= self.__target_coord.x%6
 
-    def logic(self, rooms : frozenset[Room], TIMER : _Timer_manager):
+    def logic(self, rooms : list[Room], TIMER : _Timer_manager):
         '''finite state machine (FSM) implementation for bot ai'''
-
         match self.state:
             case Bot_states.IDLE:
                 draw.rect(self.surf, "red", (0,0,10,10))
@@ -159,10 +158,8 @@ class Bot:
                         self.is_leaving = True
                         self.target_coord = self.exit_coords
                         
-                if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
+                if not self.coord.bot_movement_compare(self.target_coord):
                     self.state = Bot_states.WALK
-                    #print(f'walking to x = {self.target_coord}')
-                    #print(f"changed state to {self.state}")
 
             case Bot_states.WALK:
                 draw.rect(self.surf, "blue", (0,0,10,10))
