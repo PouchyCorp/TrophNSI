@@ -1,11 +1,13 @@
 from random import *
 import pygame 
+
 pygame.init()
 class Dialogue():
     def __init__(self, fichier, ):
         self.fichier=fichier
         #self.screen=screen    screen
         self.avatar= pygame.image.load('data\image_dialogue.png').convert_alpha()
+        self.format = pygame.font.SysFont("Arial", 40)
         self.texte=[]
         self.number=None
 
@@ -22,7 +24,7 @@ class Dialogue():
 
     def show(self):
         a=self.random_dialogue()
-        txtsurf = format.render(self.texte[a], True, (255,255,255))
+        txtsurf = self.format.render(self.texte[a], True, (255,255,255))
         self.screen.blit(self.avatar, (200, 600)) #a recadrer
         self.screen.blit(txtsurf,(500, 900)) #a recadrer
         
