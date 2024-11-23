@@ -1,6 +1,5 @@
 import pygame as pg
 import sys
-import time
 from enum import Enum, auto
 
 pg.init()
