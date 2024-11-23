@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from coord import Coord
 from anim import Animation
+from sprite import get_outline
 
 class Placeable:
     def __init__(self, name : str, coord : Coord, surf : Surface, tag : str | None = None, anim : Animation | None = None, y_constraint : int | None = None) -> None:
@@ -41,18 +42,7 @@ class Placeable:
 
 
     def draw_outline(self, win : Surface, color : tuple):
-        outline_width = 5
-
-        width, height = self.surf.get_size()
-        outline_surface = Surface((width + outline_width * 2, height + outline_width * 2), SRCALPHA)
-
-        for dx in range(-outline_width, outline_width + 1):
-            for dy in range(-outline_width, outline_width + 1):
-                if abs(dx) + abs(dy) == outline_width:
-                    outline_surface.blit(self.surf, (dx + outline_width, dy + outline_width))
-
-        outline_surface.fill(color+tuple([0]), special_flags=BLEND_RGBA_MAX)
-        win.blit(outline_surface, (self.rect.x-5, self.rect.y-5))
+        win.blit(get_outline(self.surf, color), (self.rect.x-5, self.rect.y-5))
     
     def move(self, coord : Coord):
         self.coord = coord

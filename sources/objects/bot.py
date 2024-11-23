@@ -180,6 +180,7 @@ class Bot:
 
                 self.move_to_target_coord()
                 self.surf = self.anim_idle.get_frame()
+                
             case Bot_states.WATCH:
                 draw.rect(self.surf, "green", (0,0,10,10))
                 

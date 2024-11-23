@@ -1,4 +1,4 @@
-from pygame import image, Surface, transform, SRCALPHA
+from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX
 
 def load_image(path : str):
     sprite = image.load(path)
@@ -52,8 +52,21 @@ def nine_slice_scaling(surf : Surface, size : tuple[int], border : int) -> Surfa
 
         #blit all slices together
         target_surf.blits([(top_slice, (0,0)), (middle_slice, (0, border)), (bottom_slice, (0,border+middle_slice_new_height))])
-    
     return target_surf
+
+def get_outline(surf, color):
+    outline_width = 5
+
+    width, height = surf.get_size()
+    outline_surface = Surface((width + outline_width * 2, height + outline_width * 2), SRCALPHA)
+
+    for dx in range(-outline_width, outline_width + 1):
+        for dy in range(-outline_width, outline_width + 1):
+            if abs(dx) + abs(dy) == outline_width:
+                outline_surface.blit(surf, (dx + outline_width, dy + outline_width))
+
+    outline_surface.fill(color+tuple([0]), special_flags=BLEND_RGBA_MAX)
+    return outline_surface
 
 BG1 = load_image("data/bg_test_approfondis.png")
 
