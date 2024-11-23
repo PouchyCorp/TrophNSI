@@ -19,11 +19,10 @@ class Dialogue():
                 mot+=lines[k]
             intermediate.append(mot)
             self.texte.append(intermediate)
-        return self.texte
 
     def show(self):
-
-        txtsurf = format.render("Hello, World", True, (255,255,255))
+        a=self.random_dialogue()
+        txtsurf = format.render(self.texte[a], True, (255,255,255))
         self.screen.blit(self.avatar, (200, 600)) #a recadrer
         self.screen.blit(txtsurf,(500, 900)) #a recadrer
         
@@ -35,34 +34,6 @@ class Dialogue():
 
 
 
-test=Dialogue("data\dialogue.txt")
-texte=test.load_save
-a=test.random_dialogue
-
-screen = pygame.display.set_mode((1920, 1080))
-done = False
-
-format = pygame.font.SysFont("Arial", 40)
-
-
-avatar = pygame.image.load('data\image_dialogue.png').convert_alpha()
-
-bg = (127,127,127)
-
-while not done:
-   for event in pygame.event.get():
-      screen.fill(bg)
-      if event.type == pygame.QUIT:
-         done = True
-      
-      if event.type == pygame.KEYDOWN:
-                match event.key:
-                    case pygame.K_SPACE:
-                        txtsurf = format.render(texte[a], True, (255,255,255))
-                        screen.blit(avatar, (200, 600)) #a recadrer
-                        screen.blit(txtsurf,(500, 900)) #a recadrer
-                        
-                        pygame.display.flip()
 
 ###Tests
 
