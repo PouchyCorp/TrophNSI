@@ -34,7 +34,7 @@ class Placeable:
         self.placed = False
 
     def draw(self,win):
-        win.blit(self.surf, self.rect)
+        win.blit(self.surf,self.rect)
     
     def update_anim(self):
         if self.anim:
