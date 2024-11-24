@@ -201,7 +201,6 @@ if __name__ == '__main__':
         # fps counter / state debug
         WIN.blit(Popup(
             f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy} / $ : {moulaga}').text_surf, (0, 0))
-
         inventory.draw(WIN, mouse_pos, gui_state == State.INVENTORY)
         # use blits because more performant
         current_room.draw_placed(WIN)

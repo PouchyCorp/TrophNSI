@@ -20,7 +20,7 @@ R1.placed.append(test_canva)
 
 #R2
 R2 = Room(2,sprite.BG3)
-R2_stairs = Placeable('R2_stairs', Coord(2,(1200,300)), Surface((200,300)))
+R2_stairs = Placeable('R2_stairs', Coord(2,(1551,442)), Surface((335,220)))
 test_canva = Placeable('test_canva', Coord(2,(100,100)), Surface((48*6,64*6)), "decoration")
 
 R2.placed.append(test_canva)
