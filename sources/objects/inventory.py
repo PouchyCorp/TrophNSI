@@ -1,7 +1,7 @@
 from placeable import Placeable
 from coord import Coord
 from pygame import Surface, transform, BLEND_RGB_MIN, font
-from sprite import ICON_1
+from sprite import ICON_1, WINDOW, nine_slice_scaling
 
 class Inventory:
     def __init__(self) -> None:
@@ -9,10 +9,12 @@ class Inventory:
         self.inv : list[Placeable] = []
 
         #showed placeables when opened
-        self.showed_objects : list[Placeable] = []
+        self.showed_objects : list[tuple[Placeable, Surface]] = []
         #false if closed, true if opened
         self._page = 0
-        #self.font = font.SysFont(None,30,False,False)
+        self.font = font.SysFont(None,30)
+
+        self.window_sprite : Surface = WINDOW
 
     def open(self):
         """initialise all objects for rendering"""
@@ -31,22 +33,13 @@ class Inventory:
             if obj.placed == True:
                 thumbnail_surf.fill((50,50,50), special_flags=BLEND_RGB_MIN)
 
-            """ marche pas
-            #label
-            label_text = obj.name
-            label_surf = self.font.render(label_text,True,"black")
-
-            #blit label on thumbnail
-            thumbnail_surf.blit(label_surf, (0,180))
-            thumbnail_rect = thumbnail_surf.get_rect()
-            """
-
             #placement
             if ind % 2 == 0:
-                thumbnail_rect.x = 50
+                thumbnail_rect.x = 12
             else:
-                thumbnail_rect.x = 50+180+20
-            thumbnail_rect.y = 50+(220*(ind//2))
+                thumbnail_rect.x = 12+180+20
+            thumbnail_rect.y = 72+(220*(ind//2))
+
             
             #create placeable
             thumbnail_placeable = Placeable(obj.name, Coord(obj.coord.room_num, thumbnail_rect.topleft), thumbnail_surf)
@@ -55,29 +48,40 @@ class Inventory:
 
             thumbnail_placeable.pixelise()
 
-            #print(thumbnail_placeable)
+            #blit label on thumbnail
+            #label
+            label_text = obj.name
+            label_surf = self.font.render(label_text,True,"green")
 
             #update list
-            self.showed_objects[ind] = thumbnail_placeable
-
-    '''
-    def toggle(self):
-        self.is_open = not self.is_open
-
-        if self.is_open:
-            self.open()               
+            #self.showed change de type
+            self.showed_objects[ind] = (thumbnail_placeable, label_surf)
+        
+        if self.showed_objects:
+            first_obj_topleft = self.showed_objects[0][0].rect.topleft
+            last_obj_bottomright = self.showed_objects[-1][0].rect.bottomright
+            if len(self.showed_objects) > 1:
+                difference = (12+180+144+12, last_obj_bottomright[1]-first_obj_topleft[1]+24)
+            else:
+                difference = (12+138, 24+180)
+            self.window_sprite = nine_slice_scaling(WINDOW, difference, 6)
         else:
-            self.close()
-    '''
+            self.window_sprite = nine_slice_scaling(WINDOW, (180,180), 6)
+
     def draw(self, win : Surface, mouse_pos : Coord, is_open : bool):
         if is_open:
+
+            #keep this order
+            win.blit(self.window_sprite, (0,60))
             self.mouse_highlight(win, mouse_pos)
-            win.blits([(plcb.surf, plcb.rect.topleft) for plcb in self.showed_objects])
+            win.blits([(plcb.surf, plcb.rect.topleft) for plcb, _ in self.showed_objects])
+            win.blits([(txt_surf, (plcb.rect.x, plcb.rect.y+190)) for plcb, txt_surf in self.showed_objects])
+
         else:
             win.blit(ICON_1, (0,60))
     
     def mouse_highlight(self, win : Surface, mouse_pos : Coord):
-        for placeable in self.showed_objects:
+        for placeable, _ in self.showed_objects:
             if placeable.rect.collidepoint(mouse_pos.xy):
                 placeable.draw_outline(win,(150,150,255))
 
@@ -85,7 +89,7 @@ class Inventory:
     def select_item(self, mouse_pos : Coord) -> str | None:
         """return the id of the item selected
         returns None if no items"""
-        for placeable in self.showed_objects:
+        for placeable, _ in self.showed_objects:
             if placeable.rect.collidepoint(mouse_pos.xy):
                 return placeable.id
         return None
