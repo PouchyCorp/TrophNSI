@@ -79,7 +79,6 @@ if __name__ == '__main__':
         CLOCK.tick(60)
         WIN.blit(current_room.bg_surf, (0, 0))
         mouse_pos: Coord = Coord(current_room.num, pg.mouse.get_pos())
-
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
                 color = (150, 150, 255) if not destruction_mode.in_destruction_mode else (255, 0, 0)
@@ -87,6 +86,7 @@ if __name__ == '__main__':
                 if placeable.name == "R2_stairs":
                     placeable.update_anim()
                     print("pizza")
+                    
         events = pg.event.get()
         keys = pg.key.get_pressed()
 
