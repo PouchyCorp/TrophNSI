@@ -19,7 +19,7 @@ R1.placed.append(test_canva)
 
 
 #R2
-R2 = Room(2,sprite.BG1)
+R2 = Room(2,sprite.BG3)
 R2_stairs = Placeable('R2_stairs', Coord(2,(1200,300)), Surface((200,300)))
 test_canva = Placeable('test_canva', Coord(2,(100,100)), Surface((48*6,64*6)), "decoration")
 
@@ -30,7 +30,7 @@ R2.blacklist.append(R2_stairs)
 
 
 #R3
-R3 = Room(3,sprite.BG1)
+R3 = Room(3,sprite.BG3)
 
 
 ROOMS : list[Room] = [R0, R1, R2, R3]

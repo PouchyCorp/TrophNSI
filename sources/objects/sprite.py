@@ -70,6 +70,8 @@ def get_outline(surf, color):
 
 BG1 = load_image("data/bg_test_approfondis.png")
 
+BG3 = load_image("data/room_2.png")
+
 BG2 = load_image("data/bg_test_paint.png")
 
 P1 = load_image('data/p1.png')
