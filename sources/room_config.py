@@ -5,8 +5,8 @@ import objects.sprite as sprite
 from pygame import Surface,image,transform
 from objects.anim import Spritesheet,Animation
 
-spritesheet_prt = Spritesheet(sprite.SPRTESHEET_PORTE,(60*20,60*20))
-anim_prt = Animation(spritesheet_prt,0,20)
+spritesheet = Spritesheet(sprite.SPRTESHEET_PORTE, (56*6, 76*6))
+anim_prt = Animation(spritesheet, 0, 20)
 
 #R0
 R0 = Room(0,sprite.BG2)
@@ -24,7 +24,7 @@ R1.placed.append(test_canva)
 
 #R2
 R2 = Room(2,sprite.BG3)
-R2_stairs = Placeable('R2_stairs', Coord(2,(1551,442)), Surface((335,220)),anim_prt)
+R2_stairs = Placeable('R2_stairs', Coord(2,(1551,442)), Surface((335,220)),anim = anim_prt)
 test_canva = Placeable('test_canva', Coord(2,(100,100)), Surface((48*6,64*6)), "decoration")
 
 R2.placed.append(test_canva)

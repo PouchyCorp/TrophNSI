@@ -52,12 +52,12 @@ spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48*6, 48*6))
 anim = Animation(spritesheet, 0, 7)
 
 
-spritesheet = Spritesheet(sprite.SPRTESHEET_PORTE, (60*6, 100*6))
+spritesheet = Spritesheet(sprite.SPRTESHEET_PORTE, (56*6, 76*6))
 anim_ = Animation(spritesheet, 0, 20)
 
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
-#inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim_, y_constraint=600, tag="decoration"))
+#inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim_, tag="decoration"))
 #inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
 #inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
 
@@ -202,7 +202,8 @@ if __name__ == '__main__':
 
         # anim:
         for placeable in current_room.placed:
-            placeable.update_anim()
+            if not placeable.name == "R2_stairs":
+                placeable.update_anim()
 
         # fps counter / state debug
         WIN.blit(Popup(
