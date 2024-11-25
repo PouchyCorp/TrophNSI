@@ -17,7 +17,7 @@ from objects.coord import Coord
 from objects.inventory import Inventory
 from objects.chip_inv import Chip_inv
 from objects.popup import Popup
-from room_config import R0, R1, R2, R3, ROOMS
+from room_config import R0, R1, R2, R3, ROOMS, R1_stairs, R2_stairs
 from objects.timermanager import _Timer_manager
 import objects.sprite as sprite
 
@@ -52,8 +52,12 @@ spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48*6, 48*6))
 anim = Animation(spritesheet, 0, 7)
 
 
-spritesheet = Spritesheet(sprite.SPRTESHEET_PORTE, (56*6, 76*6))
-anim_ = Animation(spritesheet, 0, 20)
+spritesheet = Spritesheet(sprite.SPRITESHEET_HAUT, (42*6, 29*6))
+anim_haut = Animation(spritesheet, 0, 18)
+
+
+spritesheet = Spritesheet(sprite.SPRITESHEET_BAS, (42*6, 29*6))
+anim_bas = Animation(spritesheet, 0, 9)
 
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
@@ -197,7 +201,7 @@ if __name__ == '__main__':
 
         # anim:
         for placeable in current_room.placed:
-            if placeable.name != "R2_stairs" and placeable.name != "R1_stairs":
+
                 placeable.update_anim()
 
 
@@ -206,9 +210,16 @@ if __name__ == '__main__':
                 color = (150, 150, 255) if not gui_state == State.DESTRUCTION else (255, 0, 0)
                 
                 if placeable.name == "R2_stairs" or placeable.name == 'R1_stairs':
-                    placeable.update_anim()
-                placeable.draw_outline(WIN, color) 
-                    
+                    anim_bas.reset_frame()
+                    R2_stairs.anim = anim_haut
+                    R1_stairs.anim = anim_haut
+                else:
+                    anim_haut.reset_frame()
+                    R2_stairs.anim = anim_bas.copy()
+                    R1_stairs.anim = anim_bas.copy()
+
+                placeable.draw_outline(WIN, color)
+                
         # fps counter / state debug
         WIN.blit(Popup(
             f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy} / $ : {moulaga}').text_surf, (0, 0))

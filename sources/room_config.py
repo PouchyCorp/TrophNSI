@@ -5,8 +5,8 @@ import objects.sprite as sprite
 from pygame import Surface,image,transform
 from objects.anim import Spritesheet,Animation
 
-spritesheet = Spritesheet(sprite.SPRITESHEET_PORTE_HAUT, (42*6, 33*6))
-anim_prt = Animation(spritesheet, 0, 20,4)
+spritesheet = Spritesheet(sprite.SPRITESHEET_BAS, (42*6, 29*6))
+anim_prt = Animation(spritesheet, 0, 9,4)
 
 #R0
 R0 = Room(0,sprite.BG2)

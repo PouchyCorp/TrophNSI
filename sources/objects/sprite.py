@@ -96,6 +96,10 @@ SPRTESHEET_PORTE = load_image('data/prte_anim.png')
 
 SPRITESHEET_PORTE_HAUT = load_image('data/prt_anim_haut.png')
 
+SPRITESHEET_HAUT = load_image("data/prt_haut.png")
+
+SPRITESHEET_BAS = load_image("data/prt_bas.png")
+
 PATTERN_1 = load_image('data/pattern_storage/pattern_test.png')
 
 PATTERN_LIST = [PATTERN_1 for k in range(7)]

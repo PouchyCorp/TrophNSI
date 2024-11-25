@@ -40,6 +40,8 @@ class Placeable:
         if self.anim:
             self.surf = self.anim.get_frame()
 
+    def reset_anim(self):
+        self.surf = self.anim.reset_frame()
 
     def draw_outline(self, win : Surface, color : tuple):
         win.blit(get_outline(self.surf, color), (self.rect.x-3, self.rect.y-3))
