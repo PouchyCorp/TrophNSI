@@ -83,7 +83,7 @@ if __name__ == '__main__':
             if placeable.rect.collidepoint(mouse_pos.xy):
                 color = (150, 150, 255) if not destruction_mode.in_destruction_mode else (255, 0, 0)
                 placeable.draw_outline(WIN, color)
-                if placeable.name == "R2_stairs":
+                if placeable.name == "R2_stairs" or placeable.name == 'R1_stairs':
                     placeable.update_anim()
                     print("pizza")
                     
@@ -202,7 +202,7 @@ if __name__ == '__main__':
 
         # anim:
         for placeable in current_room.placed:
-            if not placeable.name == "R2_stairs":
+            if not placeable.name == "R2_stairs" or placeable.name == "R1_stairs":
                 placeable.update_anim()
 
         # fps counter / state debug
