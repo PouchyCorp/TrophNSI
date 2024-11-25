@@ -79,13 +79,8 @@ if __name__ == '__main__':
         CLOCK.tick(60)
         WIN.blit(current_room.bg_surf, (0, 0))
         mouse_pos: Coord = Coord(current_room.num, pg.mouse.get_pos())
-        for placeable in current_room.placed:
-            if placeable.rect.collidepoint(mouse_pos.xy):
-                color = (150, 150, 255) if not destruction_mode.in_destruction_mode else (255, 0, 0)
-                placeable.draw_outline(WIN, color)
-                if placeable.name == "R2_stairs" or placeable.name == 'R1_stairs':
-                    placeable.update_anim()
-                    print("pizza")
+
+                    
                     
         events = pg.event.get()
         keys = pg.key.get_pressed()
@@ -202,9 +197,18 @@ if __name__ == '__main__':
 
         # anim:
         for placeable in current_room.placed:
-            if not placeable.name == "R2_stairs" or placeable.name == "R1_stairs":
+            if placeable.name != "R2_stairs" and placeable.name != "R1_stairs":
                 placeable.update_anim()
 
+
+        for placeable in current_room.placed:
+            if placeable.rect.collidepoint(mouse_pos.xy):
+                color = (150, 150, 255) if not gui_state == State.DESTRUCTION else (255, 0, 0)
+                
+                if placeable.name == "R2_stairs" or placeable.name == 'R1_stairs':
+                    placeable.update_anim()
+                placeable.draw_outline(WIN, color) 
+                    
         # fps counter / state debug
         WIN.blit(Popup(
             f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy} / $ : {moulaga}').text_surf, (0, 0))

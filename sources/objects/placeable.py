@@ -42,7 +42,7 @@ class Placeable:
 
 
     def draw_outline(self, win : Surface, color : tuple):
-        win.blit(get_outline(self.surf, color), (self.rect.x-5, self.rect.y-5))
+        win.blit(get_outline(self.surf, color), (self.rect.x-3, self.rect.y-3))
     
     def move(self, coord : Coord):
         self.coord = coord

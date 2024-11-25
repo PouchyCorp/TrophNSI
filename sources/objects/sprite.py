@@ -55,7 +55,7 @@ def nine_slice_scaling(surf : Surface, size : tuple[int], border : int) -> Surfa
     return target_surf
 
 def get_outline(surf, color):
-    outline_width = 5
+    outline_width = 3
 
     width, height = surf.get_size()
     outline_surface = Surface((width + outline_width * 2, height + outline_width * 2), SRCALPHA)
