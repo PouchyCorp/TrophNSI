@@ -193,14 +193,19 @@ if __name__ == '__main__':
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
                 color = (150, 150, 255) if not gui_state == State.DESTRUCTION else (255, 0, 0)
-                placeable.draw_outline(WIN, color)
-            
-                if type(placeable) == subplaceable.Door and not placeable.is_open:
-                    placeable.is_open = True
-
-            elif type(placeable) == subplaceable.Door and placeable.is_open:
-                placeable.is_open = False
                 
+                if type(placeable) == subplaceable.Door  and placeable.anim_close.is_finished():
+                    placeable.anim = placeable.anim_open
+                    placeable.anim_close.reset_frame()
+
+                #placeable.draw_outline(WIN, color)
+
+
+            elif type(placeable) == subplaceable.Door and placeable.anim_open.is_finished():
+                placeable.anim = placeable.anim_close
+                placeable.anim_open.reset_frame()
+
+
         # fps counter / state debug
         WIN.blit(Popup(
             f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy} / $ : {moulaga}').text_surf, (0, 0))

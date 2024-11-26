@@ -25,10 +25,10 @@ class Animation:
         self.repeat = repeat
 
     def get_frame(self) -> Surface:
-        if self.img_index == self.length and self.repeat:
+        if self.img_index == self.length-1 and self.repeat:
             self.img_index = 0
         
-        if self.__speed_incr >= self.speed and self.img_index != self.length:
+        if self.__speed_incr >= self.speed and self.img_index != self.length-1 :
             self.img_index += 1
             self.__speed_incr = 0 
         else:
@@ -44,3 +44,7 @@ class Animation:
         return new_surf
     def copy(self):
         return Animation(self.spritesheet,self.line,self.length,self.speed,self.repeat)
+
+    def is_finished(self):
+        if self.img_index == self.length-1 :
+            return True
