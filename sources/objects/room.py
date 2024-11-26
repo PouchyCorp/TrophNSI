@@ -27,7 +27,7 @@ class Room:
     """
     def draw_placed(self, win):
         #map(self.check_coords, self.placed)
-        win.blits([(placeable.surf, placeable.coord.xy) for placeable in self.placed])
+        win.blits([placeable.get_blit_args() for placeable in self.placed])
         
 # tests
 if __name__ == '__main__':

@@ -33,12 +33,10 @@ class Placeable:
         self.y_constraint = y_constraint
         self.placed = False
 
-    def draw(self,win):
-        win.blit(self.surf,self.rect)
-    
-    def update_anim(self):
+    def get_blit_args(self):
         if self.anim:
             self.surf = self.anim.get_frame()
+        return self.surf, self.rect
 
     def reset_anim(self):
         self.surf = self.anim.reset_frame()

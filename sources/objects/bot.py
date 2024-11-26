@@ -120,8 +120,8 @@ class Bot:
         self.move_dir = "RIGHT"
         self.surf = choice([sprite.P4,sprite.P5]).copy()
         
-        spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48*6, 48*6))
-        anim = Animation(spritesheet, 0, 7)
+        
+        anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
         self.anim_idle = anim
 
         self.door_x = 1716

@@ -28,7 +28,7 @@ class Animation:
         if self.img_index == self.length and self.repeat:
             self.img_index = 0
         
-        if self.__speed_incr >= self.speed and self.img_index + 1 != self.length:
+        if self.__speed_incr >= self.speed and self.img_index != self.length:
             self.img_index += 1
             self.__speed_incr = 0 
         else:

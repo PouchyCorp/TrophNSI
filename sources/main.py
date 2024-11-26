@@ -48,16 +48,8 @@ popups: list[Popup] = []
 
 # test hivemind
 hivemind = Hivemind(60, 600)
-spritesheet = Spritesheet(sprite.SPRITESHEET_TEST, (48*6, 48*6))
-anim = Animation(spritesheet, 0, 7)
-
-
-spritesheet = Spritesheet(sprite.SPRITESHEET_HAUT, (42*6, 29*6))
-anim_haut = Animation(spritesheet, 0, 18)
-
-
-spritesheet = Spritesheet(sprite.SPRITESHEET_BAS, (42*6, 29*6))
-anim_bas = Animation(spritesheet, 0, 9)
+anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
+anim_porte = Animation(sprite.SPRITESHEET_PORTE, 0, 20)
 
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
@@ -197,26 +189,11 @@ if __name__ == '__main__':
         #timer update
         TIMER.update()
         #print(TIMER.timers)
-        
-
-        # anim:
-        for placeable in current_room.placed:
-
-                placeable.update_anim()
 
 
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
                 color = (150, 150, 255) if not gui_state == State.DESTRUCTION else (255, 0, 0)
-                
-                if placeable.name == "R2_stairs" or placeable.name == 'R1_stairs':
-                    anim_bas.reset_frame()
-                    R2_stairs.anim = anim_haut
-                    R1_stairs.anim = anim_haut
-                else:
-                    anim_haut.reset_frame()
-                    R2_stairs.anim = anim_bas.copy()
-                    R1_stairs.anim = anim_bas.copy()
 
                 placeable.draw_outline(WIN, color)
                 

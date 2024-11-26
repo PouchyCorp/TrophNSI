@@ -1,4 +1,5 @@
 from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX
+import anim
 
 def load_image(path : str):
     sprite = image.load(path)
@@ -90,18 +91,19 @@ ICON_1 = load_image('data/icon_inv_test.png')
 
 CHIP = load_image('data/chip.png')
 
-SPRITESHEET_TEST = load_image('data/test_robot.png')
+SPRITESHEET_BOT = anim.Spritesheet(load_image('data/test_robot.png'), (48*6, 48*6))
 
-SPRTESHEET_PORTE = load_image('data/prte_anim.png')
+SPRITESHEET_PORTE = anim.Spritesheet(load_image('data/prte_anim.png'),(60*20,60*20))
 
 SPRITESHEET_PORTE_HAUT = load_image('data/prt_anim_haut.png')
 
-SPRITESHEET_HAUT = load_image("data/prt_haut.png")
+SPRITESHEET_HAUT = anim.Spritesheet(load_image("data/prt_haut.png"), (42*6, 29*6))
 
-SPRITESHEET_BAS = load_image("data/prt_bas.png")
+SPRITESHEET_BAS = anim.Spritesheet(load_image("data/prt_bas.png"), (42*6, 29*6))
 
 PATTERN_1 = load_image('data/pattern_storage/pattern_test.png')
 
 PATTERN_LIST = [PATTERN_1 for k in range(7)]
 
 WINDOW = load_image('data/window.png')
+
