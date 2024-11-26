@@ -8,16 +8,17 @@ WIN = pg.display.set_mode((1920, 1080))
 CLOCK = pg.time.Clock()
 
 from objects.placeable import Placeable
-from objects.anim import Spritesheet, Animation
+import objects.placeablesubclass as subplaceable
+from objects.anim import Animation
 from objects.chip import Chip
 from objects.canva import Canva
-from objects.bot import Bot, Hivemind
+from objects.bot import Hivemind
 from objects.build_mode import Build_mode, Destruction_mode
 from objects.coord import Coord
 from objects.inventory import Inventory
 from objects.chip_inv import Chip_inv
 from objects.popup import Popup
-from room_config import R0, R1, R2, R3, ROOMS, R1_stairs, R2_stairs
+from room_config import R0, R1, R2, R3, ROOMS
 from objects.timermanager import _Timer_manager
 import objects.sprite as sprite
 
@@ -49,7 +50,6 @@ popups: list[Popup] = []
 # test hivemind
 hivemind = Hivemind(60, 600)
 anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
-anim_porte = Animation(sprite.SPRITESHEET_PORTE, 0, 20)
 
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
@@ -144,7 +144,6 @@ if __name__ == '__main__':
 
                             # check if object already placed
                             if not clicked_obj.placed:
-
                                 # enter build mode
                                 build_mode.selected_placeable = clicked_obj
                                 gui_state = State.BUILD
@@ -190,12 +189,17 @@ if __name__ == '__main__':
         TIMER.update()
         #print(TIMER.timers)
 
-
+        #placeable iter
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
                 color = (150, 150, 255) if not gui_state == State.DESTRUCTION else (255, 0, 0)
-
                 placeable.draw_outline(WIN, color)
+            
+                if type(placeable) == subplaceable.Door and not placeable.is_open:
+                    placeable.is_open = True
+
+            elif type(placeable) == subplaceable.Door and placeable.is_open:
+                placeable.is_open = False
                 
         # fps counter / state debug
         WIN.blit(Popup(

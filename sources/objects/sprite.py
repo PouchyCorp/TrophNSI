@@ -93,10 +93,6 @@ CHIP = load_image('data/chip.png')
 
 SPRITESHEET_BOT = anim.Spritesheet(load_image('data/test_robot.png'), (48*6, 48*6))
 
-SPRITESHEET_PORTE = anim.Spritesheet(load_image('data/prte_anim.png'),(60*20,60*20))
-
-SPRITESHEET_PORTE_HAUT = load_image('data/prt_anim_haut.png')
-
 SPRITESHEET_HAUT = anim.Spritesheet(load_image("data/prt_haut.png"), (42*6, 29*6))
 
 SPRITESHEET_BAS = anim.Spritesheet(load_image("data/prt_bas.png"), (42*6, 29*6))
