@@ -194,14 +194,14 @@ if __name__ == '__main__':
             if placeable.rect.collidepoint(mouse_pos.xy):
                 color = (150, 150, 255) if not gui_state == State.DESTRUCTION else (255, 0, 0)
                 
-                if type(placeable) == subplaceable.Door  and placeable.anim_close.is_finished():
+                if type(placeable) in [subplaceable.Door_up, subplaceable.Door_down] and placeable.anim_close.is_finished():
                     placeable.anim = placeable.anim_open
                     placeable.anim_close.reset_frame()
 
                 #placeable.draw_outline(WIN, color)
 
 
-            elif type(placeable) == subplaceable.Door and placeable.anim_open.is_finished():
+            elif type(placeable) in [subplaceable.Door_up, subplaceable.Door_down] and placeable.anim_open.is_finished():
                 placeable.anim = placeable.anim_close
                 placeable.anim_open.reset_frame()
 

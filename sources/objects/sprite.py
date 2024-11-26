@@ -97,6 +97,11 @@ SPRITESHEET_HAUT = anim.Spritesheet(load_image("data/prt_haut.png"), (42*6, 29*6
 
 SPRITESHEET_BAS = anim.Spritesheet(load_image("data/prt_bas.png"), (42*6, 29*6))
 
+
+SPRITESHEET_HAUT_1 = anim.Spritesheet(transform.flip(load_image("data/prt_haut.png"),False, True), (42*6, 29*6))
+
+SPRITESHEET_BAS_1 = anim.Spritesheet(transform.flip(load_image("data/prt_bas.png"),False, True), (42*6, 29*6))
+
 PATTERN_1 = load_image('data/pattern_storage/pattern_test.png')
 
 PATTERN_LIST = [PATTERN_1 for k in range(7)]
