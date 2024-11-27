@@ -189,7 +189,7 @@ if __name__ == '__main__':
         #placeable iter
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
-                color = (150, 150, 255) if not gui_state != State.DESTRUCTION else (255, 0, 0)
+                color = (150, 150, 255) if gui_state != State.DESTRUCTION else (255, 0, 0)
                 
                 if type(placeable) in [subplaceable.Door_up, subplaceable.Door_down] and placeable.anim_close.is_finished():
                     placeable.anim = placeable.anim_open
