@@ -99,7 +99,7 @@ SPRITESHEET_BAS = anim.Spritesheet(load_image("data/prt_bas.png"), (42*6, 29*6))
 
 PATTERN_1 = load_image('data/pattern_storage/pattern_test.png')
 
-PATTERN_LIST = [PATTERN_1 for k in range(7)]
+PATTERN_LIST = [PATTERN_1 for _ in range(7)]
 
 WINDOW = load_image('data/window.png')
 

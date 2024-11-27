@@ -56,6 +56,10 @@ class Placeable:
 
     def __repr__(self) -> str:
         return str(self.__dict__)
+    
+    def interaction(self, args):
+        #doesn't do anything (used for subclasses)
+        pass
 
 
 

@@ -12,7 +12,7 @@ class Pattern:
         self.rect.x, self.rect.y = self.coord.xy
 
 
-class Chip_inv:
+class ChipInv:
     def __init__(self) -> None:
         self.inv = []
         x,y = 100, 100

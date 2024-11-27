@@ -9,7 +9,7 @@ class Chip:
         self.colors : list = colors
         self.pattern : pg.Surface = self.pattern_init(pattern)
         self.sprite = CHIP
-        self.coord = Coord(0,((0,0)))
+        self.coord = Coord(0,(0,0))
         self.drawing = False
 
     def draw(self,win):

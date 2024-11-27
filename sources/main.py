@@ -13,10 +13,10 @@ from objects.anim import Animation
 from objects.chip import Chip
 from objects.canva import Canva
 from objects.bot import Hivemind
-from objects.build_mode import Build_mode, Destruction_mode
+from objects.build_mode import BuildMode, DestructionMode
 from objects.coord import Coord
 from objects.inventory import Inventory
-from objects.chip_inv import Chip_inv
+from sources.objects.chipInv import ChipInv
 from objects.popup import Popup
 from room_config import R0, R1, R2, R3, ROOMS
 from objects.timermanager import _Timer_manager
@@ -53,19 +53,13 @@ anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
 
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
-#inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim_, tag="decoration"))
-#inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
-#inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
 
-chip_inventory : Chip_inv = Chip_inv()
+chip_inventory : ChipInv = ChipInv()
 
-build_mode: Build_mode = Build_mode()
-destruction_mode: Destruction_mode = Destruction_mode()
+build_mode: BuildMode = BuildMode()
+destruction_mode: DestructionMode = DestructionMode()
 
 test_painting = Canva()
-
-#TIMER.create_timer(2, hivemind.free_last_bot, repeat= True)
-#TIMER.create_timer(1, hivemind.add_bot, repeat= True)
 
 moulaga = 0
 money_per_robot = 10
@@ -172,10 +166,7 @@ if __name__ == '__main__':
                                             Popup('bip boup erreur erreur'))
 
                     case State.PAINTING:
-                        try:
-                            chip = Chip(chip_inventory.select_chip(mouse_pos),["black"])
-                        except:
-                            pass
+                        chip = Chip(chip_inventory.select_chip(mouse_pos),["black"])
                         if chip != None:
                             gui_state = State.PLACING_CHIP
 
@@ -192,7 +183,7 @@ if __name__ == '__main__':
         #placeable iter
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
-                color = (150, 150, 255) if not gui_state == State.DESTRUCTION else (255, 0, 0)
+                color = (150, 150, 255) if gui_state != State.DESTRUCTION else (255, 0, 0)
                 placeable.draw_outline(WIN, color)
             
                 if type(placeable) == subplaceable.Door and not placeable.is_open:

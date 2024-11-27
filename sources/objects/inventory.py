@@ -102,7 +102,3 @@ class Inventory:
 
     def __repr__(self):
         return str(self.__dict__)
-
-# tests
-if __name__ == '__main__':
-    pass

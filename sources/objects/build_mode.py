@@ -2,10 +2,11 @@ from placeable import Placeable
 from room import Room
 from coord import Coord
 from pygame import Surface, BLEND_RGBA_ADD
+from typing import Optional
 
-class Build_mode():
+class BuildMode():
     def __init__(self) -> None:
-        self.selected_placeable : Placeable = None
+        self.selected_placeable : Optional[Placeable] = None
         self.ghost_rect = None
         #self.in_build_mode : bool = False
     
@@ -59,7 +60,7 @@ class Build_mode():
         #print(self.selected_placeable)
         return self.selected_placeable
     
-class Destruction_mode():
+class DestructionMode():
     def __init__(self) -> None:
         self.in_destruction_mode : bool = False
 

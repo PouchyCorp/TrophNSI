@@ -5,8 +5,10 @@ from tkinter import messagebox
 import pickle
 import pygame
 
+db_link = "testDb.db"
+
 def initialize_database():
-    connection = sqlite3.connect('testDb.db')
+    connection = sqlite3.connect(db_link)
     cursor = connection.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
@@ -22,7 +24,7 @@ def hash_password(password):
     return sha256(password.encode()).hexdigest()
 
 def fetch_user_data(username):
-    connection = sqlite3.connect('testDb.db')
+    connection = sqlite3.connect(db_link)
     cursor = connection.cursor()
     cursor.execute('SELECT pickled_data FROM users WHERE username = ?', (username,))
     result = cursor.fetchone()
@@ -45,7 +47,7 @@ def register_user():
         messagebox.showwarning("Input Error", "Both fields are required!")
         return
     
-    connection = sqlite3.connect('testDb.db')
+    connection = sqlite3.connect(db_link)
     cursor = connection.cursor()
     try:
         cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', 
@@ -65,7 +67,7 @@ def login_user():
         messagebox.showwarning("Input Error", "Both fields are required!")
         return
     
-    connection = sqlite3.connect('testDb.db')
+    connection = sqlite3.connect(db_link)
     cursor = connection.cursor()
     cursor.execute('SELECT password FROM users WHERE username = ?', (username,))
     result = cursor.fetchone()
@@ -85,7 +87,7 @@ def save_user_data(username, data):
         data (dict): The data to be pickled and saved.
     """
     pickled_data = pickle.dumps(data)  # Serialize the data
-    connection = sqlite3.connect('testDb.db')
+    connection = sqlite3.connect(db_link)
     cursor = connection.cursor()
     cursor.execute('UPDATE users SET pickled_data = ? WHERE username = ?', (pickled_data, username))
     connection.commit()
@@ -101,7 +103,7 @@ def pygame_window(username : str):
     
     user_data = fetch_user_data(username)
     
-    if type(user_data) == list:
+    if type(user_data) is list:
         rects = user_data
     else:
         rects = []
