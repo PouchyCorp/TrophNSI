@@ -53,6 +53,10 @@ anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
 
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
+inventory.inv.append(Placeable('6545dqwz31',Coord(1,(121,50)), sprite.PROP_STATUE, tag= "decoration",y_constraint= 620))
+#inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim_, tag="decoration"))
+#inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
+#inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
 
 chip_inventory : ChipInv = ChipInv()
 
@@ -68,6 +72,7 @@ if __name__ == '__main__':
     while True:
         CLOCK.tick(60)
         WIN.blit(current_room.bg_surf, (0, 0))
+        mouse_x, mouse_y = pg.mouse.get_pos()
         mouse_pos: Coord = Coord(current_room.num, pg.mouse.get_pos())
 
                     
@@ -156,6 +161,10 @@ if __name__ == '__main__':
                                         current_room = R2
                                     case 'R2_stairs':
                                         current_room = R3
+                                    case 'R2_stairs_down':
+                                        current_room = R1
+                                    case 'R1_stairs_down':
+                                        current_room = R0
                                     case 'bot_placeable':
                                         hivemind.free_last_bot()
                                         moulaga += money_per_robot
@@ -183,15 +192,20 @@ if __name__ == '__main__':
         #placeable iter
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
-                color = (150, 150, 255) if gui_state != State.DESTRUCTION else (255, 0, 0)
-                placeable.draw_outline(WIN, color)
-            
-                if type(placeable) == subplaceable.Door and not placeable.is_open:
-                    placeable.is_open = True
-
-            elif type(placeable) == subplaceable.Door and placeable.is_open:
-                placeable.is_open = False
+                color = (150, 150, 255) if not gui_state == State.DESTRUCTION else (255, 0, 0)
                 
+                if type(placeable) in [subplaceable.Door_up, subplaceable.Door_down] and placeable.anim_close.is_finished():
+                    placeable.anim = placeable.anim_open
+                    placeable.anim_close.reset_frame()
+
+                placeable.draw_outline(WIN, color)
+
+
+            elif type(placeable) in [subplaceable.Door_up, subplaceable.Door_down] and placeable.anim_open.is_finished():
+                placeable.anim = placeable.anim_close
+                placeable.anim_open.reset_frame()
+
+
         # fps counter / state debug
         WIN.blit(Popup(
             f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy} / $ : {moulaga}').text_surf, (0, 0))
@@ -199,9 +213,12 @@ if __name__ == '__main__':
         # use blits because more performant
         current_room.draw_placed(WIN)
 
+
         match gui_state:
             case State.BUILD:
-                build_mode.show_hologram(WIN, mouse_pos)
+                mouse_pos_coord = Coord(current_room.num, (mouse_x - build_mode.get_width() // 2, mouse_y - build_mode.get_height() // 2))
+                build_mode.show_hologram(WIN, mouse_pos_coord)
+
                 build_mode.show_room_holograms(WIN, current_room)
 
             case w if w in (State.PAINTING, State.PLACING_CHIP):
