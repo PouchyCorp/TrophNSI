@@ -29,13 +29,14 @@ class Placeable:
 
         self.rect : Rect = self.surf.get_rect()
         self.rect.x, self.rect.y = self.coord.xy
+        self.temp_rect = self.rect.copy()
         
         #snap to x axis
         self.y_constraint = y_constraint
         self.placed = False
 
     def get_blit_args(self):
-        return self.temp_surf, self.rect
+        return self.temp_surf, self.temp_rect
 
     def draw_outline(self, win : Surface, color : tuple):
         win.blit(get_outline(self.surf, color), (self.rect.x-3, self.rect.y-3))
@@ -63,11 +64,13 @@ class Placeable:
 
         if is_hovered:
             self.temp_surf = get_outline(self.surf, color)
-            self.temp_surf.blit(self.surf, (self.rect.x+3, self.rect.y+3))
-            self.temp_surf.scroll(-3,-3)
+            self.temp_surf.blit(self.surf, (3,3))
+            self.temp_rect = self.rect.copy()
+            self.temp_rect.x -= 3
+            self.temp_rect.y -= 3
         else:
-            self.temp_surf = self.surf
-            
+            self.temp_surf = self.surf.copy()
+            self.temp_rect = self.rect.copy()
 
 
 

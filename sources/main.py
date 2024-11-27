@@ -23,7 +23,7 @@ from objects.timermanager import _Timer_manager
 import objects.sprite as sprite
 
 
-def render_popups():
+def render_popups():  
     global popups
     for popup in popups:
         if popup.lifetime <= 0:
