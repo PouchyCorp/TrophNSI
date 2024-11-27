@@ -13,10 +13,10 @@ from objects.anim import Animation
 from objects.chip import Chip
 from objects.canva import Canva
 from objects.bot import Hivemind
-from objects.build_mode import BuildMode, DestructionMode
+from objects.buildmode import BuildMode, DestructionMode
 from objects.coord import Coord
 from objects.inventory import Inventory
-from sources.objects.chipInv import ChipInv
+from objects.chipInv import ChipInv
 from objects.popup import Popup
 from room_config import R0, R1, R2, R3, ROOMS
 from objects.timermanager import _Timer_manager
@@ -188,20 +188,15 @@ if __name__ == '__main__':
 
         #placeable iter
         for placeable in current_room.placed:
+            #if hovered
             if placeable.rect.collidepoint(mouse_pos.xy):
                 color = (150, 150, 255) if gui_state != State.DESTRUCTION else (255, 0, 0)
+                placeable.update_sprite(True, color)
+            
+            #if not hovered
+            else:
+                placeable.update_sprite(False)
                 
-                if type(placeable) in [subplaceable.Door_up, subplaceable.Door_down] and placeable.anim_close.is_finished():
-                    placeable.anim = placeable.anim_open
-                    placeable.anim_close.reset_frame()
-
-                placeable.draw_outline(WIN, color)
-
-
-            elif type(placeable) in [subplaceable.Door_up, subplaceable.Door_down] and placeable.anim_open.is_finished():
-                placeable.anim = placeable.anim_close
-                placeable.anim_open.reset_frame()
-
 
         # fps counter / state debug
         WIN.blit(Popup(

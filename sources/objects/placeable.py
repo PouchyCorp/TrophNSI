@@ -22,6 +22,7 @@ class Placeable:
         else:
             self.surf = surf
         self.anim = anim
+        self.temp_surf = self.surf.copy()
 
         self.tag = tag
 
@@ -34,12 +35,7 @@ class Placeable:
         self.placed = False
 
     def get_blit_args(self):
-        if self.anim:
-            self.surf = self.anim.get_frame()
-        return self.surf, self.rect
-
-    def reset_anim(self):
-        self.surf = self.anim.reset_frame()
+        return self.temp_surf, self.rect
 
     def draw_outline(self, win : Surface, color : tuple):
         win.blit(get_outline(self.surf, color), (self.rect.x-3, self.rect.y-3))
@@ -60,6 +56,18 @@ class Placeable:
     def interaction(self, args):
         #doesn't do anything (used for subclasses)
         pass
+
+    def update_sprite(self, is_hovered : bool, color : tuple = (150, 150, 255)):
+        if self.anim:
+            self.surf = self.anim.get_frame()
+
+        if is_hovered:
+            self.temp_surf = get_outline(self.surf, color)
+            self.temp_surf.blit(self.surf, (self.rect.x+3, self.rect.y+3))
+            self.temp_surf.scroll(-3,-3)
+        else:
+            self.temp_surf = self.surf
+            
 
 
 
