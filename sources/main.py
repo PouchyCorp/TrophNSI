@@ -65,6 +65,11 @@ test_painting = Canva()
 moulaga = 0
 money_per_robot = 10
 
+def go_up_one_floor():
+    current_room = ROOMS[current_room.num+1]
+def go_down_one_floor():
+    current_room = ROOMS[current_room.num-1]
+
 if __name__ == '__main__':
     while True:
         CLOCK.tick(60)
@@ -103,13 +108,13 @@ if __name__ == '__main__':
                             if current_room == R0:
                                 gui_state = State.INTERACTION
 
-                            current_room = ROOMS[current_room.num+1]
+                            go_up_one_floor()
                         else:
                             popups.append(Popup("you can't go up anymore"))
 
                     case pg.K_DOWN:
                         if current_room.num-1 >= 0: 
-                            current_room = ROOMS[current_room.num-1]
+                            go_down_one_floor()
 
                             # enter painting mode
                             if current_room == R0:
@@ -153,16 +158,12 @@ if __name__ == '__main__':
                     case State.INTERACTION:
                         for placeable in current_room.placed:
                             if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
-                                match placeable.name:
-                                    case 'R1_stairs':
-                                        current_room = R2
-                                    case 'R2_stairs':
+                                match type(placeable):
+                                    case subplaceable.DoorDown:
+                                        placeable.interaction()
+                                    case subplaceable.DoorUp:
                                         current_room = R3
-                                    case 'R2_stairs_down':
-                                        current_room = R1
-                                    case 'R1_stairs_down':
-                                        current_room = R0
-                                    case 'bot_placeable':
+                                    case subplaceable.BotPlaceable:
                                         hivemind.free_last_bot()
                                         moulaga += money_per_robot
                                         current_room.placed.remove(placeable)

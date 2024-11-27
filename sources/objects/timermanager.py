@@ -5,7 +5,7 @@ class _Timer_manager:
     def __init__(self):
         self.timers : list[dict] = []
     
-    def create_timer(self,duration : int, func, repeat : bool = False, arguments : tuple = ()):
+    def create_timer(self,duration : float, func, repeat : bool = False, arguments : tuple = ()):
          """duration in miliseconds"""
          self.timers.append({"creation_time" : time(), "duration" : duration, "func" : func, "repeat" : repeat, "args" : arguments})
 

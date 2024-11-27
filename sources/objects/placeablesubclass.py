@@ -2,6 +2,8 @@ from placeable import Placeable
 import sprite
 from anim import Animation
 from typing import Optional
+from timermanager import _Timer_manager
+from room import Room
 
 class DoorUp(Placeable):
     def __init__(self, name, coord, surf, tag = None):
@@ -26,6 +28,12 @@ class DoorUp(Placeable):
         
         super().update_sprite(is_hovered, color)
 
+    def interaction(self, args):
+        TIMER : _Timer_manager = args[0]
+        rooms : list[Room] = args[1]
+        TIMER.create_timer(0.5, )
+        
+
 class DoorDown(Placeable):
     def __init__(self, name, coord, surf, tag = None):
         super().__init__(name, coord, surf, tag)
@@ -42,8 +50,11 @@ class DoorDown(Placeable):
             self.anim = self.anim_open #to replace with only the blinking
             self.anim_close.reset_frame()
 
-        elif self.anim_open.is_finished():
+        elif not is_hovered and self.anim_open.is_finished():
             self.anim = self.anim_close
             self.anim_open.reset_frame()
-        
+    
         super().update_sprite(is_hovered, color)
+
+class BotPlaceable(Placeable):
+    pass

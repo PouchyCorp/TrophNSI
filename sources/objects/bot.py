@@ -9,7 +9,7 @@ import sprite
 from timermanager import _Timer_manager
 from objects.anim import Spritesheet, Animation
 
-class Bot_states(Enum):
+class BotStates(Enum):
     IDLE = auto()
     WALK = auto()
     WATCH = auto()
@@ -33,11 +33,11 @@ class Hivemind:
 
     def add_bot(self):
         #checks if last place is empty
-        if not type(self.inline_bots[0]) == Bot:
+        if type(self.inline_bots[0]) is not Bot:
             self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,700+randint(-50,50))))
     
     def free_last_bot(self):
-        if type(self.inline_bots[-1]) == Bot:
+        if type(self.inline_bots[-1]) is Bot:
             self.inline_bots[-1].is_inline = False
             self.inline_bots[-1].target_coord = Coord(2,(0,0))
             self.liberated_bots.append(self.inline_bots[-1])
@@ -45,7 +45,7 @@ class Hivemind:
         
     
     def update_bots_ai(self, rooms, TIMER):
-        for bot in [bot for bot in self.inline_bots if type(bot) == Bot]:
+        for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
             bot.logic(rooms, TIMER)
         
         new_liberated_bots = self.liberated_bots.copy()
@@ -60,14 +60,14 @@ class Hivemind:
     def order_inline_bots(self):
         #print(self.bots)
         for i in range(len(self.inline_bots)-1):
-            if type(self.inline_bots[i]) == Bot and type(self.inline_bots[i+1]) != Bot:
+            if type(self.inline_bots[i]) is Bot and type(self.inline_bots[i+1]) is not Bot:
                 #print(f"moving bot to {self.x_lookup_table[i+1]}")
                 self.inline_bots[i].target_coord.x = self.x_lookup_table[i+1]+randint(-30,30)
                 self.inline_bots[i], self.inline_bots[i+1] = self.inline_bots[i+1], self.inline_bots[i]
 
     def draw(self, win : Surface, current_room_num : int): 
         #list of background bots
-        list_of_bots = [bot for bot in self.inline_bots if type(bot) == Bot] + self.liberated_bots
+        list_of_bots = [bot for bot in self.inline_bots if type(bot) is Bot] + self.liberated_bots
         sorted_bots = self.sorted_bot_by_y(list_of_bots)
 
         #draw bots in background first
@@ -88,8 +88,8 @@ class Hivemind:
         return sorted_bots
     
     def check_last_bot_idle(self) -> bool:
-        if type(self.inline_bots[-1]) == Bot:
-            if self.inline_bots[-1].state is Bot_states.IDLE:
+        if type(self.inline_bots[-1]) is Bot:
+            if self.inline_bots[-1].state is BotStates.IDLE:
                 return True
         return False
 
@@ -98,7 +98,7 @@ class Hivemind:
         #"not R1.name_exists('bot_placeable')" checks if bot placeable already exists
         if self.check_last_bot_idle() and not R1.name_exists_in_placed('bot_placeable'):
             last_bot : Bot = self.inline_bots[-1]
-            assert type(last_bot) == Bot
+            assert type(last_bot) is Bot
 
             #create a clickable to let robots enter
             bot_placeable = Placeable('bot_placeable', last_bot.coord, last_bot.surf)
@@ -115,7 +115,7 @@ class Bot:
 
         self.is_inline = True
         self.is_leaving = False
-        self.state = Bot_states.IDLE
+        self.state = BotStates.IDLE
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
         self.surf = choice([sprite.P4,sprite.P5]).copy()
@@ -124,7 +124,7 @@ class Bot:
         anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
         self.anim_idle = anim
 
-        self.door_x = 1716
+        self.door_x = 1998
         self.exit_coords = Coord(1, (0,0))
 
     @property
@@ -143,7 +143,7 @@ class Bot:
         '''finite state machine (FSM) implementation for bot ai'''
 
         match self.state:
-            case Bot_states.IDLE:
+            case BotStates.IDLE:
                 draw.rect(self.surf, "red", (0,0,10,10))
                 
 
@@ -164,28 +164,26 @@ class Bot:
                         self.target_coord = self.exit_coords
                         
                 if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
-                    self.state = Bot_states.WALK
-                    #print(f'walking to x = {self.target_coord}')
-                    #print(f"changed state to {self.state}")
+                    self.state = BotStates.WALK
 
-            case Bot_states.WALK:
+            case BotStates.WALK:
                 draw.rect(self.surf, "blue", (0,0,10,10))
 
                 if self.coord.bot_movement_compare(self.target_coord):
                     if self.is_inline:
-                        self.state = Bot_states.IDLE
+                        self.state = BotStates.IDLE
                     else:
-                        self.state = Bot_states.WATCH
-                        TIMER.create_timer(5, self.set_attribute, False, arguments=('state', Bot_states.IDLE))
+                        self.state = BotStates.WATCH
+                        TIMER.create_timer(5, self.set_attribute, False, arguments=('state', BotStates.IDLE))
 
                 self.move_to_target_coord()
                 self.surf = self.anim_idle.get_frame()
-            case Bot_states.WATCH:
+            case BotStates.WATCH:
                 draw.rect(self.surf, "green", (0,0,10,10))
                 
 
             case _:
-                raise Exception('bot should not have this state')
+                raise ValueError
 
     def get_potential_destinations(self, rooms : list[Room]) -> list[tuple[Coord, str]]:
         """returns a list of potential destinations for the robot according to some criteria"""
@@ -234,9 +232,6 @@ class Bot:
 
         else:
             self.__move_cntr += 1
-            
-    def react():
-        pass
 
     def draw(self, win : Surface):
         win.blit(self.surf, self.coord.xy)
