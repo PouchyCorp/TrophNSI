@@ -54,9 +54,6 @@ anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
 inventory.inv.append(Placeable('6545dqwz31',Coord(1,(121,50)), sprite.PROP_STATUE, tag= "decoration",y_constraint= 620))
-#inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim_, tag="decoration"))
-#inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
-#inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
 
 chip_inventory : ChipInv = ChipInv()
 
@@ -192,7 +189,7 @@ if __name__ == '__main__':
         #placeable iter
         for placeable in current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.xy):
-                color = (150, 150, 255) if not gui_state == State.DESTRUCTION else (255, 0, 0)
+                color = (150, 150, 255) if not gui_state != State.DESTRUCTION else (255, 0, 0)
                 
                 if type(placeable) in [subplaceable.Door_up, subplaceable.Door_down] and placeable.anim_close.is_finished():
                     placeable.anim = placeable.anim_open
