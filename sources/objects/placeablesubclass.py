@@ -20,7 +20,7 @@ class DoorUp(Placeable):
             self.anim = self.anim_open #to replace with only the blinking
             self.anim_close.reset_frame()
 
-        elif self.anim_open.is_finished():
+        elif not is_hovered and self.anim_open.is_finished():
             self.anim = self.anim_close
             self.anim_open.reset_frame()
         
