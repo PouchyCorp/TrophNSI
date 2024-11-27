@@ -53,6 +53,7 @@ anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
 
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
+inventory.inv.append(Placeable('6545dqwz31',Coord(1,(121,50)), sprite.PROP_STATUE, tag= "decoration",y_constraint= 620))
 #inventory.inv.append(Placeable('6gqeeqd4231', Coord(1, (121, 50)), sprite.P3, anim=anim_, tag="decoration"))
 #inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
 #inventory.inv.append(Placeable('654564231',Coord(1,(121,50)), sprite.P3))
@@ -74,6 +75,7 @@ if __name__ == '__main__':
     while True:
         CLOCK.tick(60)
         WIN.blit(current_room.bg_surf, (0, 0))
+        mouse_x, mouse_y = pg.mouse.get_pos()
         mouse_pos: Coord = Coord(current_room.num, pg.mouse.get_pos())
 
                     
@@ -162,6 +164,10 @@ if __name__ == '__main__':
                                         current_room = R2
                                     case 'R2_stairs':
                                         current_room = R3
+                                    case 'R2_stairs_down':
+                                        current_room = R1
+                                    case 'R1_stairs_down':
+                                        current_room = R0
                                     case 'bot_placeable':
                                         hivemind.free_last_bot()
                                         moulaga += money_per_robot
@@ -198,7 +204,7 @@ if __name__ == '__main__':
                     placeable.anim = placeable.anim_open
                     placeable.anim_close.reset_frame()
 
-                #placeable.draw_outline(WIN, color)
+                placeable.draw_outline(WIN, color)
 
 
             elif type(placeable) in [subplaceable.Door_up, subplaceable.Door_down] and placeable.anim_open.is_finished():
@@ -213,9 +219,12 @@ if __name__ == '__main__':
         # use blits because more performant
         current_room.draw_placed(WIN)
 
+
         match gui_state:
             case State.BUILD:
-                build_mode.show_hologram(WIN, mouse_pos)
+                mouse_pos_coord = Coord(current_room.num, (mouse_x - build_mode.get_width() // 2, mouse_y - build_mode.get_height() // 2))
+                build_mode.show_hologram(WIN, mouse_pos_coord)
+
                 build_mode.show_room_holograms(WIN, current_room)
 
             case w if w in (State.PAINTING, State.PLACING_CHIP):

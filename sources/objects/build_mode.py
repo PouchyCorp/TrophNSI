@@ -44,7 +44,17 @@ class Build_mode():
         hologram.fill((0,0,200,0),special_flags=BLEND_RGBA_ADD)
 
         win.blits([(hologram_rect_surf, self.ghost_rect.topleft), (hologram, self.ghost_rect.topleft)])
-    
+
+    def get_width(self) -> int:
+
+        if self.selected_placeable:
+            return self.selected_placeable.rect.width
+        
+    def get_height(self) -> int:
+
+        if self.selected_placeable:
+            return self.selected_placeable.rect.height
+        
     def can_place(self, room : Room) -> bool:
         """check if the placeable can be placed without colliding with other objects"""
         room_rects = [placeable.rect for placeable in room.placed]

@@ -97,6 +97,7 @@ SPRITESHEET_HAUT = anim.Spritesheet(load_image("data/prt_haut.png"), (42*6, 29*6
 
 SPRITESHEET_BAS = anim.Spritesheet(load_image("data/prt_bas.png"), (42*6, 29*6))
 
+PROP_STATUE = load_image('data/props_statue.png')
 
 SPRITESHEET_HAUT_1 = anim.Spritesheet(transform.flip(load_image("data/prt_haut.png"),False, True), (42*6, 29*6))
 
