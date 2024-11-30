@@ -56,9 +56,7 @@ class Hivemind:
         #random chance to trigger
         if not self.react_bot_pointer and self.liberated_bots:
             self.react_bot_pointer = choice(self.liberated_bots)
-            self.react_bot_placeable = subplaceable.BotPlaceable('react_placeable', self.react_bot_pointer.coord, self.react_bot_pointer.surf)
-            current_room.placed.append(self.react_bot_placeable)
-            current_room.blacklist.append(self.react_bot_placeable)
+            self.create_react_placeable(current_room)
         
         new_liberated_bots = self.liberated_bots.copy()
         for bot in self.liberated_bots:
@@ -71,6 +69,9 @@ class Hivemind:
         if self.react_bot_pointer and self.react_bot_placeable:
             self.react_bot_placeable.rect.topleft = self.react_bot_pointer.coord.xy
             self.react_bot_placeable.surf = self.react_bot_pointer.surf
+        
+        if self.react_bot_pointer:
+            self.create_react_placeable(current_room)
 
     def order_inline_bots(self):
         #print(self.bots)
@@ -127,11 +128,18 @@ class Hivemind:
             current_room.blacklist.remove(self.bot_placeable_pointer)
             self.bot_placeable_pointer = None
 
-    def launch_react(self, current_room : Room):
+    def remove_react(self, current_room : Room):
         if self.react_bot_placeable and self.react_bot_placeable in current_room.placed:
             current_room.placed.remove(self.react_bot_placeable)
             current_room.blacklist.remove(self.react_bot_placeable)
             self.react_bot_placeable = None
+    
+    def create_react_placeable(self,current_room : Room):
+        if self.react_bot_pointer:
+            self.remove_react(current_room)
+            self.react_bot_placeable = subplaceable.BotPlaceable('react_placeable', self.react_bot_pointer.coord, self.react_bot_pointer.surf)
+            current_room.placed.append(self.react_bot_placeable)
+            current_room.blacklist.append(self.react_bot_placeable)
         
 
 class Bot:

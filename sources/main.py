@@ -176,7 +176,7 @@ if __name__ == '__main__':
                                             
                                         elif placeable.name == 'react_placeable':
                                             popups.append(Popup("dialogue"))
-                                            hivemind.launch_react(current_room)
+                                            hivemind.remove_react(current_room)
                                     case _:
                                         popups.append(
                                             Popup('bip boup erreur erreur'))
