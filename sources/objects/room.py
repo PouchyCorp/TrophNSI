@@ -22,4 +22,6 @@ class Room:
     def draw_placed(self, win):
         #map(self.check_coords, self.placed)
         win.blits([placeable.get_blit_args() for placeable in self.placed])
-        
+        for placeable in self.placed:
+            if placeable.temporary:
+                self.placed.remove(placeable)

@@ -10,7 +10,7 @@ from anim import Animation
 from sprite import get_outline
 
 class Placeable:
-    def __init__(self, name : str, coord : Coord, surf : Surface, tag : str | None = None, anim : Animation | None = None, y_constraint : int | None = None) -> None:
+    def __init__(self, name : str, coord : Coord, surf : Surface, tag : str | None = None, anim : Animation | None = None, y_constraint : int | None = None, temporary : bool = False) -> None:
         self.name = name
         self.id = randint(0,10000000)
         self.coord = coord
@@ -34,6 +34,8 @@ class Placeable:
         #snap to x axis
         self.y_constraint = y_constraint
         self.placed = False
+
+        self.temporary = temporary
 
     def get_blit_args(self):
         return self.temp_surf, self.temp_rect
