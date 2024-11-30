@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 from enum import Enum, auto
+import math
 
 pg.init()
 
@@ -21,7 +22,7 @@ from objects.popup import Popup
 from room_config import R0, R1, R2, R3, ROOMS
 from objects.timermanager import TimerManager
 import objects.sprite as sprite
-
+import time
 
 def render_popups():  
     global popups
@@ -61,9 +62,27 @@ build_mode: BuildMode = BuildMode()
 destruction_mode: DestructionMode = DestructionMode()
 
 test_painting = Canva()
+filtre =pg.Surface((1920,1080))
+filtre.fill((0, 0, 0))
+filtre.set_alpha(0)
 
 moulaga = 0
 money_per_robot = 10
+
+def fondu(surf,dure):
+    debut = time.time()
+    while (time.time() - debut) < dure:
+        elapsed_time = time.time() - debut  # Temps écoulé
+        
+        # Phase aller (transparent -> noir)
+        if elapsed_time <= dure / 2:
+            alpha = int((elapsed_time / (dure / 2)) * 255)
+        # Phase retour (noir -> transparent)
+        else:
+            alpha = int(((dure - elapsed_time) / (dure / 2)) * 255)
+        print("eeee")
+        surf.set_alpha(alpha)
+        
 
 def go_up_one_floor():
     global current_room, ROOMS
@@ -164,11 +183,13 @@ if __name__ == '__main__':
                             if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
                                 match type(placeable):
                                     case subplaceable.DoorDown:
+                                       # fondu(filtre,1000)
                                         TIMER.create_timer(1, go_down_one_floor)
                                         placeable.interaction(TIMER)
                                     case subplaceable.DoorUp:
                                         TIMER.create_timer(1, go_up_one_floor)
                                         placeable.interaction(TIMER)
+
                                     case subplaceable.BotPlaceable:
                                         hivemind.free_last_bot(current_room)
                                         moulaga += money_per_robot
@@ -209,7 +230,7 @@ if __name__ == '__main__':
         inventory.draw(WIN, mouse_pos, gui_state == State.INVENTORY)
         # use blits because more performant
         current_room.draw_placed(WIN)
-
+        WIN.blit(filtre,(0,0))
 
         match gui_state:
             case State.BUILD:
