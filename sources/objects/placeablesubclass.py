@@ -51,7 +51,7 @@ class DoorDown(Placeable):
         super().__init__(name, coord, surf, tag)
         self.anim_close = Animation(sprite.SPRITESHEET_BAS_FLIP, 0, 9, 4, False)
         self.anim_open = Animation(sprite.SPRITESHEET_HAUT_FLIP, 0, 7, 4, False)
-        self.anim_blink = Animation(sprite.SPRITESHEET_DOOR_BLINK_FLIP, 0, 11)
+        self.anim_blink = Animation(sprite.SPRITESHEET_DOOR_BLINK_FLIP, 0, 10)
         self.anim = self.anim_close
 
         _rect = self.anim.get_frame().get_rect()
