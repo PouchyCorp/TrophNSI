@@ -1,7 +1,6 @@
 from enum import Enum, auto
 from coord import Coord
-from pygame import Surface, draw
-from placeable import Placeable
+from pygame import Surface, draw, transform
 from random import choice, randint
 from room import Room
 from room_config import R1
@@ -110,7 +109,7 @@ class Hivemind:
             R1.blacklist.append(bot_placeable)
     
     def remove_last_bot_clickable(self, current_room : Room):
-        if self.bot_placeable_pointer:
+        if self.bot_placeable_pointer and self.bot_placeable_pointer in current_room.placed:
             current_room.placed.remove(self.bot_placeable_pointer)
             current_room.blacklist.remove(self.bot_placeable_pointer)
             self.bot_placeable_pointer = None
@@ -129,13 +128,14 @@ class Bot:
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
         self.surf = choice([sprite.P4,sprite.P5]).copy()
-        
+        self.center_offset = self.surf.get_rect().width//2
         
         anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
         self.anim_idle = anim
 
         self.door_x = 1998
         self.exit_coords = Coord(1, (0,0))
+
 
     @property
     def target_coord(self):
@@ -166,6 +166,7 @@ class Bot:
                     if potential_dests:
                         destination = choice(potential_dests)
                         self.target_coord = destination[0]
+                        self.target_coord.x += randint(-28,28)
                         self.visited_placeable_id.append(destination[1])
                     
                     else:
