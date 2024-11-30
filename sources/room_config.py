@@ -2,8 +2,7 @@ from objects.coord import Coord
 from objects.placeable import Placeable
 from objects.room import Room
 import objects.sprite as sprite
-from pygame import Surface,image,transform
-from objects.anim import Spritesheet,Animation
+from pygame import Surface
 import objects.placeablesubclass as subplaceable
 
 stairs_up = subplaceable.DoorUp('R1_stairs', Coord(1,(1594,516)), Surface((335,220)))
@@ -34,5 +33,8 @@ R2.placed += [stairs_up , stairs_down]
 R3 = Room(3,sprite.BG4)
 R3.placed += [stairs_up , stairs_down]
 
+R4 = Room(3, sprite.BG2)
 
-ROOMS : list[Room] = [R0, R1, R2, R3]
+
+
+ROOMS : list[Room] = [R0, R1, R2, R3, R4]

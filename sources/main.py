@@ -129,7 +129,7 @@ if __name__ == '__main__':
                         hivemind.add_bot()
 
                     case pg.K_n:
-                        hivemind.free_last_bot()
+                        hivemind.free_last_bot(current_room)
 
             if event.type == pg.MOUSEBUTTONUP:
 
@@ -170,10 +170,8 @@ if __name__ == '__main__':
                                         TIMER.create_timer(1, go_up_one_floor)
                                         placeable.interaction(TIMER)
                                     case subplaceable.BotPlaceable:
-                                        hivemind.free_last_bot()
+                                        hivemind.free_last_bot(current_room)
                                         moulaga += money_per_robot
-                                        current_room.placed.remove(placeable)
-                                        current_room.blacklist.remove(placeable)
                                     case _:
                                         popups.append(
                                             Popup('bip boup erreur erreur'))

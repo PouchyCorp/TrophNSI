@@ -11,6 +11,11 @@ class DoorUp(Placeable):
         self.anim_open = Animation(sprite.SPRITESHEET_HAUT, 0, 17, 4, False)
         self.anim_blink = Animation(sprite.SPRITESHEET_DOOR_BLINK, 0, 11)
         self.anim = self.anim_close
+
+        _rect = self.anim.get_frame().get_rect()
+        self.rect.width, self.rect.height = _rect.width, _rect.height
+        self.anim.reset_frame()
+
         self.door_down : Optional[DoorDown] = None
     
     def pair_door_down(self, door_down):
@@ -48,6 +53,10 @@ class DoorDown(Placeable):
         self.anim_open = Animation(sprite.SPRITESHEET_HAUT_FLIP, 0, 7, 4, False)
         self.anim_blink = Animation(sprite.SPRITESHEET_DOOR_BLINK_FLIP, 0, 11)
         self.anim = self.anim_close
+
+        _rect = self.anim.get_frame().get_rect()
+        self.rect.width, self.rect.height = _rect.width, _rect.height
+        
         self.door_up : Optional[DoorUp] = None
 
     

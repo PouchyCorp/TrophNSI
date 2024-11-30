@@ -7,7 +7,8 @@ from room import Room
 from room_config import R1
 import sprite
 from timermanager import TimerManager
-from objects.anim import Spritesheet, Animation
+from objects.anim import Animation
+import objects.placeablesubclass as subplaceable
 
 class BotStates(Enum):
     IDLE = auto()
@@ -26,6 +27,7 @@ class Hivemind:
         self.line_start_x = line_start
         self.line_stop_x = line_stop
         
+        self.bot_placeable_pointer : subplaceable.BotPlaceable = None
         assert self.line_stop_x > self.line_start_x, "stop before start"
 
         step = (self.line_stop_x - self.line_start_x) // len(self.inline_bots)
@@ -36,12 +38,13 @@ class Hivemind:
         if type(self.inline_bots[0]) is not Bot:
             self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,700+randint(-50,50))))
     
-    def free_last_bot(self):
+    def free_last_bot(self, current_room):
         if type(self.inline_bots[-1]) is Bot:
             self.inline_bots[-1].is_inline = False
             self.inline_bots[-1].target_coord = Coord(2,(0,0))
             self.liberated_bots.append(self.inline_bots[-1])
             self.inline_bots[-1] = 'empty'
+            self.remove_last_bot_clickable(current_room)
         
     
     def update_bots_ai(self, rooms, TIMER):
@@ -101,9 +104,16 @@ class Hivemind:
             assert type(last_bot) is Bot
 
             #create a clickable to let robots enter
-            bot_placeable = Placeable('bot_placeable', last_bot.coord, last_bot.surf)
+            bot_placeable = subplaceable.BotPlaceable('bot_placeable', last_bot.coord, last_bot.surf)
+            self.bot_placeable_pointer = bot_placeable
             R1.placed.append(bot_placeable)
             R1.blacklist.append(bot_placeable)
+    
+    def remove_last_bot_clickable(self, current_room : Room):
+        if self.bot_placeable_pointer:
+            current_room.placed.remove(self.bot_placeable_pointer)
+            current_room.blacklist.remove(self.bot_placeable_pointer)
+            self.bot_placeable_pointer = None
         
 
 class Bot:
