@@ -1,15 +1,16 @@
 from random import *
+from bot import Hivemind
 import pygame 
-
+screen = pygame.display.set_mode((1920, 1080))
 pygame.init()
 class Dialogue():
-    def __init__(self, fichier, ):
+    def __init__(self, fichier):
         self.fichier=fichier
         #self.screen=screen    screen
         self.avatar= pygame.image.load('data\image_dialogue.png').convert_alpha()
-        self.format = pygame.font.SysFont("Arial", 40)
         self.texte=[]
         self.number=None
+        self.format = pygame.font.SysFont("Arial", 40)
 
     def load_save(self):
         self.texte=[]  #debogage
@@ -27,7 +28,6 @@ class Dialogue():
         txtsurf = self.format.render(self.texte[a], True, (255,255,255))
         self.screen.blit(self.avatar, (200, 600)) #a recadrer
         self.screen.blit(txtsurf,(500, 900)) #a recadrer
-        
         pygame.display.flip()
     
     def random_dialogue(self):
