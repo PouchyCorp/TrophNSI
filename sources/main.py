@@ -164,10 +164,10 @@ if __name__ == '__main__':
                             if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
                                 match type(placeable):
                                     case subplaceable.DoorDown:
-                                        TIMER.create_timer(3, go_down_one_floor)
+                                        TIMER.create_timer(1, go_down_one_floor)
                                         placeable.interaction(TIMER)
                                     case subplaceable.DoorUp:
-                                        TIMER.create_timer(3, go_up_one_floor)
+                                        TIMER.create_timer(1, go_up_one_floor)
                                         placeable.interaction(TIMER)
                                     case subplaceable.BotPlaceable:
                                         hivemind.free_last_bot()
