@@ -170,13 +170,8 @@ if __name__ == '__main__':
                                         TIMER.create_timer(1, go_up_one_floor)
                                         placeable.interaction(TIMER)
                                     case subplaceable.BotPlaceable:
-                                        if placeable.name == 'bot_placeable':
-                                            hivemind.free_last_bot(current_room)
-                                            moulaga += money_per_robot
-                                            
-                                        elif placeable.name == 'react_placeable':
-                                            popups.append(Popup("dialogue"))
-                                            hivemind.remove_react(current_room)
+                                        hivemind.free_last_bot(current_room)
+                                        moulaga += money_per_robot
                                     case _:
                                         popups.append(
                                             Popup('bip boup erreur erreur'))
@@ -231,7 +226,7 @@ if __name__ == '__main__':
                 hivemind.create_last_bot_clickable()
 
         hivemind.order_inline_bots()
-        hivemind.update_bots_ai(ROOMS, TIMER, current_room)
+        hivemind.update_bots_ai(ROOMS, TIMER)
         hivemind.draw(WIN, current_room_num=current_room.num)
 
 
