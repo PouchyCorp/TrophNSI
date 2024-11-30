@@ -27,6 +27,8 @@ class Hivemind:
         self.line_stop_x = line_stop
         
         self.bot_placeable_pointer : subplaceable.BotPlaceable = None
+        self.react_bot_pointer : Bot = None
+
         assert self.line_stop_x > self.line_start_x, "stop before start"
 
         step = (self.line_stop_x - self.line_start_x) // len(self.inline_bots)
@@ -48,11 +50,14 @@ class Hivemind:
     
     def update_bots_ai(self, rooms, TIMER):
         for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
-            bot.logic(rooms, TIMER)
+            bot.logic(rooms, TIMER, self)
         
+        if not self.react_bot_pointer and self.liberated_bots:
+            self.react_bot_pointer = choice(self.liberated_bots)
+
         new_liberated_bots = self.liberated_bots.copy()
         for bot in self.liberated_bots:
-            bot.logic(rooms, TIMER)
+            bot.logic(rooms, TIMER, self)
             #if bot not leaving and on exit, don't remove it
             if bot.is_leaving and bot.coord.bot_movement_compare(bot.exit_coords):
                 new_liberated_bots.remove(bot)
@@ -136,6 +141,8 @@ class Bot:
         self.door_x = 1998
         self.exit_coords = Coord(1, (0,0))
 
+        self.placeable : subplaceable.BotPlaceable = None
+
 
     @property
     def target_coord(self):
@@ -149,7 +156,7 @@ class Bot:
         #makes sure that target coord is reachable
         self.__target_coord.x -= self.__target_coord.x%6
 
-    def logic(self, rooms : list[Room], TIMER : TimerManager):
+    def logic(self, rooms : list[Room], TIMER : TimerManager, hivemind : Hivemind):
         '''finite state machine (FSM) implementation for bot ai'''
 
         match self.state:
@@ -191,11 +198,30 @@ class Bot:
                 self.surf = self.anim_idle.get_frame()
             case BotStates.WATCH:
                 draw.rect(self.surf, "green", (0,0,10,10))
-                
-
+            
             case _:
                 raise ValueError
 
+        #checks if need to react
+        self.react_logic(rooms, hivemind)
+
+    def react_logic(self, rooms, hivemind):
+        if self is hivemind.react_bot_pointer and not self.is_leaving:
+            if not self.placeable:
+                self.placeable = subplaceable.BotPlaceable('react_placeable', self.coord.copy(), self.surf)
+                if self.placeable not in rooms[self.coord.room_num].placed:
+                    rooms[self.coord.room_num].placed.append(self.placeable)
+            else:
+                self.placeable.rect.topleft = self.coord.xy
+                self.placeable.surf = self.surf
+            
+            if self.placeable.coord.room_num != self.coord.room_num:
+                rooms[self.placeable.coord.room_num].placed.remove(self.placeable)
+                self.placeable.coord.room_num = self.coord.room_num
+                if self.placeable not in rooms[self.coord.room_num].placed:
+                    rooms[self.coord.room_num].placed.append(self.placeable)
+                
+                
     def get_potential_destinations(self, rooms : list[Room]) -> list[tuple[Coord, str]]:
         """returns a list of potential destinations for the robot according to some criteria"""
         potential_destinations = []
