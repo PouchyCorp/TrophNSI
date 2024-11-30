@@ -75,6 +75,10 @@ BG3 = load_image("data/R2.png")
 
 BG4 = load_image("data/R3.png")
 
+BG5 = load_image("data/R4.png")
+
+BG6 = load_image("data/R5.png")
+
 BG2 = load_image("data/bg_test_paint.png")
 
 P1 = load_image('data/p1.png')
