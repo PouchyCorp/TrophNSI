@@ -27,6 +27,9 @@ class Hivemind:
         self.line_stop_x = line_stop
         
         self.bot_placeable_pointer : subplaceable.BotPlaceable = None
+        self.react_bot_pointer : Bot = None
+        self.react_bot_placeable : subplaceable.BotPlaceable = None
+
         assert self.line_stop_x > self.line_start_x, "stop before start"
 
         step = (self.line_stop_x - self.line_start_x) // len(self.inline_bots)
@@ -46,9 +49,16 @@ class Hivemind:
             self.remove_last_bot_clickable(current_room)
         
     
-    def update_bots_ai(self, rooms, TIMER):
+    def update_bots_ai(self, rooms, TIMER, current_room : Room):
         for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
             bot.logic(rooms, TIMER)
+
+        #random chance to trigger
+        if not self.react_bot_pointer and self.liberated_bots:
+            self.react_bot_pointer = choice(self.liberated_bots)
+            self.react_bot_placeable = subplaceable.BotPlaceable('react_placeable', self.react_bot_pointer.coord, self.react_bot_pointer.surf)
+            current_room.placed.append(self.react_bot_placeable)
+            current_room.blacklist.append(self.react_bot_placeable)
         
         new_liberated_bots = self.liberated_bots.copy()
         for bot in self.liberated_bots:
@@ -57,7 +67,10 @@ class Hivemind:
             if bot.is_leaving and bot.coord.bot_movement_compare(bot.exit_coords):
                 new_liberated_bots.remove(bot)
         self.liberated_bots = new_liberated_bots
-            
+        
+        if self.react_bot_pointer and self.react_bot_placeable:
+            self.react_bot_placeable.rect.topleft = self.react_bot_pointer.coord.xy
+            self.react_bot_placeable.surf = self.react_bot_pointer.surf
 
     def order_inline_bots(self):
         #print(self.bots)
@@ -98,7 +111,7 @@ class Hivemind:
 
     def create_last_bot_clickable(self):
         #"not R1.name_exists('bot_placeable')" checks if bot placeable already exists
-        if self.check_last_bot_idle() and not R1.name_exists_in_placed('bot_placeable'):
+        if self.check_last_bot_idle() and not self.bot_placeable_pointer:
             last_bot : Bot = self.inline_bots[-1]
             assert type(last_bot) is Bot
 
@@ -113,6 +126,12 @@ class Hivemind:
             current_room.placed.remove(self.bot_placeable_pointer)
             current_room.blacklist.remove(self.bot_placeable_pointer)
             self.bot_placeable_pointer = None
+
+    def launch_react(self, current_room : Room):
+        if self.react_bot_placeable and self.react_bot_placeable in current_room.placed:
+            current_room.placed.remove(self.react_bot_placeable)
+            current_room.blacklist.remove(self.react_bot_placeable)
+            self.react_bot_placeable = None
         
 
 class Bot:
