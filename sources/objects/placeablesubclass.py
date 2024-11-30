@@ -9,7 +9,7 @@ class DoorUp(Placeable):
         super().__init__(name, coord, surf, tag)
         self.anim_close = Animation(sprite.SPRITESHEET_BAS, 0, 9, 4, False)
         self.anim_open = Animation(sprite.SPRITESHEET_HAUT, 0, 17, 4, False)
-        self.anim_blink = Animation(sprite.SPRITESHEET_DOOR_BLINK, 0, 11)
+        self.anim_blink = Animation(sprite.SPRITESHEET_DOOR_BLINK, 0, 10)
         self.anim = self.anim_close
 
         _rect = self.anim.get_frame().get_rect()
