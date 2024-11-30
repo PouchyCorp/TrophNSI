@@ -97,11 +97,15 @@ SPRITESHEET_HAUT = anim.Spritesheet(load_image("data/prt_haut.png"), (42*6, 29*6
 
 SPRITESHEET_BAS = anim.Spritesheet(load_image("data/prt_bas.png"), (42*6, 29*6))
 
+SPRITESHEET_DOOR_BLINK = anim.Spritesheet(load_image("data/prt_blink.png"), (42*6, 29*6))
+
 PROP_STATUE = load_image('data/props_statue.png')
 
-SPRITESHEET_HAUT_1 = anim.Spritesheet(transform.flip(load_image("data/prt_haut.png"),False, True), (42*6, 29*6))
+SPRITESHEET_HAUT_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_haut.png"),False, True), (42*6, 29*6))
 
-SPRITESHEET_BAS_1 = anim.Spritesheet(transform.flip(load_image("data/prt_bas.png"),False, True), (42*6, 29*6))
+SPRITESHEET_BAS_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_bas.png"),False, True), (42*6, 29*6))
+
+SPRITESHEET_DOOR_BLINK_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_blink.png"),False, True), (42*6, 29*6))
 
 PATTERN_1 = load_image('data/pattern_storage/pattern_test.png')
 

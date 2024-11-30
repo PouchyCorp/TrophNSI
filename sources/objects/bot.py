@@ -6,7 +6,7 @@ from random import choice, randint
 from room import Room
 from room_config import R1
 import sprite
-from timermanager import _Timer_manager
+from timermanager import TimerManager
 from objects.anim import Spritesheet, Animation
 
 class BotStates(Enum):
@@ -139,7 +139,7 @@ class Bot:
         #makes sure that target coord is reachable
         self.__target_coord.x -= self.__target_coord.x%6
 
-    def logic(self, rooms : list[Room], TIMER : _Timer_manager):
+    def logic(self, rooms : list[Room], TIMER : TimerManager):
         '''finite state machine (FSM) implementation for bot ai'''
 
         match self.state:

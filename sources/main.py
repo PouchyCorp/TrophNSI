@@ -19,7 +19,7 @@ from objects.inventory import Inventory
 from objects.chipInv import ChipInv
 from objects.popup import Popup
 from room_config import R0, R1, R2, R3, ROOMS
-from objects.timermanager import _Timer_manager
+from objects.timermanager import TimerManager
 import objects.sprite as sprite
 
 
@@ -41,7 +41,7 @@ class State(Enum):
     PAINTING = auto()
     PLACING_CHIP = auto()
 
-TIMER = _Timer_manager()
+TIMER = TimerManager()
 
 current_room = R1
 gui_state = State.INTERACTION
@@ -66,9 +66,13 @@ moulaga = 0
 money_per_robot = 10
 
 def go_up_one_floor():
+    global current_room, ROOMS
     current_room = ROOMS[current_room.num+1]
+
 def go_down_one_floor():
+    global current_room, ROOMS
     current_room = ROOMS[current_room.num-1]
+
 
 if __name__ == '__main__':
     while True:
@@ -160,9 +164,11 @@ if __name__ == '__main__':
                             if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
                                 match type(placeable):
                                     case subplaceable.DoorDown:
-                                        placeable.interaction()
+                                        TIMER.create_timer(3, go_down_one_floor)
+                                        placeable.interaction(TIMER)
                                     case subplaceable.DoorUp:
-                                        current_room = R3
+                                        TIMER.create_timer(3, go_up_one_floor)
+                                        placeable.interaction(TIMER)
                                     case subplaceable.BotPlaceable:
                                         hivemind.free_last_bot()
                                         moulaga += money_per_robot

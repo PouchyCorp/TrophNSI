@@ -71,6 +71,12 @@ class Placeable:
         else:
             self.temp_surf = self.surf.copy()
             self.temp_rect = self.rect.copy()
+    
+    def set_attribute(self, attribute_name, value):
+        if hasattr(self, attribute_name):  # check if the attribute exists
+            setattr(self, attribute_name, value)  # dynamically set the attribute
+        else:
+            raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attribute_name}'")
 
 
 
