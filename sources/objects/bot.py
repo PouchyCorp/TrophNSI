@@ -178,8 +178,6 @@ class Bot:
                     
                     else:
                         #no valid destination -> leave
-                        if self.placeable:
-                            del self.placeable
                         self.is_leaving = True
                         self.target_coord = self.exit_coords
                         
@@ -207,22 +205,38 @@ class Bot:
         #checks if need to react
         self.react_logic(rooms, hivemind)
 
-    def react_logic(self, rooms, hivemind):
+    def react_logic(self, rooms, hivemind : Hivemind):
         if self is hivemind.react_bot_pointer and not self.is_leaving:
-            if not self.placeable:
-                self.placeable = subplaceable.BotPlaceable('react_placeable', self.coord.copy(), self.surf)
-                if self.placeable not in rooms[self.coord.room_num].placed:
-                    rooms[self.coord.room_num].placed.append(self.placeable)
-            else:
-                self.placeable.rect.topleft = self.coord.xy
-                self.placeable.surf = self.surf
-            
-            if self.placeable.coord.room_num != self.coord.room_num:
-                rooms[self.placeable.coord.room_num].placed.remove(self.placeable)
-                self.placeable.coord.room_num = self.coord.room_num
-                if self.placeable not in rooms[self.coord.room_num].placed:
-                    rooms[self.coord.room_num].placed.append(self.placeable)
+                if self.is_leaving:
+                    self.remove_placeable(rooms)
+                    return
+
+                if not self.placeable:
+                    self.add_placeable(rooms)
+                else:
+                    self.update_placeable(rooms)
+
+    def update_placeable(self, rooms : list[Room]):
+        self.placeable.rect.topleft = self.coord.xy
+        self.placeable.surf = self.surf
                 
+        if self.placeable.coord.room_num != self.coord.room_num:
+            rooms[self.placeable.coord.room_num].placed.remove(self.placeable)
+            self.placeable.coord.room_num = self.coord.room_num
+            if self.placeable not in rooms[self.coord.room_num].placed:
+                rooms[self.coord.room_num].placed.append(self.placeable)
+
+    def add_placeable(self, rooms : list[Room]):
+        self.placeable = subplaceable.BotPlaceable('react_placeable', self.coord.copy(), self.surf)
+        if self.placeable not in rooms[self.coord.room_num].placed:
+            rooms[self.coord.room_num].placed.append(self.placeable)
+        
+    
+    def remove_placeable(self, rooms : list[Room]):
+        if self.placeable in rooms[self.placeable.coord.room_num].placed:
+            rooms[self.placeable.coord.room_num].placed.remove(self.placeable)
+    
+
                 
     def get_potential_destinations(self, rooms : list[Room]) -> list[tuple[Coord, str]]:
         """returns a list of potential destinations for the robot according to some criteria"""

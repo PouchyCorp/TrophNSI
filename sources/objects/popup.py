@@ -15,7 +15,3 @@ class Popup:
 
     def draw(self, screen):
         screen.blit(self.text_surf, self.rect)
-
-# tests
-if __name__ == '__main__':
-    pass

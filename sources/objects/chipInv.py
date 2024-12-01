@@ -1,7 +1,7 @@
 from placeable import Placeable
 from coord import Coord
 from pygame import Surface
-from sprite import PATTERN_LIST
+#from sprite import PATTERN_LIST
 from coord import Coord
 
 class Pattern:
@@ -16,7 +16,7 @@ class ChipInv:
     def __init__(self) -> None:
         self.inv = []
         x,y = 100, 100
-        for p in PATTERN_LIST:
+        for p in []: #PATTERN_LIST:
             self.inv.append(Pattern(p,Coord(0,(x,y))))
             if x < 400:
                 x += 150
