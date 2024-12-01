@@ -1,4 +1,5 @@
 from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX
+
 import anim
 
 def load_image(path : str):
