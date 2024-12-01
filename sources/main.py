@@ -22,6 +22,7 @@ from objects.popup import Popup
 from room_config import R0, R1, R2, R3, ROOMS
 from objects.timermanager import TimerManager
 import objects.sprite as sprite
+from objects.dialogue import Dialogue
 import time
 
 def render_popups():  
@@ -41,6 +42,7 @@ class State(Enum):
     INVENTORY = auto()
     PAINTING = auto()
     PLACING_CHIP = auto()
+    DIALOG = auto()
 
 TIMER = TimerManager()
 
@@ -60,6 +62,11 @@ chip_inventory : ChipInv = ChipInv()
 
 build_mode: BuildMode = BuildMode()
 destruction_mode: DestructionMode = DestructionMode()
+
+test=Dialogue('data\dialogue.txt')
+test.load_save()
+a=test.random_dialogue()
+dit=test.load_dialogue(a)
 
 test_painting = Canva()
 filtre =pg.Surface((1920,1080))
@@ -102,7 +109,7 @@ if __name__ == '__main__':
         mouse_x, mouse_y = pg.mouse.get_pos()
         mouse_pos: Coord = Coord(current_room.num, pg.mouse.get_pos())
 
-                    
+        
                     
         events = pg.event.get()
         keys = pg.key.get_pressed()
@@ -203,15 +210,17 @@ if __name__ == '__main__':
                                             moulaga += money_per_robot
                                         elif placeable.name == 'react_placeable':
                                             #lance le dialogue
-                                            
+                                            gui_state = State.DIALOG
+                                            test.bot_surf = hivemind.react_bot_pointer.surf.copy()
                                             hivemind.react_bot_pointer.remove_placeable(ROOMS)
                                             #clear react_bot_pointer
-                                            hivemind.react_bot_pointer = None
-                                            print('uwu')
+                                            hivemind.react_bot_pointer = None 
                                     case _:
                                         popups.append(
                                             Popup('bip boup erreur erreur'))
-
+                    case State.DIALOG:
+                        gui_state = State.INTERACTION
+                                    
                     case State.PAINTING:
                         chip = Chip(chip_inventory.select_chip(mouse_pos),["black"])
                         if chip != None:
@@ -247,6 +256,10 @@ if __name__ == '__main__':
         current_room.draw_placed(WIN)
         WIN.blit(filtre,(0,0))
 
+        hivemind.order_inline_bots()
+        hivemind.update_bots_ai(ROOMS, TIMER)
+        hivemind.draw(WIN, current_room_num=current_room.num)
+
         match gui_state:
             case State.BUILD:
                 mouse_pos_coord = Coord(current_room.num, (mouse_x - build_mode.get_width() // 2, mouse_y - build_mode.get_height() // 2))
@@ -260,12 +273,10 @@ if __name__ == '__main__':
             
             case State.INTERACTION:
                 hivemind.create_last_bot_clickable()
-
-        hivemind.order_inline_bots()
-        hivemind.update_bots_ai(ROOMS, TIMER)
-        hivemind.draw(WIN, current_room_num=current_room.num)
-
-
+            
+            case State.DIALOG:
+                pg.transform.grayscale(WIN, WIN)
+                test.show(WIN, dit)
         # drawed last
         render_popups()
         pg.display.flip()

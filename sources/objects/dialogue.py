@@ -8,10 +8,11 @@ class Dialogue():
     def __init__(self, fichier):    #nécessite de donner le chemin exacte du fichier
         self.fichier=fichier
         #self.screen=screen    screen
-        self.avatar= pygame.image.load('data\Fond.png')
+        self.avatar= pygame.image.load('data\Fond.png').convert_alpha()
         self.texte=[]
         self.number=None
         self.format = pygame.font.SysFont("Arial", 20)
+        self.bot_surf = None
     
 
     def load_save(self):
@@ -33,15 +34,13 @@ class Dialogue():
 
 # A pour vocation de disparaitre
    
-    def show(self, screen, talked, robot):
+    def show(self, screen, talked):
         
         txtsurf = self.format.render(talked, True, (255,255,255))
-        screen.blit(self.avatar, (200, 200)) #a recadrer
-        screen.blit(robot, (200, 200)) #a recadrer
-        screen.blit(txtsurf,(200, 200)) #a recadrer
+        screen.blit(pygame.Surface((1000,125)), (200, 750)) #a recadrer
+        screen.blit(self.bot_surf, (200, 750)) #a recadrer
+        screen.blit(txtsurf,(450, 800)) #a recadrer
         
-        pygame.display.flip()
-    
     def random_dialogue(self):
         self.number=randint(0, len(self.texte)) 
         return self.number
