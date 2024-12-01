@@ -198,8 +198,16 @@ if __name__ == '__main__':
                                         placeable.interaction(TIMER)
 
                                     case subplaceable.BotPlaceable:
-                                        hivemind.free_last_bot(current_room)
-                                        moulaga += money_per_robot
+                                        if placeable.name == 'bot_placeable':
+                                            hivemind.free_last_bot(current_room)
+                                            moulaga += money_per_robot
+                                        elif placeable.name == 'react_placeable':
+                                            #lance le dialogue
+                                            
+                                            hivemind.react_bot_pointer.remove_placeable(ROOMS)
+                                            #clear react_bot_pointer
+                                            hivemind.react_bot_pointer = None
+                                            print('uwu')
                                     case _:
                                         popups.append(
                                             Popup('bip boup erreur erreur'))

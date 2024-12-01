@@ -51,9 +51,6 @@ class Hivemind:
     def update_bots_ai(self, rooms, TIMER):
         for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
             bot.logic(rooms, TIMER, self)
-        
-        if not self.react_bot_pointer and self.liberated_bots:
-            self.react_bot_pointer = choice(self.liberated_bots)
 
         new_liberated_bots = self.liberated_bots.copy()
         for bot in self.liberated_bots:
@@ -61,7 +58,12 @@ class Hivemind:
             #if bot not leaving and on exit, don't remove it
             if bot.is_leaving and bot.coord.bot_movement_compare(bot.exit_coords):
                 new_liberated_bots.remove(bot)
+                if bot is self.react_bot_pointer:
+                    self.react_bot_pointer = None
         self.liberated_bots = new_liberated_bots
+
+        if not self.react_bot_pointer and self.liberated_bots:
+            self.react_bot_pointer = choice(self.liberated_bots)
             
 
     def order_inline_bots(self):
@@ -192,7 +194,7 @@ class Bot:
                         self.state = BotStates.IDLE
                     else:
                         self.state = BotStates.WATCH
-                        TIMER.create_timer(5, self.set_attribute, False, arguments=('state', BotStates.IDLE))
+                        TIMER.create_timer(1, self.set_attribute, False, arguments=('state', BotStates.IDLE))
 
                 self.move_to_target_coord()
                 self.surf = self.anim_idle.get_frame()
@@ -207,31 +209,27 @@ class Bot:
 
     def react_logic(self, rooms, hivemind : Hivemind):
         if self is hivemind.react_bot_pointer and not self.is_leaving:
-                if self.is_leaving:
-                    self.remove_placeable(rooms)
-                    return
-
                 if not self.placeable:
                     self.add_placeable(rooms)
                 else:
                     self.update_placeable(rooms)
+        elif self is hivemind.react_bot_pointer:
+            self.remove_placeable(rooms)
 
     def update_placeable(self, rooms : list[Room]):
         self.placeable.rect.topleft = self.coord.xy
         self.placeable.surf = self.surf
                 
         if self.placeable.coord.room_num != self.coord.room_num:
-            rooms[self.placeable.coord.room_num].placed.remove(self.placeable)
+            self.remove_placeable(rooms)
             self.placeable.coord.room_num = self.coord.room_num
-            if self.placeable not in rooms[self.coord.room_num].placed:
-                rooms[self.coord.room_num].placed.append(self.placeable)
+            self.add_placeable(rooms)
 
     def add_placeable(self, rooms : list[Room]):
         self.placeable = subplaceable.BotPlaceable('react_placeable', self.coord.copy(), self.surf)
         if self.placeable not in rooms[self.coord.room_num].placed:
             rooms[self.coord.room_num].placed.append(self.placeable)
         
-    
     def remove_placeable(self, rooms : list[Room]):
         if self.placeable in rooms[self.placeable.coord.room_num].placed:
             rooms[self.placeable.coord.room_num].placed.remove(self.placeable)
