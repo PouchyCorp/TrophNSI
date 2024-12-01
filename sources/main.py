@@ -93,9 +93,11 @@ def go_down_one_floor():
     current_room = ROOMS[current_room.num-1]
 
 
+
 if __name__ == '__main__':
+    fps = 60
     while True:
-        CLOCK.tick(60)
+        CLOCK.tick(fps)
         WIN.blit(current_room.bg_surf, (0, 0))
         mouse_x, mouse_y = pg.mouse.get_pos()
         mouse_pos: Coord = Coord(current_room.num, pg.mouse.get_pos())
@@ -149,6 +151,11 @@ if __name__ == '__main__':
 
                     case pg.K_n:
                         hivemind.free_last_bot(current_room)
+
+                    case pg.K_LEFTBRACKET:
+                        fps -= 5
+                    case pg.K_RIGHTBRACKET:
+                        fps += 5
 
             if event.type == pg.MOUSEBUTTONUP:
 
