@@ -178,6 +178,8 @@ class Bot:
                     
                     else:
                         #no valid destination -> leave
+                        if self.placeable:
+                            del self.placeable
                         self.is_leaving = True
                         self.target_coord = self.exit_coords
                         
