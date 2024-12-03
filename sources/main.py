@@ -282,3 +282,4 @@ if __name__ == '__main__':
         # drawed last
         render_popups()
         pg.display.flip()
+

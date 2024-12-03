@@ -25,95 +25,26 @@ class Dialogue():
                 mot+=lines[k]
             intermediate.append(mot)
             self.texte.append(intermediate)
-
+        return self.texte
+    
     def load_dialogue(self, number):
         talked=""
         for letter in self.texte[number]:
             talked+=letter
         return talked
-
-# A pour vocation de disparaitre
-   
+       
     def show(self, screen, talked):
-        
         txtsurf = self.format.render(talked, True, (255,255,255))
         screen.blit(pygame.Surface((1000,125)), (200, 750)) #a recadrer
         screen.blit(self.bot_surf, (200, 750)) #a recadrer
         screen.blit(txtsurf,(450, 800)) #a recadrer
         
     def random_dialogue(self):
-        self.number=randint(0, len(self.texte)) 
+        self.number=randint(0, (len(self.texte)-1)) 
         return self.number
 
-    
-         
 
-
-"""
-test=Dialogue('data\dialogue.txt')
-test.load_save()
-
-""""""Initialisateur pygame"""""" 
-
-ecran = pygame.display.set_mode((1000, 800))
-bg = (127,127,127)
-done = False
-format = pygame.font.SysFont("Arial", 40)
-#SPRITESHEET_BOT = anim.Spritesheet(load_image('data/test_robot.png'), (48*6, 48*6))
-
-while not done:
-   for event in pygame.event.get():
-      ecran.fill(bg)
-      if event.type == pygame.QUIT:
-         done = True
-
-      if event.type == pygame.KEYDOWN:
-                    match event.key:
-                        case pygame.K_SPACE:
-                            a=test.random_dialogue()
-                            dit=test.load_dialogue(a)
-                            test.show(ecran, dit)
-                            """
                         
 #SPRITESHEET_BOT = Spritesheet(pygame.image.load('data/test_robot.png'), (48*6, 48*6))
 #animated = Animation(sprite.SPRITESHEET_BOT, 0, 7)
 
-
-
-
-###Tests
-
-"""
-dialogue=init('data\dialogue.txt')
-print(dialogue)
-
-
-screen = pygame.display.set_mode((1920, 1080))
-done = False
-
-format = pygame.font.SysFont("Arial", 40)
-'''fond = pygame.image.load('bg_test_approfondis.png').convert
-
-
-screen.blit(fond, (0, 0))'''
-
-avatar = pygame.image.load('data\image_dialogue.png').convert_alpha()
-
-bg = (127,127,127)
-
-while not done:
-   for event in pygame.event.get():
-      screen.fill(bg)
-      if event.type == pygame.QUIT:
-         done = True
-      
-      if event.type == pygame.KEYDOWN:
-                match event.key:
-                    case pygame.K_SPACE:
-                        txtsurf = format.render("Hello, World", True, (255,255,255))
-                        screen.blit(avatar, (200, 600)) #a recadrer
-                        screen.blit(txtsurf,(500, 900)) #a recadrer
-                        
-                        pygame.display.flip()
-#def affichage():
-"""
