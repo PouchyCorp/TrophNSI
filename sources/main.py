@@ -65,8 +65,9 @@ destruction_mode: DestructionMode = DestructionMode()
 
 test=Dialogue('data\dialogue.txt')
 test.load_save()
-a=test.random_dialogue()
-dit=test.load_dialogue(a)
+dialoguet2=Dialogue('data\dialogue_t2.txt')
+dialoguet2.load_save()
+
 
 test_painting = Canva()
 filtre =pg.Surface((1920,1080))
@@ -211,6 +212,7 @@ if __name__ == '__main__':
                                         elif placeable.name == 'react_placeable':
                                             #lance le dialogue
                                             gui_state = State.DIALOG
+                                            sentence=test.random_dialogue()
                                             test.bot_surf = hivemind.react_bot_pointer.surf.copy()
                                             hivemind.react_bot_pointer.remove_placeable(ROOMS)
                                             #clear react_bot_pointer
@@ -276,7 +278,7 @@ if __name__ == '__main__':
             
             case State.DIALOG:
                 pg.transform.grayscale(WIN, WIN)
-                test.show(WIN, dit)
+                test.show(WIN, test.load_dialogue(sentence))
         # drawed last
         render_popups()
         pg.display.flip()
