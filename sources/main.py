@@ -19,7 +19,7 @@ from objects.coord import Coord
 from objects.inventory import Inventory
 from objects.chipInv import ChipInv
 from objects.popup import Popup
-from room_config import R0, R1, R2, R3, ROOMS
+from room_config import R0, R1, ROOMS
 from objects.timermanager import TimerManager
 import objects.sprite as sprite
 from objects.dialogue import Dialogue
@@ -100,6 +100,12 @@ def go_down_one_floor():
     global current_room, ROOMS
     current_room = ROOMS[current_room.num-1]
 
+def launch_dialogue(bot_sprite):
+    """function to be passed to other functions easily"""
+    global gui_state, test
+    gui_state = State.DIALOG
+    test.random_dialogue()
+    test.bot_surf = bot_sprite.copy()
 
 
 if __name__ == '__main__':
@@ -109,6 +115,7 @@ if __name__ == '__main__':
         WIN.blit(current_room.bg_surf, (0, 0))
         mouse_x, mouse_y = pg.mouse.get_pos()
         mouse_pos: Coord = Coord(current_room.num, pg.mouse.get_pos())
+        clicked = False
 
         
                     
@@ -166,7 +173,7 @@ if __name__ == '__main__':
                         fps += 5
 
             if event.type == pg.MOUSEBUTTONUP:
-
+                clicked = True
                 # to keep before the inventory click check
                 match gui_state:
                     case State.BUILD:
@@ -209,14 +216,6 @@ if __name__ == '__main__':
                                         if placeable.name == 'bot_placeable':
                                             hivemind.free_last_bot(current_room)
                                             moulaga += money_per_robot
-                                        elif placeable.name == 'react_placeable':
-                                            #lance le dialogue
-                                            gui_state = State.DIALOG
-                                            sentence=test.random_dialogue()
-                                            test.bot_surf = hivemind.react_bot_pointer.surf.copy()
-                                            hivemind.react_bot_pointer.remove_placeable(ROOMS)
-                                            #clear react_bot_pointer
-                                            hivemind.react_bot_pointer = None 
                                     case _:
                                         popups.append(
                                             Popup('bip boup erreur erreur'))
@@ -244,7 +243,6 @@ if __name__ == '__main__':
             if placeable.rect.collidepoint(mouse_pos.xy):
                 color = (150, 150, 255) if gui_state != State.DESTRUCTION else (255, 0, 0)
                 placeable.update_sprite(True, color)
-            
             #if not hovered
             else:
                 placeable.update_sprite(False)
@@ -259,7 +257,7 @@ if __name__ == '__main__':
         WIN.blit(filtre,(0,0))
 
         hivemind.order_inline_bots()
-        hivemind.update_bots_ai(ROOMS, TIMER)
+        hivemind.update_bots_ai(ROOMS, TIMER, clicked, mouse_pos, launch_dialogue)
         hivemind.draw(WIN, current_room_num=current_room.num)
 
         match gui_state:
@@ -278,7 +276,7 @@ if __name__ == '__main__':
             
             case State.DIALOG:
                 pg.transform.grayscale(WIN, WIN)
-                test.show(WIN, test.load_dialogue(sentence))
+                test.show(WIN)
         # drawed last
         render_popups()
         pg.display.flip()

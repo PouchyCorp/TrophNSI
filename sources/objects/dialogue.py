@@ -36,15 +36,14 @@ class Dialogue():
                 print('bite')"""
         return talked
        
-    def show(self, screen, talked):
-        txtsurf = self.format.render(talked, True, (255,255,255))
+    def show(self, screen):
+        txtsurf = self.format.render(self.load_dialogue(self.number), True, (255,255,255))
         screen.blit(pygame.Surface((1000,125)), (200, 750)) #a recadrer
         screen.blit(self.bot_surf, (200, 750)) #a recadrer
         screen.blit(txtsurf,(450, 800)) #a recadrer
         
     def random_dialogue(self):
         self.number=randint(0, (len(self.texte)-1)) 
-        return self.number
 
 dialoguet2=Dialogue('data\dialogue_t2.txt')
 print(dialoguet2.load_save())

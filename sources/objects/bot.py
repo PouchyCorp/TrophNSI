@@ -1,6 +1,6 @@
 from enum import Enum, auto
 from coord import Coord
-from pygame import Surface, draw, transform
+from pygame import Surface, draw, Rect
 from random import choice, randint
 from room import Room
 from room_config import R1
@@ -27,7 +27,6 @@ class Hivemind:
         self.line_stop_x = line_stop
         
         self.bot_placeable_pointer : subplaceable.BotPlaceable = None
-        self.react_bot_pointer : Bot = None
 
         assert self.line_stop_x > self.line_start_x, "stop before start"
 
@@ -48,22 +47,18 @@ class Hivemind:
             self.remove_last_bot_clickable(current_room)
         
     
-    def update_bots_ai(self, rooms, TIMER):
+    def update_bots_ai(self, rooms, TIMER, clicked, mouse_pos, launch_dialogue_func):
         for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
-            bot.logic(rooms, TIMER, self)
+            bot.logic(rooms, TIMER, clicked, mouse_pos, launch_dialogue_func)
 
         new_liberated_bots = self.liberated_bots.copy()
         for bot in self.liberated_bots:
-            bot.logic(rooms, TIMER, self)
+            bot.logic(rooms, TIMER, clicked, mouse_pos, launch_dialogue_func)
             #if bot not leaving and on exit, don't remove it
             if bot.is_leaving and bot.coord.bot_movement_compare(bot.exit_coords):
                 new_liberated_bots.remove(bot)
-                if bot is self.react_bot_pointer:
-                    self.react_bot_pointer = None
-        self.liberated_bots = new_liberated_bots
 
-        if not self.react_bot_pointer and self.liberated_bots:
-            self.react_bot_pointer = choice(self.liberated_bots)
+        self.liberated_bots = new_liberated_bots
             
 
     def order_inline_bots(self):
@@ -135,7 +130,7 @@ class Bot:
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
         self.surf = choice([sprite.P4,sprite.P5]).copy()
-        self.center_offset = self.surf.get_rect().width//2
+        self.rect = self.surf.get_rect()
         
         anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
         self.anim_idle = anim
@@ -143,7 +138,7 @@ class Bot:
         self.door_x = 1998
         self.exit_coords = Coord(1, (0,0))
 
-        self.placeable : subplaceable.BotPlaceable = None
+        self.is_reacting = True
 
 
     @property
@@ -158,7 +153,7 @@ class Bot:
         #makes sure that target coord is reachable
         self.__target_coord.x -= self.__target_coord.x%6
 
-    def logic(self, rooms : list[Room], TIMER : TimerManager, hivemind : Hivemind):
+    def logic(self, rooms : list[Room], TIMER : TimerManager, clicked, mouse_pos, launch_dialogue_func):
         '''finite state machine (FSM) implementation for bot ai'''
 
         match self.state:
@@ -205,16 +200,21 @@ class Bot:
                 raise ValueError
 
         #checks if need to react
-        self.react_logic(rooms, hivemind)
+        self.react_logic(clicked, mouse_pos,launch_dialogue_func)
 
-    def react_logic(self, rooms, hivemind : Hivemind):
-        if self is hivemind.react_bot_pointer and not self.is_leaving:
-                if not self.placeable:
-                    self.add_placeable(rooms)
-                else:
-                    self.update_placeable(rooms)
-        elif self is hivemind.react_bot_pointer:
-            self.remove_placeable(rooms)
+    def react_logic(self, clicked : bool, mouse_pos : Coord, launch_dialogue_func):
+        #checks if mouse on self
+        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):
+            #checks click
+            self.is_mouse_on_self = True
+
+            if clicked:
+                self.is_reacting = False
+                #launches the dialogue
+                launch_dialogue_func(self.surf)
+
+        else:
+            self.is_mouse_on_self = False
 
     def update_placeable(self, rooms : list[Room]):
         self.placeable.rect.topleft = self.coord.xy
@@ -285,7 +285,13 @@ class Bot:
             self.__move_cntr += 1
 
     def draw(self, win : Surface):
-        win.blit(self.surf, self.coord.xy)
+        '''needs to be called after hivemind.update_bot_ai'''
+        if self.is_mouse_on_self:
+            temp_surf = sprite.get_outline(self.surf, (150, 150, 255))
+            temp_surf.blit(self.surf, (3,3))
+            win.blit(temp_surf, (self.coord.x-3, self.coord.y-3))
+        else:
+            win.blit(self.surf, self.coord.xy)
     
     def __repr__(self):
         return str(self.__dict__)
