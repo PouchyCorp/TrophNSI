@@ -51,7 +51,7 @@ gui_state = State.INTERACTION
 popups: list[Popup] = []
 
 # test hivemind
-hivemind = Hivemind(60, 600)
+hivemind = Hivemind(60, 600, TIMER)
 anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
 
 inventory: Inventory = Inventory()

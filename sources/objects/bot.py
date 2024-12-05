@@ -17,7 +17,7 @@ class BotStates(Enum):
 possible_reaction = ['waw', 'bof', 'uwu', 'owo', 'noob']
 
 class Hivemind:
-    def __init__(self, line_start : int, line_stop : int) -> None:
+    def __init__(self, line_start : int, line_stop : int, TIMER : TimerManager) -> None:
         """supreme entity governing the bots
             All hail the hivemind,
             All hail the hivemind !"""
@@ -25,13 +25,20 @@ class Hivemind:
         self.liberated_bots : list[Bot] = []
         self.line_start_x = line_start
         self.line_stop_x = line_stop
-        
+        self.react_time_min, self.react_time_max = 30, 60
         self.bot_placeable_pointer : subplaceable.BotPlaceable = None
 
         assert self.line_stop_x > self.line_start_x, "stop before start"
 
         step = (self.line_stop_x - self.line_start_x) // len(self.inline_bots)
         self.x_lookup_table = [(step*i)+self.line_start_x for i in range(len(self.inline_bots))]
+        TIMER.create_timer(randint(self.react_time_min,self.react_time_max),self.create_react_bot, arguments=[TIMER])
+
+    def create_react_bot(self, TIMER : TimerManager):
+        if self.liberated_bots:
+            random_bot = choice(self.liberated_bots)
+            random_bot.is_reacting = True
+        TIMER.create_timer(randint(self.react_time_min,self.react_time_max),self.create_react_bot, arguments=[TIMER])
 
     def add_bot(self):
         #checks if last place is empty
@@ -138,7 +145,7 @@ class Bot:
         self.door_x = 1998
         self.exit_coords = Coord(1, (0,0))
 
-        self.is_reacting = True
+        self.is_reacting = False
 
 
     @property
@@ -193,9 +200,10 @@ class Bot:
 
                 self.move_to_target_coord()
                 self.surf = self.anim_idle.get_frame()
+
             case BotStates.WATCH:
                 draw.rect(self.surf, "green", (0,0,10,10))
-            
+
             case _:
                 raise ValueError
 
