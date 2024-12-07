@@ -25,7 +25,7 @@ class Hivemind:
         self.liberated_bots : list[Bot] = []
         self.line_start_x = line_start
         self.line_stop_x = line_stop
-        self.react_time_min, self.react_time_max = 1, 1
+        self.react_time_min, self.react_time_max = 1, 2
         self.bot_placeable_pointer : subplaceable.BotPlaceable = None
 
         assert self.line_stop_x > self.line_start_x, "stop before start"
