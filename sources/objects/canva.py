@@ -1,10 +1,11 @@
 
 import pygame as pg
 from coord import Coord
+from placeable import Placeable
 
 class Canva:
     def __init__(self):
-        self.coord = Coord(666,(600,60))
+        self.coord = Coord(0,(600,60))
         self.surf = pg.Surface((600,900))
         self.surf.fill(pg.Color(255,255,255))
         self.rect = self.surf.get_rect()
@@ -14,7 +15,8 @@ class Canva:
     def draw(self,win):
         win.blit(self.surf,self.coord.xy)
 
-    def save(self, name):
+    def save(self, name, inv):
         self.name = name
-
+        self.surf.blit(self.surf.copy(),(0,0))
+        inv.append(Placeable(self.name,self.coord,pg.transform.scale(self.surf.copy(),(300,450)),'decoration'))
 
