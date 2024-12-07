@@ -242,19 +242,19 @@ if __name__ == '__main__':
             #if not hovered
             else:
                 placeable.update_sprite(False)
-                
+
+        # use blits because more performant
+        current_room.draw_placed(WIN)
 
         # fps counter / state debug
         WIN.blit(Popup(
             f'gui state : {gui_state} / fps : {round(CLOCK.get_fps())} / mouse : {mouse_pos.xy} / $ : {moulaga}').text_surf, (0, 0))
         inventory.draw(WIN, mouse_pos, gui_state == State.INVENTORY)
-        # use blits because more performant
-        current_room.draw_placed(WIN)
-        WIN.blit(filtre,(0,0))
 
         hivemind.order_inline_bots()
         hivemind.update_bots_ai(ROOMS, TIMER, clicked, mouse_pos, launch_dialogue)
         hivemind.draw(WIN, current_room_num=current_room.num)
+
 
         match gui_state:
             case State.BUILD:
@@ -272,6 +272,7 @@ if __name__ == '__main__':
             
             case State.DIALOG:
                 pg.transform.grayscale(WIN, WIN)
+                
                 test.show(WIN)
             
             case State.TRANSITION:
@@ -279,6 +280,7 @@ if __name__ == '__main__':
                     incr_fondu = sprite.fondu(WIN, incr_fondu, 0.0125)
                 else:
                     gui_state = State.INTERACTION
+
         # drawed last
         render_popups()
 
