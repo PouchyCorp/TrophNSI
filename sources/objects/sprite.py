@@ -1,5 +1,5 @@
 from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX
-
+from math import sin, pi
 import anim
 
 def load_image(path : str):
@@ -68,7 +68,23 @@ def get_outline(surf, color):
                 outline_surface.blit(surf, (dx + outline_width, dy + outline_width))
 
     outline_surface.fill(color+tuple([0]), special_flags=BLEND_RGBA_MAX)
-    return outline_surface
+    return outline_surface\
+
+
+def fondu(surf : Surface, incr ,speed) -> Surface:
+    """speed is a float between 0 and 1"""
+    if incr <= pi:
+        speed = pi*speed
+        rect = surf.get_rect()
+        black_surf = Surface((rect.w, rect.h), SRCALPHA)
+        color = (0,0,0,round(255*sin(incr)))
+        black_surf.fill(color)
+        surf.blit(black_surf, (0,0))
+
+        incr += speed
+    
+    return incr
+
 
 BG1 = load_image("data/bg_test_approfondis.png")
 

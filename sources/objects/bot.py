@@ -55,6 +55,16 @@ class Hivemind:
         
     
     def update_bots_ai(self, rooms, TIMER, clicked, mouse_pos, launch_dialogue_func):
+        """
+        Update the AI logic for the bots in the game.
+        @param self - the object itself
+        @param rooms - the rooms in the game
+        @param TIMER - the game timer
+        @param clicked - the clicked status
+        @param mouse_pos - the position of the mouse
+        @param launch_dialogue_func - the function to launch a dialogue
+        @return None
+        """
         for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
             bot.logic(rooms, TIMER, clicked, mouse_pos, launch_dialogue_func)
 

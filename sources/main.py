@@ -1,7 +1,6 @@
 import pygame as pg
 import sys
 from enum import Enum, auto
-import math
 
 pg.init()
 
@@ -23,7 +22,7 @@ from room_config import R0, R1, ROOMS
 from objects.timermanager import TimerManager
 import objects.sprite as sprite
 from objects.dialogue import Dialogue
-import time
+from math import pi
 
 def render_popups():  
     global popups
@@ -43,6 +42,7 @@ class State(Enum):
     PAINTING = auto()
     PLACING_CHIP = auto()
     DIALOG = auto()
+    TRANSITION = auto()
 
 TIMER = TimerManager()
 
@@ -50,13 +50,15 @@ current_room = R1
 gui_state = State.INTERACTION
 popups: list[Popup] = []
 
+incr_fondu = 0 
+
 # test hivemind
 hivemind = Hivemind(60, 600, TIMER)
 anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
 
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
-inventory.inv.append(Placeable('6545dqwz31',Coord(1,(121,50)), sprite.PROP_STATUE, tag= "decoration",y_constraint= 620))
+inventory.inv.append(Placeable('6545dqwz31',Coord(1,(121,50)), sprite.PROP_STATUE, tag= "decoration", y_constraint= 620))
 
 chip_inventory : ChipInv = ChipInv()
 
@@ -76,22 +78,9 @@ filtre.set_alpha(0)
 
 moulaga = 0
 money_per_robot = 10
+    
 
-def fondu(surf,dure):
-    debut = time.time()
-    while (time.time() - debut) < dure:
-        elapsed_time = time.time() - debut  # Temps écoulé
-        
-        # Phase aller (transparent -> noir)
-        if elapsed_time <= dure / 2:
-            alpha = int((elapsed_time / (dure / 2)) * 255)
-        # Phase retour (noir -> transparent)
-        else:
-            alpha = int(((dure - elapsed_time) / (dure / 2)) * 255)
-        print("eeee")
-        surf.set_alpha(alpha)
-        
-
+    
 def go_up_one_floor():
     global current_room, ROOMS
     current_room = ROOMS[current_room.num+1]
@@ -107,6 +96,10 @@ def launch_dialogue(bot_sprite):
     test.random_dialogue()
     test.bot_surf = bot_sprite.copy()
 
+def launch_transition():
+    global gui_state, incr_fondu
+    gui_state = State.TRANSITION
+    incr_fondu = 0
 
 if __name__ == '__main__':
     fps = 60
@@ -206,10 +199,12 @@ if __name__ == '__main__':
                                 match type(placeable):
                                     case subplaceable.DoorDown:
                                        # fondu(filtre,1000)
-                                        TIMER.create_timer(1, go_down_one_floor)
+                                        TIMER.create_timer(0.75, go_down_one_floor)
+                                        launch_transition()
                                         placeable.interaction(TIMER)
                                     case subplaceable.DoorUp:
-                                        TIMER.create_timer(1, go_up_one_floor)
+                                        TIMER.create_timer(0.75, go_up_one_floor)
+                                        launch_transition()
                                         placeable.interaction(TIMER)
 
                                     case subplaceable.BotPlaceable:
@@ -219,6 +214,7 @@ if __name__ == '__main__':
                                     case _:
                                         popups.append(
                                             Popup('bip boup erreur erreur'))
+                                        
                     case State.DIALOG:
                         gui_state = State.INTERACTION
                                     
@@ -277,7 +273,14 @@ if __name__ == '__main__':
             case State.DIALOG:
                 pg.transform.grayscale(WIN, WIN)
                 test.show(WIN)
+            
+            case State.TRANSITION:
+                if incr_fondu <= pi:
+                    incr_fondu = sprite.fondu(WIN, incr_fondu, 0.0125)
+                else:
+                    gui_state = State.INTERACTION
         # drawed last
         render_popups()
+
         pg.display.flip()
 
