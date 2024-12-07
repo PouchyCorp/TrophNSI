@@ -10,18 +10,18 @@ CLOCK = pg.time.Clock()
 from objects.placeable import Placeable
 import objects.placeablesubclass as subplaceable
 from objects.anim import Animation
-from objects.chip import Chip
+from objects.pattern import Pattern
 from objects.canva import Canva
 from objects.bot import Hivemind
 from objects.buildmode import BuildMode, DestructionMode
 from objects.coord import Coord
 from objects.inventory import Inventory
-from objects.chipInv import ChipInv
+from objects.pattern_inv import PatternInv
 from objects.popup import Popup
 from room_config import R0, R1, ROOMS
 from objects.timermanager import TimerManager
 import objects.sprite as sprite
-from objects.dialogue import Dialogue
+#from objects.dialogue import Dialogue
 from math import pi
 
 def render_popups():  
@@ -40,7 +40,7 @@ class State(Enum):
     DESTRUCTION = auto()
     INVENTORY = auto()
     PAINTING = auto()
-    PLACING_CHIP = auto()
+    PLACING_PATTERN = auto()
     DIALOG = auto()
     TRANSITION = auto()
 
@@ -60,16 +60,17 @@ inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231',Coord(1,(121,50)), sprite.P3))
 inventory.inv.append(Placeable('6545dqwz31',Coord(1,(121,50)), sprite.PROP_STATUE, tag= "decoration", y_constraint= 620))
 
-chip_inventory : ChipInv = ChipInv()
+p_list = sprite.PATTERN_LIST
+pattern_inventory : PatternInv = PatternInv(p_list)
 
 build_mode: BuildMode = BuildMode()
 destruction_mode: DestructionMode = DestructionMode()
-
+"""
 test=Dialogue('data\dialogue.txt')
 test.load_save()
 dialoguet2=Dialogue('data\dialogue_t2.txt')
 dialoguet2.load_save()
-
+"""
 
 test_painting = Canva()
 filtre =pg.Surface((1920,1080))
@@ -88,14 +89,15 @@ def go_up_one_floor():
 def go_down_one_floor():
     global current_room, ROOMS
     current_room = ROOMS[current_room.num-1]
-
+"""
 def launch_dialogue(bot_sprite):
-    """function to be passed to other functions easily"""
+    """#function to be passed to other functions easily
+"""
     global gui_state, test
     gui_state = State.DIALOG
     test.random_dialogue()
     test.bot_surf = bot_sprite.copy()
-
+"""
 def launch_transition():
     global gui_state, incr_fondu
     gui_state = State.TRANSITION
@@ -219,16 +221,14 @@ if __name__ == '__main__':
                         gui_state = State.INTERACTION
                                     
                     case State.PAINTING:
-                        chip = Chip(chip_inventory.select_chip(mouse_pos),["black"])
-                        if chip != None:
-                            gui_state = State.PLACING_CHIP
+                        pattern = Pattern(pattern_inventory.select_pattern(mouse_pos),[(0,0,0)])
+                        if pattern != None:
+                            gui_state = State.PLACING_PATTERN
 
-                    case State.PLACING_CHIP:
+                    case State.PLACING_PATTERN:
                         if test_painting.rect.collidepoint(mouse_pos.xy):
-                            chip.draw(WIN)
-                            chip.paint(Coord(666,(mouse_pos.x,mouse_pos.y)),test_painting)
+                            pattern.paint(Coord(666,(mouse_pos.x,mouse_pos.y)),test_painting)
                             gui_state = State.PAINTING
-                            chip = None
         #timer update
         TIMER.update()
         #print(TIMER.timers)
@@ -252,7 +252,7 @@ if __name__ == '__main__':
         inventory.draw(WIN, mouse_pos, gui_state == State.INVENTORY)
 
         hivemind.order_inline_bots()
-        hivemind.update_bots_ai(ROOMS, TIMER, clicked, mouse_pos, launch_dialogue)
+        #hivemind.update_bots_ai(ROOMS, TIMER, clicked, mouse_pos, launch_dialogue)
         hivemind.draw(WIN, current_room_num=current_room.num)
 
 
@@ -263,8 +263,8 @@ if __name__ == '__main__':
 
                 build_mode.show_room_holograms(WIN, current_room)
 
-            case w if w in (State.PAINTING, State.PLACING_CHIP):
-                chip_inventory.draw(WIN)
+            case w if w in (State.PAINTING, State.PLACING_PATTERN):
+                pattern_inventory.draw(WIN)
                 test_painting.draw(WIN)
             
             case State.INTERACTION:

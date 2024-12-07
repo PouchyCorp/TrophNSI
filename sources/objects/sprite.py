@@ -128,9 +128,9 @@ SPRITESHEET_BAS_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_bas.
 
 SPRITESHEET_DOOR_BLINK_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_anim_blink.png"),False, True), (42*6, 29*6))
 
-#PATTERN_1 = load_image('data/pattern_storage/pattern_test.png')
+PATTERN_LIST = [load_image('data/pattern_storage/pattern_'+str(k+1)+'.png') for k in range(9)]
 
-#PATTERN_LIST = [PATTERN_1 for _ in range(7)]
+BUTTON = load_image('data/button.png')
 
 WINDOW = load_image('data/window.png')
 

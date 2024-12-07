@@ -35,7 +35,7 @@ class PatternInv:
     def select_pattern(self, mouse_pos : Coord) -> str | None:
         for pattern in self.inv:
             if pattern.rect.collidepoint(mouse_pos.xy):
-                return pattern.button.surf.copy()
+                return pattern.button.copy()
         return None
     
 
