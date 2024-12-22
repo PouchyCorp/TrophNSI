@@ -31,9 +31,6 @@ class Dialogue():
         talked=""
         for letter in self.texte[number]:
             talked+=letter
-            print(letter)
-            """if letter =="║":
-                print('bite')"""
         return talked
        
     def show(self, screen):
@@ -46,9 +43,4 @@ class Dialogue():
         self.number=randint(0, (len(self.texte)-1)) 
 
 dialoguet2=Dialogue('data\dialogue_t2.txt')
-print(dialoguet2.load_save())
-#dialoguet2.load_dialogue(0)
-                        
-#SPRITESHEET_BOT = Spritesheet(pygame.image.load('data/test_robot.png'), (48*6, 48*6))
-#animated = Animation(sprite.SPRITESHEET_BOT, 0, 7)
 

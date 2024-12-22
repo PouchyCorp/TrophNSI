@@ -13,7 +13,7 @@ import objects.placeablesubclass as subplaceable
 from objects.anim import Animation
 from objects.pattern import Pattern
 from objects.canva import Canva
-from objects.bot import Hivemind
+from objects.bot import Hivemind, BotDistributor
 from objects.buildmode import BuildMode, DestructionMode
 from objects.coord import Coord
 from objects.inventory import Inventory
@@ -76,7 +76,10 @@ dialoguet2 = Dialogue('data\dialogue_t2.txt')
 dialoguet2.load_save()
 
 #tests 'temporary'
-TIMER.create_timer(0.75, hivemind.add_bot, True)
+bot_distributor = BotDistributor()
+TIMER.create_timer(0.25, bot_distributor.add_to_theorical_gold, True)
+TIMER.create_timer(1, bot_distributor.distribute_to_bot, True, [TIMER, hivemind], repeat_time_interval=[0.75,3])
+
 
 # Initialize the painting canvas
 test_painting = Canva()
@@ -238,7 +241,6 @@ if __name__ == '__main__':
 
         # Update timers
         TIMER.update()
-        # print(TIMER.timers)  # Print timers for debugging
 
         # Iterate through the placed objects in the current room
         for placeable in current_room.placed:

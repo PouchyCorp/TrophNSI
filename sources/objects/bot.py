@@ -16,6 +16,34 @@ class BotStates(Enum):
 
 possible_reaction = ['waw', 'bof', 'uwu', 'owo', 'noob']
 
+class BotDistributor:
+    def __init__(self):
+        self.theorical_gold = 0
+        self.robot_tiers = [10, 20, 50, 100, 500, 1000]
+
+    def add_to_theorical_gold(self):
+        gold_amount = 10
+        self.theorical_gold += gold_amount
+    
+    def distribute_to_bot(self, TIMER, hivemind):
+        for tier in reversed(self.robot_tiers): #iterate tiers from most expensive to least expensive
+            amount_mod : int = self.theorical_gold//tier #determine how much of a tier we can fit into the theorical gold
+
+            if 3 >= amount_mod >= 1: #checks if you can distribute between 3 and 1 of this tier
+
+                for j in range(amount_mod): #distribute the correct bot tier the proper amount
+                    TIMER.create_timer(j*0.5, hivemind.add_bot, False, [tier]) 
+
+                    self.theorical_gold -= tier
+
+            elif amount_mod >= 1 and self.robot_tiers.index(tier) == len(self.robot_tiers)-1: #if condition above not met and no higher tier, distribute bots
+
+                for j in range(amount_mod): 
+                    TIMER.create_timer(j*0.5, hivemind.add_bot, False, [tier]) 
+
+                    self.theorical_gold -= tier
+                return
+
 class Hivemind:
     def __init__(self, line_start : int, line_stop : int, TIMER : TimerManager) -> None:
         """supreme entity governing the bots
@@ -40,10 +68,10 @@ class Hivemind:
             random_bot.is_reacting = True
         TIMER.create_timer(randint(self.react_time_min,self.react_time_max),self.create_react_bot, arguments=[TIMER])
 
-    def add_bot(self):
+    def add_bot(self, gold_amount : int = 10):
         #checks if last place is empty
         if type(self.inline_bots[0]) is not Bot:
-            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,700+randint(-50,50))))
+            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,700+randint(-50,50))), gold_amount) #spawns bot
     
     def free_last_bot(self, current_room):
         if type(self.inline_bots[-1]) is Bot:
@@ -135,7 +163,7 @@ class Hivemind:
         
 
 class Bot:
-    def __init__(self, coord : Coord) -> None:
+    def __init__(self, coord : Coord, gold_amount) -> None:
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
         self.__target_coord = self.coord.copy()
@@ -156,6 +184,7 @@ class Bot:
         self.exit_coords = Coord(1, (0,0))
 
         self.is_reacting = False
+        self.gold_amount = gold_amount
 
 
     @property

@@ -4,7 +4,7 @@ from objects.timermanager import TimerManager
 class BotDistributor:
     def __init__(self):
         self.theorical_gold = 0
-        self.robot_tiers = [1, 5, 10, 50, 100, 500, 1000]
+        self.robot_tiers = [10, 20, 50, 100, 500, 1000]
 
     def add_to_theorical_gold(self, fooo):
         gold_amount = fooo.beauty*2
@@ -21,19 +21,25 @@ class BotDistributor:
                     TIMER.create_timer(j*0.5, print, False, [f"distr : {tier}"]) 
 
                     self.theorical_gold -= tier
+
+            elif amount_mod >= 1 and self.robot_tiers.index(tier) == len(self.robot_tiers)-1: #if condition above not met and no higher tier, distribute bots
+
+                for j in range(amount_mod): 
+                    TIMER.create_timer(j*0.5, print, False, [f"distr : {tier}"]) 
+
+                    self.theorical_gold -= tier
                 return
 
 class foo:
     def __init__(self):
-        self.beauty = 50
+        self.beauty = 10
 
 TIMER = TimerManager()
 bot_distributor = BotDistributor()
 fooo = foo()
-TIMER.create_timer(1, bot_distributor.add_to_theorical_gold, True, [fooo])
-TIMER.create_timer(5, bot_distributor.distribute_to_bot, True, [TIMER], repeat_time_interval=[0,6])
 
 while True:
     TIMER.update()
+    
 
 
