@@ -5,7 +5,7 @@ from enum import Enum, auto
 pg.init()
 
 # Set up the display window with specified resolution
-WIN = pg.display.set_mode((1920, 1080))
+WIN = pg.display.set_mode((0,0),pg.FULLSCREEN)
 CLOCK = pg.time.Clock()
 
 from objects.placeable import Placeable
@@ -69,12 +69,14 @@ pattern_inventory: PatternInv = PatternInv(p_list)  # Pattern inventory instance
 build_mode: BuildMode = BuildMode()
 destruction_mode: DestructionMode = DestructionMode()
 
-# Test implementation of the dialogue class (to be integrated later)
+#Test implementation of the dialogue class (to be integrated later)
 test = Dialogue('data\dialogue.txt')
 test.load_save()
 dialoguet2 = Dialogue('data\dialogue_t2.txt')
 dialoguet2.load_save()
 
+#tests 'temporary'
+TIMER.create_timer(0.75, hivemind.add_bot, True)
 
 # Initialize the painting canvas
 test_painting = Canva()
@@ -115,7 +117,6 @@ if __name__ == '__main__':
         mouse_x, mouse_y = pg.mouse.get_pos()  # Get mouse position
         mouse_pos: Coord = Coord(current_room.num, pg.mouse.get_pos())  # Create a coordinate object for the mouse position
         clicked = False  # Track if a mouse button was clicked
-
         events = pg.event.get()  # Get all events from the event queue
         keys = pg.key.get_pressed()  # Get the current state of all keyboard keys
 
