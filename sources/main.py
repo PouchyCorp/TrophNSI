@@ -10,18 +10,18 @@ CLOCK = pg.time.Clock()
 
 from objects.placeable import Placeable
 import objects.placeablesubclass as subplaceable
-from objects.anim import Animation
+from utils.anim import Animation
 from objects.pattern import Pattern
 from objects.canva import Canva
 from objects.bot import Hivemind, BotDistributor
-from objects.buildmode import BuildMode, DestructionMode
-from objects.coord import Coord
-from objects.inventory import Inventory
+from core.buildmode import BuildMode, DestructionMode
+from utils.coord import Coord
+from ui.inventory import Inventory
 from objects.pattern_inv import PatternInv
-from objects.popup import Popup
+from ui.popup import Popup
 from room_config import R0, R1, ROOMS
-from objects.timermanager import TimerManager
-import objects.sprite as sprite
+from utils.timermanager import TimerManager
+import ui.sprite as sprite
 from objects.dialogue import Dialogue
 from math import pi
 

@@ -1,4 +1,4 @@
-from objects.timermanager import TimerManager
+from utils.timermanager import TimerManager
 
 
 class BotDistributor:

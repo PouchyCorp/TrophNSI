@@ -1,6 +1,5 @@
-
 import pygame as pg
-from coord import Coord
+from utils.coord import Coord
 from placeable import Placeable
 
 class Canva:

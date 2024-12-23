@@ -1,2 +1,5 @@
 __pycache__
 sources/__pycache__
+.db
+creative_core_venv
+.pyc

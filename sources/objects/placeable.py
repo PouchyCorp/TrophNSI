@@ -5,9 +5,9 @@ from random import randint
 #do not remove
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from coord import Coord
-from anim import Animation
-from sprite import get_outline
+from utils.coord import Coord
+from utils.anim import Animation
+from ui.sprite import get_outline
 
 class Placeable:
     def __init__(self, name: str, coord: Coord, surf: Surface, tag: str | None = None, anim: Animation | None = None, y_constraint: int | None = None, temporary: bool = False) -> None:

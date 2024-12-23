@@ -1,8 +1,8 @@
 from placeable import Placeable
-import sprite
-from anim import Animation
+import ui.sprite as sprite
+from utils.anim import Animation
 from typing import Optional
-from timermanager import TimerManager
+from utils.timermanager import TimerManager
 
 class DoorUp(Placeable):
     def __init__(self, name, coord, surf, tag = None):

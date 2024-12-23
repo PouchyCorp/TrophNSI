@@ -1,0 +1,10 @@
+#main config file
+
+[screen]
+width = 19
+height = 1080
+fullscreen = false
+
+[gameplay]
+fps = 60
+cheats = false

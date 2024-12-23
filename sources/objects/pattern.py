@@ -1,6 +1,6 @@
-from coord import Coord
+from utils.coord import Coord
 import pygame as pg
-from sprite import BUTTON
+from ui.sprite import BUTTON
 from objects.canva import Canva
 from random import choice
 

@@ -1,5 +1,4 @@
-import pygame as pg
-from placeable import Placeable
+from objects.placeable import Placeable
 
 class Room:
     def __init__(self, num, bg_surf) -> None:

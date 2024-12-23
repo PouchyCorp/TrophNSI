@@ -1,7 +1,7 @@
-from placeable import Placeable
-from coord import Coord
+from objects.placeable import Placeable
+from utils.coord import Coord
 from pygame import Surface, transform, BLEND_RGB_MIN, font
-from sprite import ICON_1, WINDOW, nine_slice_scaling
+from ui.sprite import ICON_1, WINDOW, nine_slice_scaling
 
 class Inventory:
     def __init__(self) -> None:

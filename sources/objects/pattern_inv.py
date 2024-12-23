@@ -1,7 +1,7 @@
 from placeable import Placeable
-from coord import Coord
+from utils.coord import Coord
 from pygame import Surface
-from coord import Coord
+from utils.coord import Coord
 from pattern import Pattern
 
 class PatternInv:

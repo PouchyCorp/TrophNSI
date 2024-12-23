@@ -1,6 +1,6 @@
-from placeable import Placeable
-from room import Room
-from coord import Coord
+from objects.placeable import Placeable
+from core.room import Room
+from utils.coord import Coord
 from pygame import Surface, BLEND_RGBA_ADD
 from typing import Optional
 

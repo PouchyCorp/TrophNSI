@@ -1,6 +1,6 @@
 from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX
 from math import sin, pi
-import anim
+import utils.anim as anim
 
 def load_image(path : str):
     sprite = image.load(path)

@@ -1,7 +1,5 @@
-from random import *
+import random
 import pygame
-#from anim import Animation, Spritesheet
-#import sprite
 
 pygame.init()
 class Dialogue():
@@ -40,7 +38,7 @@ class Dialogue():
         screen.blit(txtsurf,(450, 800)) #a recadrer
         
     def random_dialogue(self):
-        self.number=randint(0, (len(self.texte)-1)) 
+        self.number=random.randint(0, (len(self.texte)-1)) 
 
 dialoguet2=Dialogue('data\dialogue_t2.txt')
 

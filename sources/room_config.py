@@ -1,7 +1,7 @@
-from objects.coord import Coord 
+from utils.coord import Coord 
 from objects.placeable import Placeable
-from objects.room import Room
-import objects.sprite as sprite
+from core.room import Room
+import ui.sprite as sprite
 from pygame import Surface
 import objects.placeablesubclass as subplaceable
 

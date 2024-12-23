@@ -1,0 +1,4 @@
+numpy==1.26.4
+pygame==2.6.1
+pygame-ce==2.5.2
+typing_extensions==4.9.0

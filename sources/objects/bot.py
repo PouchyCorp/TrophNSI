@@ -1,12 +1,12 @@
 from enum import Enum, auto
-from coord import Coord
+from utils.coord import Coord
 from pygame import Surface, draw, Rect
 from random import choice, randint
-from room import Room
+from core.room import Room
 from room_config import R1
-import sprite
-from timermanager import TimerManager
-from objects.anim import Animation
+import ui.sprite as sprite
+from utils.timermanager import TimerManager
+from utils.anim import Animation
 import objects.placeablesubclass as subplaceable
 
 class BotStates(Enum):
