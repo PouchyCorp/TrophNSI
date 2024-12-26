@@ -182,7 +182,7 @@ class Bot:
         self.surf = choice([sprite.P4,sprite.P5]).copy()
         self.rect = self.surf.get_rect()
         
-        anim = Animation(sprite.SPRITESHEET_BOT, 0, 7)
+        anim = Animation(sprite.SPRITESHEET_ROBOT_2, 1, 14, 3)
         self.anim_idle = anim
 
         self.door_x = 1998

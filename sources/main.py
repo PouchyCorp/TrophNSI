@@ -34,7 +34,6 @@ incr_fondu = 0  # Variable for transition effects
 
 # Initialize Hivemind instance to manage bots
 hivemind = Hivemind(60, 600, TIMER)
-anim = Animation(sprite.SPRITESHEET_ROBOT_2, 0, 14)
 
 # Initialize inventory and add placeable items
 inventory: Inventory = Inventory()
