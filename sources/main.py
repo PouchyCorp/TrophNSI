@@ -1,11 +1,20 @@
 import pygame as pg
 import sys
+import tomllib
 
+
+# Open config file and dump it in a dict
+with open('sources/config.toml', 'rb') as f:
+    config = tomllib.load(f)
 
 pg.init()
 
-# Set up the display window with specified resolution
-WIN = pg.display.set_mode((0,0),pg.FULLSCREEN)
+# Set up the display window with specified resolution using the config file
+if config['screen']['fullscreen']:
+  WIN = pg.display.set_mode((0,0),pg.FULLSCREEN)
+else:
+  WIN = pg.display.set_mode(config['screen']['size'])
+
 CLOCK = pg.time.Clock()
 pg.display.set_caption('Creative Core')
 
@@ -58,7 +67,7 @@ money_per_robot = 10  # Rewards per robot
 game = Game(WIN, CLOCK, TIMER, hivemind, inventory, build_mode, destruction_mode, bot_distributor, dialogue_manager, moulaga)
 
 if __name__ == '__main__':
-    fps = 60  # Frame rate
+    fps = config['gameplay']['fps']  # Frame rate
     while True:
         CLOCK.tick(fps)  # Maintain frame rate
         mouse_pos: Coord = Coord(game.current_room.num, pg.mouse.get_pos())  # Create a coordinate object for the mouse position

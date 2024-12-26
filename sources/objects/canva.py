@@ -18,4 +18,3 @@ class Canva:
         self.name = name
         self.surf.blit(self.surf.copy(),(0,0))
         inv.append(Placeable(self.name,self.coord,pg.transform.scale(self.surf.copy(),(300,450)),'decoration'))
-
