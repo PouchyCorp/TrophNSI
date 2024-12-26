@@ -6,7 +6,7 @@ from core.room import Room
 from room_config import R1
 import ui.sprite as sprite
 from utils.timermanager import TimerManager
-from utils.anim import Animation
+from utils.anim import Animation, Spritesheet
 import objects.placeablesubclass as subplaceable
 
 class BotStates(Enum):
@@ -73,10 +73,16 @@ class Hivemind:
             random_bot.is_reacting = True
         TIMER.create_timer(randint(self.react_time_min,self.react_time_max),self.create_react_bot, arguments=[TIMER])
 
+    def get_random_bot_spritesheet(self) -> tuple[Spritesheet, int]:
+        spritesheet_choice = choice(sprite.LIST_SPRITESHEET_ROBOT)
+        assert type(spritesheet_choice) is tuple
+        return spritesheet_choice
+
     def add_bot(self, gold_amount : int = 10):
         #checks if last place is empty
         if type(self.inline_bots[0]) is not Bot:
-            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,700+randint(-50,50))), gold_amount) #spawns bot
+            spritesheet_args = self.get_random_bot_spritesheet()
+            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,700+randint(-50,50))), gold_amount, spritesheet_args[0], spritesheet_args[1]) #spawns bot
     
     def free_last_bot(self, current_room):
         if type(self.inline_bots[-1]) is Bot:
@@ -168,7 +174,7 @@ class Hivemind:
         
 
 class Bot:
-    def __init__(self, coord : Coord, gold_amount) -> None:
+    def __init__(self, coord : Coord, gold_amount : int, anim_spritesheet : Spritesheet, spritesheet_lenght) -> None:
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
         self.__target_coord = self.coord.copy()
@@ -179,18 +185,21 @@ class Bot:
         self.state = BotStates.IDLE
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
-        self.surf = choice([sprite.P4,sprite.P5]).copy()
+
+        self.anim_walk_right = Animation(anim_spritesheet, 0, spritesheet_lenght, 2)
+        self.anim_walk_left = Animation(anim_spritesheet, 1, spritesheet_lenght, 2)
+        #self.anim_idle_right = Animation(anim_spritesheet, 2, *spritesheet_args)
+        #self.anim_idle_left = Animation(anim_spritesheet, 3, *spritesheet_args)
+        #self.anim_watch = Animation(anim_spritesheet, 4, *spritesheet_args)
+
+        self.surf = self.anim_walk_right.get_frame()
         self.rect = self.surf.get_rect()
-        
-        anim = Animation(sprite.SPRITESHEET_ROBOT_2, 1, 14, 3)
-        self.anim_idle = anim
 
         self.door_x = 1998
         self.exit_coords = Coord(1, (0,0))
 
         self.is_reacting = False
         self.gold_amount = gold_amount
-
 
     @property
     def target_coord(self):
@@ -228,6 +237,13 @@ class Bot:
                         #no valid destination -> leave
                         self.is_leaving = True
                         self.target_coord = self.exit_coords
+                """
+                match self.move_dir:
+                    case "RIGHT":
+                        self.surf = self.anim_idle_right.get_frame()
+                    case "LEFT":
+                        self.surf = self.anim_idle_left.get_frame()
+                """
                         
                 if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
                     self.state = BotStates.WALK
@@ -243,10 +259,17 @@ class Bot:
                         TIMER.create_timer(1, self.set_attribute, False, arguments=('state', BotStates.IDLE))
 
                 self.move_to_target_coord()
-                self.surf = self.anim_idle.get_frame()
+                match self.move_dir:
+                    case "RIGHT":
+                        self.surf = self.anim_walk_right.get_frame()
+                    case "LEFT":
+                        self.surf = self.anim_walk_left.get_frame()
 
             case BotStates.WATCH:
                 draw.rect(self.surf, "green", (0,0,10,10))
+                
+
+                #self.surf = self.anim_watch.get_frame()
 
             case _:
                 raise ValueError

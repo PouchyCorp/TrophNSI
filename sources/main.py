@@ -19,15 +19,10 @@ CLOCK = pg.time.Clock()
 pg.display.set_caption('Creative Core')
 
 from objects.placeable import Placeable
-import objects.placeablesubclass as subplaceable
-from utils.anim import Animation
-from objects.pattern import Pattern
-from objects.canva import Canva
 from objects.bot import Hivemind, BotDistributor
 from core.buildmode import BuildMode, DestructionMode
 from utils.coord import Coord
 from ui.inventory import Inventory
-from objects.pattern_inv import PatternInv
 from ui.popup import Popup
 from utils.timermanager import TimerManager
 import ui.sprite as sprite

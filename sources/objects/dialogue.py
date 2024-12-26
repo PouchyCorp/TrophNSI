@@ -3,15 +3,14 @@ import pygame
 
 pygame.init()
 class DialogueManager():
-    def __init__(self, fichier):    #nécessite de donner le chemin exacte du fichier
+    def __init__(self, fichier):
+        """nécessite de donner le chemin exacte du fichier"""
         self.fichier=fichier
-        #self.screen=screen    screen
         self.texte=[]
         self.number=None
         self.format = pygame.font.SysFont("Arial", 20)
         self.bot_surf = None
     
-
     def load_save(self):
         self.texte=[]  #debogage
         fich_ouvert=open(self.fichier, encoding='utf8') 

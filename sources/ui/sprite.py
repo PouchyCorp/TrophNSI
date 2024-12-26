@@ -134,4 +134,6 @@ BUTTON = load_image('data/button.png')
 
 WINDOW = load_image('data/window.png')
 
-SPRITESHEET_ROBOT_2 = anim.Spritesheet(load_image('data/robot_3.png'),(27*6,39*6))
+SPRITESHEET_ROBOT_1_PACK = (anim.Spritesheet(load_image('data/robot_3.png'),(27*6,39*6)), 14)
+
+LIST_SPRITESHEET_ROBOT = [SPRITESHEET_ROBOT_1_PACK]
