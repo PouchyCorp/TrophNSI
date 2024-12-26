@@ -1,21 +1,17 @@
 from enum import Enum, auto
 import pygame as pg
-from objects.placeable import Placeable
 import objects.placeablesubclass as subplaceable
-from utils.anim import Animation
-from objects.pattern import Pattern
-from objects.canva import Canva
 from objects.bot import Hivemind, BotDistributor
 from core.buildmode import BuildMode, DestructionMode
 from utils.coord import Coord
 from ui.inventory import Inventory
-from objects.pattern_inv import PatternInv
 from ui.popup import Popup
 from room_config import R0, R1, ROOMS, Room
 from utils.timermanager import TimerManager
 import ui.sprite as sprite
 from objects.dialogue import DialogueManager
 from math import pi
+from objects.placeable import Placeable
 class State(Enum):
     INTERACTION = auto()
     BUILD = auto()
@@ -39,7 +35,7 @@ class Game:
         self.destruction_mode : DestructionMode= destruction_mode
         self.bot_distributor : BotDistributor = bot_distributor
         self.dialogue_manager : DialogueManager = dialogue_manager
-        self.current_room : Room = R1
+        self.current_room : Room = R1 #starter room always in floor 1
         self.incr_fondu = 0
         self.clicked_this_frame = False
         self.gold : int = gold
@@ -103,16 +99,15 @@ class Game:
             case pg.K_n:  # Free the last bot in the current room
                 self.hivemind.free_last_bot(self.current_room)
 
-    def placeable_interaction_handler(self, placeable):
+    def placeable_interaction_handler(self, placeable : Placeable):
         match type(placeable):
             case subplaceable.DoorDown:  # Handle interaction with DoorDown type
-                # fondu(filtre,1000) # [Warning]
-                self.timer.create_timer(0.75, self.change_floor(-1))  # Create a timer to move down
+                self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
                 self.launch_transition()  # Start transition
                 placeable.interaction(self.timer)  # Trigger interaction
 
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
-                self.timer.create_timer(0.75, self.change_floor(1))  # Create a timer to move up
+                self.timer.create_timer(0.75, self.change_floor, arguments=[1])  # Create a timer to move up
                 self.launch_transition()  # Start transition
                 placeable.interaction(self.timer)  # Trigger interaction
 
@@ -127,6 +122,7 @@ class Game:
 
 
     def event_handler(self, event, mouse_pos):
+            self.clicked_this_frame = False #If not supplanted below, set false for this frame 
             if event.type == pg.KEYDOWN:  # Check for key down events
                 self.keydown_handler(event)
 

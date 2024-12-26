@@ -17,29 +17,34 @@ class BotStates(Enum):
 possible_reaction = ['waw', 'bof', 'uwu', 'owo', 'noob']
 
 class BotDistributor:
-    def __init__(self):
+    def __init__(self, game_timer : TimerManager, hivemind):
         self.theorical_gold = 0
         self.robot_tiers = [10, 20, 50, 100, 500, 1000]
+        self.game_timer = game_timer
+        self.hivemind = hivemind
+
+        self.game_timer.create_timer(0.25, self.add_to_theorical_gold, True)
+        self.game_timer.create_timer(1, self.distribute_to_bot, True, repeat_time_interval=[0.75,3])
 
     def add_to_theorical_gold(self):
         gold_amount = 10
         self.theorical_gold += gold_amount
     
-    def distribute_to_bot(self, TIMER, hivemind):
+    def distribute_to_bot(self):
         for tier in reversed(self.robot_tiers): #iterate tiers from most expensive to least expensive
             amount_mod : int = self.theorical_gold//tier #determine how much of a tier we can fit into the theorical gold
 
             if 3 >= amount_mod >= 1: #checks if you can distribute between 3 and 1 of this tier
 
                 for j in range(amount_mod): #distribute the correct bot tier the proper amount
-                    TIMER.create_timer(j*0.5, hivemind.add_bot, False, [tier]) 
+                    self.game_timer.create_timer(j*0.5, self.hivemind.add_bot, False, [tier]) 
 
                     self.theorical_gold -= tier
 
             elif amount_mod >= 1 and self.robot_tiers.index(tier) == len(self.robot_tiers)-1: #if condition above not met and no higher tier, distribute bots
 
                 for j in range(amount_mod): 
-                    TIMER.create_timer(j*0.5, hivemind.add_bot, False, [tier]) 
+                    self.game_timer.create_timer(j*0.5, self.hivemind.add_bot, False, [tier]) 
 
                     self.theorical_gold -= tier
                 return
