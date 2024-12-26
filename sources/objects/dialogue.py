@@ -2,7 +2,7 @@ import random
 import pygame
 
 pygame.init()
-class Dialogue():
+class DialogueManager():
     def __init__(self, fichier):    #nécessite de donner le chemin exacte du fichier
         self.fichier=fichier
         #self.screen=screen    screen
@@ -39,6 +39,3 @@ class Dialogue():
         
     def random_dialogue(self):
         self.number=random.randint(0, (len(self.texte)-1)) 
-
-dialoguet2=Dialogue('data\dialogue_t2.txt')
-
