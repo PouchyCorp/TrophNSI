@@ -9,7 +9,7 @@ from ui.popup import Popup
 from room_config import R0, R1, ROOMS, Room
 from utils.timermanager import TimerManager
 import ui.sprite as sprite
-from objects.dialogue import DialogueManager
+from objects.dialogue_v2 import DialogueManagement
 from math import pi
 from objects.placeable import Placeable
 class State(Enum):
@@ -34,7 +34,7 @@ class Game:
         self.build_mode : BuildMode= build_mode
         self.destruction_mode : DestructionMode= destruction_mode
         self.bot_distributor : BotDistributor = bot_distributor
-        self.dialogue_manager : DialogueManager = dialogue_manager
+        self.dialogue_manager : DialogueManagement = dialogue_manager
         self.current_room : Room = R1 #starter room always in floor 1
         self.incr_fondu = 0
         self.clicked_this_frame = False

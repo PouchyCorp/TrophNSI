@@ -1,29 +1,25 @@
-import random
+import random as rand
 import pygame
+import json
+#from anim import Animation, Spritesheet
+#import sprite
 
 pygame.init()
-class DialogueManager():
-    def __init__(self, fichier):
-        """nécessite de donner le chemin exacte du fichier"""
+class DialogueManagement():
+    def __init__(self, fichier):    #nécessite de donner le chemin exacte du fichier
         self.fichier=fichier
+        #self.screen=screen    screen
         self.texte=[]
         self.number=None
         self.format = pygame.font.SysFont("Arial", 20)
         self.bot_surf = None
     
+
     def load_save(self):
-        self.texte=[]  #debogage
-        fich_ouvert=open(self.fichier, encoding='utf8') 
-        for lines in fich_ouvert:
-            mot=''
-            intermediate=[]
-            for k in range(len(lines)-1):
-                mot+=lines[k]
-            intermediate.append(mot)
-            self.texte.append(intermediate)
-        fich_ouvert.close()
-        return self.texte
-    
+        with open(self.fichier, encoding='utf8') as file:
+            json_string = file.read()
+            self.texte = json.loads(json_string)
+
     def load_dialogue(self, number):
         talked=""
         for letter in self.texte[number]:
@@ -37,4 +33,11 @@ class DialogueManager():
         screen.blit(txtsurf,(450, 800)) #a recadrer
         
     def random_dialogue(self):
-        self.number=random.randint(0, (len(self.texte)-1)) 
+        self.number=rand.randint(0, (len(self.texte)-1)) 
+
+
+#test=Dialogue('data\dialoguetest.json')
+#test.load_save()
+#print(test.texte)
+
+

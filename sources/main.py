@@ -26,7 +26,7 @@ from ui.inventory import Inventory
 from ui.popup import Popup
 from utils.timermanager import TimerManager
 import ui.sprite as sprite
-from objects.dialogue import DialogueManager
+from objects.dialogue_v2 import DialogueManagement
 from core.logic import Game
 
 
@@ -49,7 +49,7 @@ build_mode: BuildMode = BuildMode()
 destruction_mode: DestructionMode = DestructionMode()
 
 #Test implementation of the dialogue class (to be integrated later)
-dialogue_manager = DialogueManager('data\dialogue.txt')
+dialogue_manager = DialogueManagement('data\dialogue.json')
 dialogue_manager.load_save()
 
 #tests 'temporary'
