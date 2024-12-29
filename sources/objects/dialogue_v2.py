@@ -1,6 +1,8 @@
 import random as rand
 import pygame
 import json
+from time import *
+
 #from anim import Animation, Spritesheet
 #import sprite
 
@@ -10,6 +12,7 @@ class DialogueManagement():
         self.fichier=fichier
         #self.screen=screen    screen
         self.texte=[]
+        self.double=False
         self.number=None
         self.format = pygame.font.SysFont("Arial", 20)
         self.bot_surf = None
@@ -23,15 +26,29 @@ class DialogueManagement():
     def load_dialogue(self, number):
         talked=""
         for letter in self.texte[number]:
+            if letter == "║" :
+                self.double=True
+                return talked
             talked+=letter
         return talked
-       
-    def show(self, screen):
-        txtsurf = self.format.render(self.load_dialogue(self.number), True, (255,255,255))
-        screen.blit(pygame.Surface((1000,125)), (200, 750)) #a recadrer
-        screen.blit(self.bot_surf, (200, 750)) #a recadrer
-        screen.blit(txtsurf,(450, 800)) #a recadrer
+    
+    def rest(self, number):   
+        reste=''
+        for letter in self.texte[number]:
+            reste+=letter 
+            if letter == "║" :
+                reste=""
+        self.double=False
+        return reste
+
+
+    def show(self, screen, text):
+        txtsurf = self.format.render(text, True, (255,255,255))
+        screen.blit(pygame.Surface((1000,125)), (200, 750)) 
+        screen.blit(self.bot_surf, (200, 750)) 
+        screen.blit(txtsurf,(450, 800)) 
         
+    
     def random_dialogue(self):
         self.number=rand.randint(0, (len(self.texte)-1)) 
 

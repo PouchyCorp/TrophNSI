@@ -39,7 +39,8 @@ class Game:
         self.incr_fondu = 0
         self.clicked_this_frame = False
         self.gold : int = gold
-    
+        self.first_dialogue=False
+
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
@@ -160,8 +161,10 @@ class Game:
                                 self.placeable_interaction_handler(placeable)
                                         
                     case State.DIALOG:
-                        self.gui_state = State.INTERACTION  # Return to interaction mode after dialog when clicking
-                    
+                        if self.first_dialogue==False:
+                           self.gui_state = State.INTERACTION
+                               
+
     def update(self, mouse_pos):
         
         # Update timers
@@ -206,10 +209,17 @@ class Game:
     #            test_painting.draw(WIN)  # Draw the painting canvas
             
             case State.DIALOG:
-                pg.transform.grayscale(self.win, self.win)  # Apply grayscale effect on the window
-                
-                self.dialogue_manager.show(self.win)  # Show dialogue on screen
-            
+                if self.dialogue_manager.double and self.first_dialogue:
+                    self.dialogue_manager.double=False
+                    self.first_dialogue=False
+                    self.dialogue_manager.show(self.win, self.dialogue_manager.rest(self.dialogue_manager.number))
+
+                else:
+                    pg.transform.grayscale(self.win, self.win)  # Apply grayscale effect on the window
+                    self.dialogue_manager.show(self.win, self.dialogue_manager.load_dialogue(self.dialogue_manager.number))  # Show dialogue on screen
+                    if self.dialogue_manager.double:
+                        self.first_dialogue=True    
+
             case State.TRANSITION:
                 if self.incr_fondu <= pi:
                     self.incr_fondu = sprite.fondu(self.win, self.incr_fondu, 0.0125)  # Manage transition effect
