@@ -8,8 +8,8 @@ class Spritesheet:
 
     def get_img(self, coord : tuple[int]) -> Surface:
         surf = Surface((self.img_size[0], self.img_size[1]), flags=SRCALPHA)
-        coord_x_px = coord[0]*self.img_size[0]
-        coord_y_py = coord[1]*self.img_size[1]
+        coord_x_px = coord[0]*self.img_size[0] #take the last x-coord to calculate the next position
+        coord_y_py = coord[1]*self.img_size[1] #take the last y-coord to calculate the next position
         surf.blit(self.surf, (0,0), (coord_x_px, coord_y_py, self.img_size[0], self.img_size[1]))
         return surf
 
@@ -26,11 +26,11 @@ class Animation:
 
     def get_frame(self) -> Surface:
         if self.img_index == self.length-1 and self.repeat:
-            self.img_index = 0
+            self.img_index = 0                  #reste to 0 the spritesheet
         
         if self.__speed_incr >= self.speed and self.img_index != self.length-1 :
             self.img_index += 1
-            self.__speed_incr = 0 
+            self.__speed_incr = 0           #setup the speed of the animation
         else:
             self.__speed_incr += 1
         
@@ -38,13 +38,14 @@ class Animation:
         return new_surf
     
     def reset_frame(self):
-        self.img_index = 0
+        self.img_index = 0  
 
         new_surf = self.spritesheet.get_img((self.img_index, self.line))
         return new_surf
+    
     def copy(self):
         return Animation(self.spritesheet,self.line,self.length,self.speed,self.repeat)
 
     def is_finished(self):
-        if self.img_index == self.length-1 :
+        if self.img_index == self.length-1 : #check if it's the last picture of the spritesheet
             return True
