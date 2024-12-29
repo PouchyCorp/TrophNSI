@@ -68,7 +68,7 @@ def get_outline(surf, color):
                 outline_surface.blit(surf, (dx + outline_width, dy + outline_width))
 
     outline_surface.fill(color+tuple([0]), special_flags=BLEND_RGBA_MAX)
-    return outline_surface\
+    return outline_surface
 
 
 def fondu(surf : Surface, incr ,speed) -> Surface:

@@ -53,11 +53,11 @@ class Game:
         else:
             self.popups.append(Popup("you can't go off limits"))  # Show popup if trying to go below limits
 
-    def launch_dialogue(self, bot_sprite):
+    def launch_dialogue(self, bot_anim):
         """# Function to initiate dialogue easily passed to other functions"""
         self.gui_state = State.DIALOG
         self.dialogue_manager.random_dialogue()  # Trigger a random dialogue
-        self.dialogue_manager.bot_surf = bot_sprite.copy()  # Copy the bot's surface for display
+        self.dialogue_manager.bot_anim = bot_anim.copy()  # Copy the bot's surface for display
 
 
     def launch_transition(self):
@@ -161,8 +161,8 @@ class Game:
                                 self.placeable_interaction_handler(placeable)
                                         
                     case State.DIALOG:
-                        if self.first_dialogue==False:
-                           self.gui_state = State.INTERACTION
+                        if self.dialogue_manager.click_interaction():
+                            self.gui_state = State.INTERACTION
                                
 
     def update(self, mouse_pos):
@@ -209,16 +209,10 @@ class Game:
     #            test_painting.draw(WIN)  # Draw the painting canvas
             
             case State.DIALOG:
-                if self.dialogue_manager.double and self.first_dialogue:
-                    self.dialogue_manager.double=False
-                    self.first_dialogue=False
-                    self.dialogue_manager.show(self.win, self.dialogue_manager.rest(self.dialogue_manager.number))
+                pg.transform.grayscale(self.win, self.win)  # Apply grayscale effect on the background
 
-                else:
-                    pg.transform.grayscale(self.win, self.win)  # Apply grayscale effect on the window
-                    self.dialogue_manager.show(self.win, self.dialogue_manager.load_dialogue(self.dialogue_manager.number))  # Show dialogue on screen
-                    if self.dialogue_manager.double:
-                        self.first_dialogue=True    
+                self.dialogue_manager.update() #update the dialogue manager and it's subclasses
+                self.dialogue_manager.draw(self.win)    
 
             case State.TRANSITION:
                 if self.incr_fondu <= pi:

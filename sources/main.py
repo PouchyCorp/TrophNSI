@@ -48,11 +48,8 @@ inventory.inv.append(Placeable('6545dqwz31', Coord(1, (121, 50)), sprite.PROP_ST
 build_mode: BuildMode = BuildMode()
 destruction_mode: DestructionMode = DestructionMode()
 
-#Test implementation of the dialogue class (to be integrated later)
 dialogue_manager = DialogueManagement('data\dialogue.json')
-dialogue_manager.load_save()
 
-#tests 'temporary'
 bot_distributor = BotDistributor(TIMER, hivemind)
 
 moulaga = 0  # Currency variable

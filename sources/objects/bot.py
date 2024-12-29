@@ -286,7 +286,7 @@ class Bot:
             if clicked:
                 self.is_reacting = False
                 #launches the dialogue
-                launch_dialogue_func(self.surf)
+                launch_dialogue_func(self.anim_walk_right) #à modifier --------------------------------------
 
         else:
             self.is_mouse_on_self = False

@@ -42,6 +42,7 @@ class Animation:
 
         new_surf = self.spritesheet.get_img((self.img_index, self.line))
         return new_surf
+    
     def copy(self):
         return Animation(self.spritesheet,self.line,self.length,self.speed,self.repeat)
 

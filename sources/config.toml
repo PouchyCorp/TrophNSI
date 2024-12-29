@@ -2,7 +2,7 @@
 
 [screen]
 size = [1920,1080]
-fullscreen = false
+fullscreen = true
 
 [gameplay]
 fps = 60
