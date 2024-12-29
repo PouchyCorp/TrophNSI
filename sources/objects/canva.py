@@ -3,7 +3,7 @@ from utils.coord import Coord
 from placeable import Placeable
 
 class Canva:
-    def __init__(self):
+    def __init__(self): 
         self.coord = Coord(0,(600,60))
         self.surf = pg.Surface((600,900))
         self.surf.fill(pg.Color(0,255,0))
@@ -11,10 +11,10 @@ class Canva:
         self.rect.x, self.rect.y = self.coord.xy
         self.name = None
 
-    def draw(self,win):
-        win.blit(self.surf,self.coord.xy)
+    def draw(self,win):         
+        win.blit(self.surf,self.coord.xy)       #blit the painting on the screen
 
-    def save(self, name, inv):
+    def save(self, name, inv):    #setup the paint in your inventory as a placeable
         self.name = name
         self.surf.blit(self.surf.copy(),(0,0))
-        inv.append(Placeable(self.name,self.coord,pg.transform.scale(self.surf.copy(),(300,450)),'decoration'))
+        inv.append(Placeable(self.name,self.coord,pg.transform.scale(self.surf.copy(),(300,450)),'decoration'))     #add it to the inventory
