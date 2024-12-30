@@ -78,7 +78,7 @@ class Game:
             case pg.K_SPACE:  # Spacebar to toggle between inventory and interaction
                 if self.gui_state is State.INTERACTION:
                     self.gui_state = State.INVENTORY  # Open inventory
-                    self.inventory.open()
+                    self.inventory.init()
                 elif self.gui_state is State.INVENTORY:
                     self.gui_state = State.INTERACTION  # Return to interaction
 
@@ -138,6 +138,7 @@ class Game:
                             self.gui_state = State.INTERACTION  # Return to interaction mode
 
                     case State.INVENTORY:
+                        self.inventory.handle_navigation(mouse_pos)
                         clicked_showed_obj_id = self.inventory.select_item(mouse_pos)  # Check if an inventory item was clicked
                         if clicked_showed_obj_id:
                             clicked_obj = self.inventory.search_by_id(

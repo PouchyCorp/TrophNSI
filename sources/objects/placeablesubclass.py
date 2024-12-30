@@ -80,3 +80,9 @@ class DoorDown(Placeable):
 
 class BotPlaceable(Placeable):
     pass
+
+class ShopPlaceable(Placeable):
+    def __init__(self, name, coord, surf, tag = None, anim = None, y_constraint = None, temporary = False):
+        super().__init__(name, coord, surf, tag, anim, y_constraint, temporary)
+        self.is_open = False
+
