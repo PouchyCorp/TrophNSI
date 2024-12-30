@@ -13,6 +13,7 @@ stairs_up.pair_door_down(stairs_down)
 #R0
 R0 = Room(0,sprite.BG2)
 canva = Placeable('canva', Coord(0,(1200,50)), Surface((700,1000)))
+R0.placed += [stairs_up , stairs_down]
 
 #R1
 R1 = Room(1,sprite.BG1)

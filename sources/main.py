@@ -43,7 +43,8 @@ hivemind = Hivemind(60, 600, TIMER)
 inventory: Inventory = Inventory()
 inventory.inv.append(Placeable('6545dqw231', Coord(1, (121, 50)), sprite.P3))
 inventory.inv.append(Placeable('6545dqwz31', Coord(1, (121, 50)), sprite.PROP_STATUE, tag="decoration", y_constraint=620))
-
+inventory.inv.append(Placeable('6545dqwz31', Coord(1, (39, 38)), sprite.SPRITE_PLANT_1, tag="decoration", y_constraint=700))
+inventory.inv.append(Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620))
 # Instantiate build and destruction modes
 build_mode: BuildMode = BuildMode()
 destruction_mode: DestructionMode = DestructionMode()
