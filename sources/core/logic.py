@@ -203,7 +203,7 @@ class Game:
 
         # Manage bot behavior
         self.hivemind.order_inline_bots()  # Arrange bots in a line
-        self.hivemind.update_bots_ai(ROOMS, self.timer, self.clicked_this_frame, mouse_pos, self.launch_dialogue)  # Update bot AI
+        self.hivemind.update(ROOMS, self.timer, self.clicked_this_frame, mouse_pos, self.launch_dialogue)  # Update bot AI
 
         match self.gui_state:      
             case State.INTERACTION:

@@ -73,7 +73,7 @@ class Hivemind:
             random_bot.is_reacting = True
         TIMER.create_timer(randint(self.react_time_min,self.react_time_max),self.create_react_bot, arguments=[TIMER])
 
-    def get_random_bot_spritesheet(self) -> tuple[Spritesheet, int]:
+    def get_random_bot_spritesheet(self) -> tuple[Spritesheet, list]:
         spritesheet_choice = choice(sprite.LIST_SPRITESHEET_ROBOT)
         assert type(spritesheet_choice) is tuple
         return spritesheet_choice
@@ -82,7 +82,8 @@ class Hivemind:
         #checks if last place is empty
         if type(self.inline_bots[0]) is not Bot:
             spritesheet_args = self.get_random_bot_spritesheet()
-            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,700+randint(-50,50))), gold_amount, spritesheet_args[0], spritesheet_args[1]) #spawns bot
+            bot_sprite_height = spritesheet_args[0].img_size[0]
+            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,958-bot_sprite_height+randint(-50,50))), gold_amount, spritesheet_args[0], spritesheet_args[1]) #spawns bot
     
     def free_last_bot(self, current_room):
         if type(self.inline_bots[-1]) is Bot:
@@ -93,7 +94,7 @@ class Hivemind:
             self.remove_last_bot_clickable(current_room)
         
     
-    def update_bots_ai(self, rooms, TIMER, clicked, mouse_pos, launch_dialogue_func):
+    def update(self, rooms, TIMER, clicked, mouse_pos, launch_dialogue_func):
         """
         Update the AI logic for the bots in the game.
         @param self - the object itself
@@ -129,6 +130,10 @@ class Hivemind:
         #list of background bots
         list_of_bots = [bot for bot in self.inline_bots if type(bot) is Bot] + self.liberated_bots
         sorted_bots = self.sorted_bot_by_y(list_of_bots)
+
+        #updates the placeable to follow the last bot's animation
+        if self.bot_placeable_pointer and type(self.inline_bots[-1]) is Bot:
+            self.bot_placeable_pointer.surf = self.inline_bots[-1].surf
 
         #draw bots in background first
         for bot in sorted_bots:
@@ -174,7 +179,7 @@ class Hivemind:
         
 
 class Bot:
-    def __init__(self, coord : Coord, gold_amount : int, anim_spritesheet : Spritesheet, spritesheet_lenght) -> None:
+    def __init__(self, coord : Coord, gold_amount : int, anim_spritesheet : Spritesheet, spritesheet_lenghts) -> None:
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
         self.__target_coord = self.coord.copy()
@@ -186,11 +191,11 @@ class Bot:
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
 
-        self.anim_walk_right = Animation(anim_spritesheet, 0, spritesheet_lenght, 2)
-        self.anim_walk_left = Animation(anim_spritesheet, 1, spritesheet_lenght, 2)
-        #self.anim_idle_right = Animation(anim_spritesheet, 2, *spritesheet_args)
-        #self.anim_idle_left = Animation(anim_spritesheet, 3, *spritesheet_args)
-        #self.anim_watch = Animation(anim_spritesheet, 4, *spritesheet_args)
+        self.anim_walk_right = Animation(anim_spritesheet, 0, spritesheet_lenghts[0], 2)
+        self.anim_walk_left = Animation(anim_spritesheet, 1, spritesheet_lenghts[1], 2)
+        self.anim_idle_right = Animation(anim_spritesheet, 2, spritesheet_lenghts[2], 2)
+        #self.anim_idle_left = Animation(anim_spritesheet, 3, spritesheet_lenght, 2)
+        self.anim_watch = Animation(anim_spritesheet, 3, spritesheet_lenghts[3], 6, False)
 
         self.surf = self.anim_walk_right.get_frame()
         self.rect = self.surf.get_rect()
@@ -230,20 +235,19 @@ class Bot:
                     if potential_dests:
                         destination = choice(potential_dests)
                         self.target_coord = destination[0]
-                        self.target_coord.x += randint(-28,28)
                         self.visited_placeable_id.append(destination[1])
                     
                     else:
                         #no valid destination -> leave
                         self.is_leaving = True
                         self.target_coord = self.exit_coords
-                """
+
                 match self.move_dir:
                     case "RIGHT":
                         self.surf = self.anim_idle_right.get_frame()
                     case "LEFT":
-                        self.surf = self.anim_idle_left.get_frame()
-                """
+                        #self.surf = self.anim_idle_left.get_frame()
+                        pass
                         
                 if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
                     self.state = BotStates.WALK
@@ -256,7 +260,8 @@ class Bot:
                         self.state = BotStates.IDLE
                     else:
                         self.state = BotStates.WATCH
-                        TIMER.create_timer(1, self.set_attribute, False, arguments=('state', BotStates.IDLE))
+                        TIMER.create_timer(2.75, self.set_attribute, False, arguments=('state', BotStates.IDLE))
+                        TIMER.create_timer(2.75, self.anim_watch.reset_frame, False)
 
                 self.move_to_target_coord()
                 match self.move_dir:
@@ -269,7 +274,7 @@ class Bot:
                 draw.rect(self.surf, "green", (0,0,10,10))
                 
 
-                #self.surf = self.anim_watch.get_frame()
+                self.surf = self.anim_watch.get_frame()
 
             case _:
                 raise ValueError
@@ -317,7 +322,12 @@ class Bot:
         for room in rooms:
             for placeable in room.placed:
                 if placeable.tag == "decoration" and placeable.id not in self.visited_placeable_id:
-                    potential_destinations.append((placeable.coord.copy(), placeable.id))
+
+                    placeable_center_coord = placeable.coord.copy()
+                    placeable_center_coord.x += placeable.rect.width // 3 
+                    placeable_center_coord.x += randint(-placeable.rect.width // 3, placeable.rect.width // 3)
+
+                    potential_destinations.append((placeable_center_coord, placeable.id))
         return potential_destinations
     
     def set_attribute(self, attribute_name, value):
