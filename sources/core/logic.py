@@ -251,7 +251,7 @@ class Game:
                 self.shop.draw(self.win, mouse_pos)
 
         self.win.blit(InfoPopup(
-            f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : flop').text_surf, (0, 0))
+            f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.gold}').text_surf, (0, 0))
         
           # Draw inventory
         
