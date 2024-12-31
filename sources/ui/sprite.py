@@ -132,7 +132,7 @@ PATTERN_LIST = [load_image('data/pattern_storage/pattern_'+str(k+1)+'.png') for 
 
 BUTTON = load_image('data/button.png')
 
-WINDOW = load_image('data/window.png')
+WINDOW = load_image('data/bord.png')
 
 SPRITESHEET_ROBOT_1_PACK = (anim.Spritesheet(load_image('data/robot_3.png'),(27*6,39*6)), [14, 14, 11, 17])
 
@@ -141,3 +141,7 @@ LIST_SPRITESHEET_ROBOT = [SPRITESHEET_ROBOT_1_PACK]
 SPRITE_PLANT_1 = load_image("data/plant_2_39x38.png")
 
 SPRITE_PLANT_2 = load_image("data/plant_3_28x48.png")
+
+FLECHE_GAUCHE = load_image("data/fleche_gauche.png")
+
+FLECHE_DROITE  = load_image("data/fleche_droite.png")
