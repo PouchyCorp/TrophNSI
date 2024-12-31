@@ -1,5 +1,6 @@
 import pygame as pg
 from utils.coord import Coord
+from ui.sprite import WINDOW, nine_slice_scaling
 class ConfirmationPopup:
     def __init__(self, screen : pg.Surface, question : str, yes_func, no_func = None, yes_func_args : list = [], no_func_args : list = []):
         """
@@ -14,8 +15,7 @@ class ConfirmationPopup:
         self.screen = screen
         self.question = question
         self.font = pg.font.Font(None, 36)
-        self.background : pg.Surface = pg.Surface((600,200))
-
+        self.background : pg.Surface = nine_slice_scaling(WINDOW,(600,200),12)
         test_surf = pg.Surface((50,50))
         test_surf.fill('white')
         self.yes_button = self._create_button(yes_func, yes_func_args, test_surf)
