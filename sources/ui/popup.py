@@ -1,6 +1,6 @@
 import pygame as pg
 
-class Popup:
+class InfoPopup:
     def __init__(self, text):
         self.text : str = text
 

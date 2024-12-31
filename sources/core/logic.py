@@ -1,17 +1,4 @@
 from enum import Enum, auto
-import pygame as pg
-import objects.placeablesubclass as subplaceable
-from objects.bot import Hivemind, BotDistributor
-from core.buildmode import BuildMode, DestructionMode
-from utils.coord import Coord
-from ui.inventory import Inventory
-from ui.popup import Popup
-from room_config import R0, R1, ROOMS, Room
-from utils.timermanager import TimerManager
-import ui.sprite as sprite
-from objects.dialogue_v2 import DialogueManagement
-from math import pi
-from objects.placeable import Placeable
 class State(Enum):
     INTERACTION = auto()
     BUILD = auto()
@@ -21,16 +8,35 @@ class State(Enum):
     PLACING_PATTERN = auto()
     DIALOG = auto()
     TRANSITION = auto()
+    CONFIRMATION = auto()
+    SHOP = auto()
+
+import pygame as pg
+import objects.placeablesubclass as subplaceable
+from objects.bot import Hivemind, BotDistributor
+from core.buildmode import BuildMode, DestructionMode
+from utils.coord import Coord
+from ui.inventory import Inventory, Shop
+from ui.popup import InfoPopup
+from room_config import R0, R1, ROOMS, Room
+from utils.timermanager import TimerManager
+import ui.sprite as sprite
+from objects.dialogue_v2 import DialogueManagement
+from math import pi
+from objects.placeable import Placeable
+from ui.confirmationpopup import ConfirmationPopup
 
 class Game:
-    def __init__(self, win, clock, timer, hivemind, inventory, build_mode, destruction_mode, bot_distributor, dialogue_manager, gold):
+    def __init__(self, win, clock, timer, hivemind, inventory, shop, build_mode, destruction_mode, bot_distributor, dialogue_manager, gold):
         self.timer : TimerManager = timer
         self.win : pg.Surface = win
-        self.clock : pg.Clock = clock
-        self.popups : list[Popup] = []
+        self.clock : pg.time.Clock = clock
+        self.popups : list[InfoPopup] = []
+        self.confirmation_popups : list[ConfirmationPopup] = []
         self.gui_state = State.INTERACTION
         self.hivemind : Hivemind = hivemind
         self.inventory : Inventory = inventory
+        self.shop : Shop = shop
         self.build_mode : BuildMode= build_mode
         self.destruction_mode : DestructionMode= destruction_mode
         self.bot_distributor : BotDistributor = bot_distributor
@@ -39,7 +45,6 @@ class Game:
         self.incr_fondu = 0
         self.clicked_this_frame = False
         self.gold : int = gold
-        self.first_dialogue=False
 
     def change_floor(self, direction):
         """to move up : 1
@@ -51,7 +56,7 @@ class Game:
             if self.current_room == R0:
                 self.gui_state = State.PAINTING
         else:
-            self.popups.append(Popup("you can't go off limits"))  # Show popup if trying to go below limits
+            self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
 
     def launch_dialogue(self, bot_anim):
         """# Function to initiate dialogue easily passed to other functions"""
@@ -88,6 +93,13 @@ class Game:
                 else:
                     self.gui_state = State.INTERACTION  # Return to interaction
 
+            case pg.K_s:
+                if self.gui_state is State.INTERACTION:
+                    self.gui_state = State.SHOP  # Open inventory
+                    self.shop.init()
+                elif self.gui_state is State.SHOP:
+                    self.gui_state = State.INTERACTION  # Return to interaction
+                    
             case pg.K_UP:  # Move up a floor
                 self.change_floor(1)
 
@@ -119,10 +131,10 @@ class Game:
 
             case _:
                 self.popups.append(
-                    Popup('bip boup erreur erreur'))  # Add error popup if matching type fails
+                    InfoPopup('bip boup erreur erreur'))  # Add error popup if matching type fails
 
 
-    def event_handler(self, event, mouse_pos):
+    def event_handler(self, event : pg.event.Event, mouse_pos : Coord):
             self.clicked_this_frame = False #If not supplanted below, set false for this frame 
             if event.type == pg.KEYDOWN:  # Check for key down events
                 self.keydown_handler(event)
@@ -139,16 +151,15 @@ class Game:
 
                     case State.INVENTORY:
                         self.inventory.handle_navigation(mouse_pos)
-                        clicked_showed_obj_id = self.inventory.select_item(mouse_pos)  # Check if an inventory item was clicked
-                        if clicked_showed_obj_id:
-                            clicked_obj = self.inventory.search_by_id(
-                                clicked_showed_obj_id)  # Retrieve the object by its ID
-
-                            # Check if the object is already placed
-                            if not clicked_obj.placed:
-                                # Prepare to enter build mode with the selected placeable
-                                self.build_mode.selected_placeable = clicked_obj
-                                self.gui_state = State.BUILD
+                        clicked_placeable : Placeable | None = self.inventory.handle_click(mouse_pos)
+                        if clicked_placeable:
+                            # Prepare to enter build mode with the selected placeable
+                            self.build_mode.selected_placeable = clicked_placeable
+                            self.gui_state = State.BUILD
+                    
+                    case State.SHOP:
+                        self.shop.handle_click(mouse_pos, self)
+                        
 
                     case State.DESTRUCTION:
                         for placeable in self.current_room.placed:
@@ -163,6 +174,14 @@ class Game:
                                         
                     case State.DIALOG:
                         if self.dialogue_manager.click_interaction():
+                            self.gui_state = State.INTERACTION
+                    
+                    case State.CONFIRMATION:
+                        flag = self.confirmation_popups[-1].handle_click(mouse_pos)
+                        if flag is not None:
+                            self.confirmation_popups.pop()
+
+                        if not len(self.confirmation_popups):
                             self.gui_state = State.INTERACTION
                                
 
@@ -207,7 +226,7 @@ class Game:
 
     #        case w if w in (State.PAINTING, State.PLACING_PATTERN):
     #            pattern_inventory.draw(WIN)  # Draw the pattern inventory
-    #            test_painting.draw(WIN)  # Draw the painting canvas
+    #            test_painting.draw(WIN)  # Draw the painting 
             
             case State.DIALOG:
                 pg.transform.grayscale(self.win, self.win)  # Apply grayscale effect on the background
@@ -221,9 +240,20 @@ class Game:
                 else:
                     self.gui_state = State.INTERACTION  # Return to interaction state after transition
             
-        self.win.blit(Popup(
+            case State.CONFIRMATION:
+                if self.confirmation_popups:
+                    self.confirmation_popups[-1].draw(mouse_pos)
+            
+            case State.INVENTORY:
+                self.inventory.draw(self.win, mouse_pos)
+
+            case State.SHOP:
+                self.shop.draw(self.win, mouse_pos)
+
+        self.win.blit(InfoPopup(
             f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : flop').text_surf, (0, 0))
-        self.inventory.draw(self.win, mouse_pos, self.gui_state == State.INVENTORY)  # Draw inventory
+        
+          # Draw inventory
         
         # Render popups after all other drawings
         self.render_popups()

@@ -2,6 +2,9 @@ from objects.placeable import Placeable
 from utils.coord import Coord
 from pygame import Surface, transform, BLEND_RGB_MIN, font, Rect, draw
 from ui.sprite import ICON_1, WINDOW, nine_slice_scaling
+from ui.confirmationpopup import ConfirmationPopup
+from ui.popup import InfoPopup
+
 
 BORDER_AROUND_WINDOW = 12
 OBJECT_SIZE = 180
@@ -69,21 +72,18 @@ class Inventory:
         height = OBJECT_SIZE*5
         self.window_sprite = nine_slice_scaling(WINDOW, (width, height), 6)
 
-    def draw(self, win: Surface, mouse_pos: Coord, is_open: bool):
+    def draw(self, win: Surface, mouse_pos: Coord):
         """Draws the inventory or shop interface on the screen."""
-        if is_open:
-            win.blit(self.window_sprite, (12, 60))
-            self._draw_title(win)
-            self._mouse_highlight(win, mouse_pos)
+        win.blit(self.window_sprite, (12, 60))
+        self._draw_title(win)
+        self._mouse_highlight(win, mouse_pos)
 
-            # Draw objects and their labels
-            win.blits([(plcb.surf, plcb.rect.topleft) for plcb, _ in self.displayed_objects])
-            win.blits([(txt_surf, (plcb.rect.x, plcb.rect.y + 190)) for plcb, txt_surf in self.displayed_objects])
+        # Draw objects and their labels
+        win.blits([(plcb.surf, plcb.rect.topleft) for plcb, _ in self.displayed_objects])
+        win.blits([(txt_surf, (plcb.rect.x, plcb.rect.y + 190)) for plcb, txt_surf in self.displayed_objects])
 
-            # Draw navigation buttons
-            self._draw_navigation_buttons(win)
-        else:
-            win.blit(ICON_1, (12, 60))
+        # Draw navigation buttons
+        self._draw_navigation_buttons(win)
 
     def _draw_title(self, win: Surface):
         """Draws the title of the inventory or shop."""
@@ -113,15 +113,23 @@ class Inventory:
         elif self.button_next_rect.collidepoint(mouse_pos.xy) and (self._page + 1) * ITEMS_PER_PAGE < len(self.inv):
             self._page += 1
             self.init()
+    
+    def handle_click(self, mouse_pos):
+        """returns the placeable contained in inventory if all conditions are valid : placeable not already placed, mouse clicked on it"""
+        clicked_showed_obj_id = self._select_item(mouse_pos)  # Check if an inventory item was clicked, and if the object is already placed
+        if clicked_showed_obj_id:
+            clicked_obj = self._search_by_id(clicked_showed_obj_id)  # Retrieve the object by its ID
+            return clicked_obj
+        return None
 
-    def select_item(self, mouse_pos: Coord) -> str | None:
-        """Returns the ID of the selected item, or None if no item is selected."""
+    def _select_item(self, mouse_pos: Coord) -> str | None:
+        """Returns the ID of the selected item, or None if no item is selected or the item is already placed."""
         for placeable, _ in self.displayed_objects:
-            if placeable.rect.collidepoint(mouse_pos.xy):
+            if placeable.rect.collidepoint(mouse_pos.xy) and not placeable.placed:
                 return placeable.id
         return None
 
-    def search_by_id(self, item_id: int) -> Placeable | None:
+    def _search_by_id(self, item_id: int) -> Placeable | None:
         """Finds and returns the first placeable matching the given ID."""
         for obj in self.inv:
             if obj.id == item_id:
@@ -131,3 +139,24 @@ class Inventory:
     def __repr__(self):
         """Returns a string representation of the inventory."""
         return str(self.__dict__)
+
+
+class Shop(Inventory):
+    def buy_object(self, obj : Placeable, game):
+        if game.gold - obj.price >= 0:
+            game.gold -= obj.price
+            game.inventory.inv.append(obj)
+            self.inv.remove(obj)
+            self.init()
+            game.popups.append(InfoPopup(f"{obj.name} a été ajouté à ton inventaire !"))
+        else:
+            game.popups.append(InfoPopup("Tu n'as as assez d'argent pour acheter l'objet :("))
+
+    def handle_click(self, mouse_pos : Coord, game):
+        """checks if click event happenend on an object, and launches confirmation for buying"""
+        clicked_showed_obj_id = self._select_item(mouse_pos)  # Check if an inventory item was clicked, and if the object is already placed
+        if clicked_showed_obj_id:
+            clicked_obj = self._search_by_id(clicked_showed_obj_id)  # Retrieve the object by its ID
+            game.confirmation_popups.append(ConfirmationPopup(game.win, f"acheter cet objet pour {clicked_obj.price}$?", self.buy_object, yes_func_args=[clicked_obj, game]))
+            from core.logic import State
+            game.gui_state = State.CONFIRMATION

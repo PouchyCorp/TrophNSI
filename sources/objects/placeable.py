@@ -10,7 +10,7 @@ from utils.anim import Animation
 from ui.sprite import get_outline
 
 class Placeable:
-    def __init__(self, name: str, coord: Coord, surf: Surface, tag: str | None = None, anim: Animation | None = None, y_constraint: int | None = None, temporary: bool = False) -> None:
+    def __init__(self, name: str, coord: Coord, surf: Surface, tag: str | None = None, anim: Animation | None = None, y_constraint: int | None = None, temporary: bool = False, price : int = 0) -> None:
         self.name = name
         self.id = randint(0, 10000000)  # Generates a random ID for the Placeable instance
         self.coord = coord
@@ -36,6 +36,8 @@ class Placeable:
         self.placed = False  # Indicates if the Placeable object has been placed
 
         self.temporary = temporary  # Indicates whether the Placeable object is temporary
+
+        self.price = price
 
     def get_blit_args(self):
         """Returns the surface and rectangle for blitting."""

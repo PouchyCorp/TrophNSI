@@ -22,8 +22,8 @@ from objects.placeable import Placeable
 from objects.bot import Hivemind, BotDistributor
 from core.buildmode import BuildMode, DestructionMode
 from utils.coord import Coord
-from ui.inventory import Inventory
-from ui.popup import Popup
+from ui.inventory import Inventory, Shop
+from ui.popup import InfoPopup
 from utils.timermanager import TimerManager
 import ui.sprite as sprite
 from objects.dialogue_v2 import DialogueManagement
@@ -32,7 +32,7 @@ from core.logic import Game
 
 TIMER = TimerManager()
 
-popups: list[Popup] = []  # List to manage popups
+popups: list[InfoPopup] = []  # List to manage popups
 
 incr_fondu = 0  # Variable for transition effects
 
@@ -53,6 +53,9 @@ inventory.inv.append(Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_P
 inventory.inv.append(Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620))
 inventory.inv.append(Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620))
 
+shop: Shop = Shop()
+shop.inv.append(Placeable('6545dqdfwz31', Coord(1, (121, 50)), sprite.PROP_STATUE, tag="decoration", y_constraint=620, price=10))
+
 # Instantiate build and destruction modes
 build_mode: BuildMode = BuildMode()
 destruction_mode: DestructionMode = DestructionMode()
@@ -65,7 +68,7 @@ moulaga = 0  # Currency variable
 money_per_robot = 10  # Rewards per robot
 
 #game initialized with all the objects as parameters instead of in the __init__ of Game, because of the eventuality that they would be loaded by a db save
-game = Game(WIN, CLOCK, TIMER, hivemind, inventory, build_mode, destruction_mode, bot_distributor, dialogue_manager, moulaga)
+game = Game(WIN, CLOCK, TIMER, hivemind, inventory, shop, build_mode, destruction_mode, bot_distributor, dialogue_manager, moulaga)
 
 if __name__ == '__main__':
     fps = config['gameplay']['fps']  # Frame rate
