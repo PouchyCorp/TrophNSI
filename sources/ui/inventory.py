@@ -1,16 +1,15 @@
 from objects.placeable import Placeable
 from utils.coord import Coord
 from pygame import Surface, transform, BLEND_RGB_MIN, font, Rect, draw
-from ui.sprite import ICON_1, WINDOW, nine_slice_scaling
+from ui.sprite import ICON_1, WINDOW, nine_slice_scaling, FLECHE_GAUCHE, FLECHE_DROITE
 from ui.confirmationpopup import ConfirmationPopup
 from ui.popup import InfoPopup
 
 
-BORDER_AROUND_WINDOW = 12
+BORDER_AROUND_WINDOW = 24
 OBJECT_SIZE = 180
 ITEMS_PER_PAGE = 8
-BUTTON_WIDTH = 40
-BUTTON_HEIGHT = 80
+
 
 class Inventory:
     def __init__(self, title: str = "Inventory") -> None:
@@ -21,9 +20,8 @@ class Inventory:
         self.font = font.SysFont(None, 30)  # Font for labels
         self.title = title  # Title of the inventory
         self.window_sprite: Surface = WINDOW  # Window background
-        self.button_prev_rect = Rect(20, 978, BUTTON_WIDTH, BUTTON_HEIGHT)  # Next page button
-        self.button_next_rect = Rect(280, 978, BUTTON_WIDTH, BUTTON_HEIGHT)  # Previous page button
-
+        self.button_prev_rect = FLECHE_GAUCHE.get_rect(topleft = (64,975))
+        self.button_next_rect = FLECHE_GAUCHE.get_rect(topleft = (224,975))
     def init(self):
         """Initializes the objects for rendering on the current page."""
         # Paginate items
@@ -70,7 +68,7 @@ class Inventory:
         """Resizes the window sprite based on the displayed objects."""
         width = BORDER_AROUND_WINDOW * 2 + OBJECT_SIZE + 144
         height = OBJECT_SIZE*5
-        self.window_sprite = nine_slice_scaling(WINDOW, (width, height), 6)
+        self.window_sprite = nine_slice_scaling(WINDOW, (width, height), 12)
 
     def draw(self, win: Surface, mouse_pos: Coord):
         """Draws the inventory or shop interface on the screen."""
@@ -98,12 +96,10 @@ class Inventory:
 
     def _draw_navigation_buttons(self, win: Surface):
         """Draws the previous and next page buttons."""
-        draw.rect(win, (100, 100, 100), self.button_prev_rect) #temp
+        #.rect(win, (100, 100, 100), self.button_prev_rect) #temp
         draw.rect(win, (100, 100, 100), self.button_next_rect) #temp
-        prev_label = self.font.render("<", True, "white")
-        next_label = self.font.render(">", True, "white")
-        win.blit(prev_label, self.button_prev_rect.center)
-        win.blit(next_label, self.button_next_rect.center)
+        win.blit(FLECHE_GAUCHE, self.button_prev_rect)
+        win.blit(FLECHE_DROITE, self.button_next_rect)
 
     def handle_navigation(self, mouse_pos: Coord):
         """Handles navigation button clicks to change pages."""
