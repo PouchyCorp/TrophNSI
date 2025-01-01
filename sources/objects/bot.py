@@ -196,6 +196,7 @@ class Bot:
         self.anim_idle_right = Animation(anim_spritesheet, 2, spritesheet_lenghts[2], 2)
         #self.anim_idle_left = Animation(anim_spritesheet, 3, spritesheet_lenght, 2)
         self.anim_watch = Animation(anim_spritesheet, 3, spritesheet_lenghts[3], 6, False)
+        self.exclamation_anim = Animation(sprite.EXCLAMATION_SPRITESHEET, 0, 9, 3)
 
         self.surf = self.anim_walk_right.get_frame()
         self.rect = self.surf.get_rect()
@@ -377,6 +378,10 @@ class Bot:
             win.blit(temp_surf, (self.coord.x-3, self.coord.y-3))
         else:
             win.blit(self.surf, self.coord.xy)
+        
+        if self.is_reacting:
+            coord_over_head_of_bot = (self.coord.x+(self.surf.get_width()//2)-6, self.coord.y - 10*6)
+            win.blit(self.exclamation_anim.get_frame(), coord_over_head_of_bot)
     
     def __repr__(self):
         return str(self.__dict__)
