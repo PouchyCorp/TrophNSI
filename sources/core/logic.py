@@ -61,6 +61,7 @@ class Game:
     def launch_dialogue(self, bot_anim):
         """# Function to initiate dialogue easily passed to other functions"""
         self.gui_state = State.DIALOG
+        self.temp_bg =  pg.transform.grayscale(self.win)
         self.dialogue_manager.random_dialogue()  # Trigger a random dialogue
         self.dialogue_manager.bot_anim = bot_anim.copy()  # Copy the bot's surface for display
 
@@ -249,8 +250,7 @@ class Game:
     #            test_painting.draw(WIN)  # Draw the painting 
             
             case State.DIALOG:
-                pg.transform.grayscale(self.win, self.win)  # Apply grayscale effect on the background
-
+                self.win.blit(self.temp_bg, (0,0))  # Apply grayscale effect on the background
                 self.dialogue_manager.update() #update the dialogue manager and it's subclasses
                 self.dialogue_manager.draw(self.win)    
 

@@ -84,7 +84,7 @@ class DialogueManagement():
         for i, surf in enumerate(self.selected_dialogue.bliting_list):
             line_height = 812 + 27 * i
             screen.blit(surf,(650, line_height))
-        screen.blit(self.bot_anim.get_frame(), (330, 750))
+        screen.blit(pg.transform.scale2x(self.bot_anim.get_frame()), (240, 600))
 
 
 
