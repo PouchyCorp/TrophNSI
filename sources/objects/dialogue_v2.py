@@ -49,7 +49,7 @@ class DialogueManagement():
         self.dialogues : list[Dialogue] = self.init()
         self.selected_dialogue : Dialogue = None
         self.bot_anim : Animation = None #idle anim of the robot clicked
-        self.background = sprite.nine_slice_scaling(sprite.WINDOW, (1300, 252), 12)
+        self.background = sprite.DIALBOX#sprite.nine_slice_scaling(sprite.WINDOW, (1300, 252), 12)
 
     def init(self) -> list[list[str]]:
         with open(self.fichier, encoding='utf8') as file:
@@ -83,7 +83,7 @@ class DialogueManagement():
         screen.blit(self.background, (300, 750)) 
         for i, surf in enumerate(self.selected_dialogue.bliting_list):
             line_height = 800 + 27 * i
-            screen.blit(surf,(500, line_height))
+            screen.blit(surf,(750, line_height))
         screen.blit(self.bot_anim.get_frame(), (330, 750))
 
 

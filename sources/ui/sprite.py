@@ -145,3 +145,5 @@ SPRITE_PLANT_2 = load_image("data/plant_3_28x48.png")
 FLECHE_GAUCHE = load_image("data/fleche_gauche.png")
 
 FLECHE_DROITE  = load_image("data/fleche_droite.png")
+
+DIALBOX = load_image("data/pop_up_dialogue.png")
