@@ -126,63 +126,83 @@ class Game:
 
             case subplaceable.BotPlaceable:  # Handle interaction with BotPlaceable type
                 if placeable.name == 'bot_placeable':
+                    self.gold += self.hivemind.inline_bots[-1].gold_amount  # Increment currency
                     self.hivemind.free_last_bot(self.current_room)  # Free the last bot
-                    self.gold += 10  # Increment currency
+                    
+            case subplaceable.ShopPlaceable:
+                if self.gui_state is not State.SHOP:
+                    self.gui_state = State.SHOP
+                    self.shop.init()
+
+            case subplaceable.InvPlaceable:
+                if self.gui_state is not State.INVENTORY:
+                    self.gui_state = State.INVENTORY
+                    self.inventory.init()
 
             case _:
                 self.popups.append(
                     InfoPopup('bip boup erreur erreur'))  # Add error popup if matching type fails
 
 
-    def event_handler(self, event : pg.event.Event, mouse_pos : Coord):
-            self.clicked_this_frame = False #If not supplanted below, set false for this frame 
-            if event.type == pg.KEYDOWN:  # Check for key down events
-                self.keydown_handler(event)
+    def event_handler(self, event: pg.event.Event, mouse_pos: Coord):
+        """
+        Handle events such as key presses and mouse button releases.
 
-            if event.type == pg.MOUSEBUTTONUP:  # Handle mouse button release
-                self.clicked_this_frame = True
-                # Handle interactions based on the current GUI state
-                match self.gui_state:
-                    case State.BUILD:
-                        if self.build_mode.can_place(self.current_room):
-                            self.current_room.placed.append(
-                                self.build_mode.place(self.current_room.num))  # Place the object in the current room
-                            self.gui_state = State.INTERACTION  # Return to interaction mode
+        Args:
+            event (pg.event.Event): The event to handle.
+            mouse_pos (Coord): The current position of the mouse.
 
-                    case State.INVENTORY:
-                        self.inventory.handle_navigation(mouse_pos)
-                        clicked_placeable : Placeable | None = self.inventory.handle_click(mouse_pos)
-                        if clicked_placeable:
-                            # Prepare to enter build mode with the selected placeable
-                            self.build_mode.selected_placeable = clicked_placeable
-                            self.gui_state = State.BUILD
+        Returns:
+            None
+        """
+        self.clicked_this_frame = False  # If not supplanted below, set false for this frame 
+        if event.type == pg.KEYDOWN:  # Check for key down events
+            self.keydown_handler(event)
+
+        if event.type == pg.MOUSEBUTTONUP:  # Handle mouse button release
+            self.clicked_this_frame = True
+            # Handle interactions based on the current GUI state
+            match self.gui_state:
+                case State.BUILD:
+                    if self.build_mode.can_place(self.current_room):
+                        self.current_room.placed.append(
+                            self.build_mode.place(self.current_room.num))  # Place the object in the current room
+                        self.gui_state = State.INVENTORY  # Return to interaction mode
+
+                case State.INVENTORY:
+                    self.inventory.handle_navigation(mouse_pos)
+                    clicked_placeable : Placeable | None = self.inventory.handle_click(mouse_pos)
+                    if clicked_placeable:
+                        # Prepare to enter build mode with the selected placeable
+                        self.build_mode.selected_placeable = clicked_placeable
+                        self.gui_state = State.BUILD
+                
+                case State.SHOP:
+                    self.shop.handle_click(mouse_pos, self)
                     
-                    case State.SHOP:
-                        self.shop.handle_click(mouse_pos, self)
-                        
 
-                    case State.DESTRUCTION:
-                        for placeable in self.current_room.placed:
-                            if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
-                                self.destruction_mode.remove_from_room(
-                                    placeable, self.current_room)  # Remove the selected placeable from the room
+                case State.DESTRUCTION:
+                    for placeable in self.current_room.placed:
+                        if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
+                            self.destruction_mode.remove_from_room(
+                                placeable, self.current_room)  # Remove the selected placeable from the room
 
-                    case State.INTERACTION:
-                        for placeable in self.current_room.placed:
-                            if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):  # Check if mouse is over a placeable
-                                self.placeable_interaction_handler(placeable)
-                                        
-                    case State.DIALOG:
-                        if self.dialogue_manager.click_interaction():
-                            self.gui_state = State.INTERACTION
-                    
-                    case State.CONFIRMATION:
-                        flag = self.confirmation_popups[-1].handle_click(mouse_pos)
-                        if flag is not None:
-                            self.confirmation_popups.pop()
+                case State.INTERACTION:
+                    for placeable in self.current_room.placed:
+                        if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):  # Check if mouse is over a placeable
+                            self.placeable_interaction_handler(placeable)
+                                    
+                case State.DIALOG:
+                    if self.dialogue_manager.click_interaction():
+                        self.gui_state = State.INTERACTION
+                
+                case State.CONFIRMATION:
+                    flag = self.confirmation_popups[-1].handle_click(mouse_pos)
+                    if flag is not None:
+                        self.confirmation_popups.pop()
 
-                        if not len(self.confirmation_popups):
-                            self.gui_state = State.INTERACTION
+                    if not len(self.confirmation_popups):
+                        self.gui_state = State.INTERACTION
                                
 
     def update(self, mouse_pos):

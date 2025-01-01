@@ -56,7 +56,7 @@ class DialogueManagement():
             json_string = file.read()
             dialogues = []
             loaded_dicts = json.loads(json_string)
-            for dict in loaded_dicts:
+            for dict in loaded_dicts: 
                 for dialogue in dict['dialogues']:
                     dialogues.append(Dialogue(dialogue))
             return dialogues

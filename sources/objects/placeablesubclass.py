@@ -3,6 +3,7 @@ import ui.sprite as sprite
 from utils.anim import Animation
 from typing import Optional
 from utils.timermanager import TimerManager
+from core.logic import State
 
 class DoorUp(Placeable):
     def __init__(self, name, coord, surf, tag = None):
@@ -82,7 +83,9 @@ class BotPlaceable(Placeable):
     pass
 
 class ShopPlaceable(Placeable):
-    def __init__(self, name, coord, surf, tag = None, anim = None, y_constraint = None, temporary = False):
-        super().__init__(name, coord, surf, tag, anim, y_constraint, temporary)
-        self.is_open = False
+    pass
+
+class InvPlaceable(Placeable):
+    pass
+
 
