@@ -3,7 +3,6 @@ import ui.sprite as sprite
 from utils.anim import Animation
 from typing import Optional
 from utils.timermanager import TimerManager
-from core.logic import State
 
 class DoorUp(Placeable):
     def __init__(self, name, coord, surf, tag = None):
