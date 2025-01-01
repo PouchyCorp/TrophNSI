@@ -100,7 +100,11 @@ class Game:
                     self.shop.init()
                 elif self.gui_state is State.SHOP:
                     self.gui_state = State.INTERACTION  # Return to interaction
-                    
+            
+            case pg.K_ESCAPE:
+                if self.gui_state not in [State.TRANSITION, State.CONFIRMATION]:
+                    self.gui_state = State.INTERACTION
+
             case pg.K_UP:  # Move up a floor
                 self.change_floor(1)
 
@@ -214,7 +218,7 @@ class Game:
         # Iterate through the placed objects in the current room
         for placeable in self.current_room.placed:
             # If the mouse is hovering over it
-            if placeable.rect.collidepoint(mouse_pos.xy):
+            if placeable.rect.collidepoint(mouse_pos.xy) and self.gui_state in [State.DESTRUCTION, State.INTERACTION]:
                 color = (150, 150, 255) if self.gui_state != State.DESTRUCTION else (255, 0, 0)  # Change color based on state
                 placeable.update_sprite(True, color)  # Update sprite to indicate hover
             # If not hovered
@@ -224,7 +228,7 @@ class Game:
 
         # Manage bot behavior
         self.hivemind.order_inline_bots()  # Arrange bots in a line
-        self.hivemind.update(ROOMS, self.timer, self.clicked_this_frame, mouse_pos, self.launch_dialogue)  # Update bot AI
+        self.hivemind.update(ROOMS, self.timer, self.clicked_this_frame, mouse_pos, self.launch_dialogue, self.gui_state in [State.INTERACTION])  # Update bot AI
 
         match self.gui_state:      
             case State.INTERACTION:

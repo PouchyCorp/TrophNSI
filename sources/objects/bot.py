@@ -94,7 +94,7 @@ class Hivemind:
             self.remove_last_bot_clickable(current_room)
         
     
-    def update(self, rooms, TIMER, clicked, mouse_pos, launch_dialogue_func):
+    def update(self, rooms, TIMER, clicked, mouse_pos, launch_dialogue_func, is_outline_gui_valid):
         """
         Update the AI logic for the bots in the game.
         @param self - the object itself
@@ -106,11 +106,11 @@ class Hivemind:
         @return None
         """
         for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
-            bot.logic(rooms, TIMER, clicked, mouse_pos, launch_dialogue_func)
+            bot.logic(rooms, TIMER, clicked, mouse_pos, launch_dialogue_func, is_outline_gui_valid)
 
         new_liberated_bots = self.liberated_bots.copy()
         for bot in self.liberated_bots:
-            bot.logic(rooms, TIMER, clicked, mouse_pos, launch_dialogue_func)
+            bot.logic(rooms, TIMER, clicked, mouse_pos, launch_dialogue_func, is_outline_gui_valid)
             #if bot not leaving and on exit, don't remove it
             if bot.is_leaving and bot.coord.bot_movement_compare(bot.exit_coords):
                 new_liberated_bots.remove(bot)
@@ -219,7 +219,7 @@ class Bot:
         #makes sure that target coord is reachable
         self.__target_coord.x -= self.__target_coord.x%6
 
-    def logic(self, rooms : list[Room], TIMER : TimerManager, clicked, mouse_pos, launch_dialogue_func):
+    def logic(self, rooms : list[Room], TIMER : TimerManager, clicked, mouse_pos, launch_dialogue_func, is_outline_gui_valid):
         '''finite state machine (FSM) implementation for bot ai'''
 
         match self.state:
@@ -281,11 +281,11 @@ class Bot:
                 raise ValueError
 
         #checks if need to react
-        self.react_logic(clicked, mouse_pos,launch_dialogue_func)
+        self.react_logic(clicked, mouse_pos,launch_dialogue_func, is_outline_gui_valid)
 
-    def react_logic(self, clicked : bool, mouse_pos : Coord, launch_dialogue_func):
+    def react_logic(self, clicked : bool, mouse_pos : Coord, launch_dialogue_func, is_outline_gui_valid : bool):
         #checks if mouse on self
-        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):
+        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy) and is_outline_gui_valid:
             #checks click
             self.is_mouse_on_self = True
 
@@ -372,7 +372,7 @@ class Bot:
 
     def draw(self, win : Surface):
         '''needs to be called after hivemind.update_bot_ai'''
-        if self.is_mouse_on_self:
+        if self.is_mouse_on_self:  
             temp_surf = sprite.get_outline(self.surf, (150, 150, 255))
             temp_surf.blit(self.surf, (3,3))
             win.blit(temp_surf, (self.coord.x-3, self.coord.y-3))
