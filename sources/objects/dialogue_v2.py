@@ -2,6 +2,8 @@ import random as rand
 import pygame as pg
 import json
 from utils.anim import Animation
+import ui.sprite as sprite
+from utils.fonts import TERMINAL_FONT
 
 
 pg.init()
@@ -10,22 +12,27 @@ class Dialogue:
     def __init__(self, text : list[str]):
         self.textes = text
         self.anim_chars = ""
+        self.bliting_list : list[pg.Surface]= []
         self.part_ind = 0
         self.showed_texte = self.textes[self.part_ind]
-        self.format = pg.font.SysFont("Arial", 20)
     
-    def get_text_surf(self):
-        return self.format.render(self.anim_chars, True, (255,255,255))
+    def get_text_surf(self, bot_name):
+        return TERMINAL_FONT.render(f"{bot_name}@botOS:~$ {self.anim_chars}" , False, 'green')
     
-    def update(self):
+    def update(self, bot_name):
         if self.showed_texte != self.anim_chars:
             self.anim_chars += self.showed_texte[len(self.anim_chars)]
+
+        if len(self.bliting_list)-1 < self.part_ind:
+            self.bliting_list.append(self.get_text_surf(bot_name))
+        else:
+            self.bliting_list[self.part_ind] = self.get_text_surf(bot_name)
     
     def is_on_last_part(self):
         return True if self.part_ind == len(self.textes)-1 else False
 
     def skip_to_next_part(self):
-        if not self.is_on_last_part():
+        if not self.is_on_last_part() and self.showed_texte == self.anim_chars:
             self.part_ind += 1
             self.anim_chars = ""
             self.showed_texte = self.textes[self.part_ind]
@@ -33,6 +40,7 @@ class Dialogue:
     def reset(self):
         self.anim_chars = ""
         self.showed_texte = self.textes[0]
+        self.bliting_list = []
         self.part_ind = 0
 
 class DialogueManagement():
@@ -41,14 +49,16 @@ class DialogueManagement():
         self.dialogues : list[Dialogue] = self.init()
         self.selected_dialogue : Dialogue = None
         self.bot_anim : Animation = None #idle anim of the robot clicked
+        self.background = sprite.nine_slice_scaling(sprite.WINDOW, (1300, 252), 12)
 
     def init(self) -> list[list[str]]:
         with open(self.fichier, encoding='utf8') as file:
             json_string = file.read()
             dialogues = []
-            loaded_lists = json.loads(json_string)
-            for lst in loaded_lists:
-                dialogues.append(Dialogue(lst))
+            loaded_dicts = json.loads(json_string)
+            for dict in loaded_dicts:
+                for dialogue in dict['dialogues']:
+                    dialogues.append(Dialogue(dialogue))
             return dialogues
     
     def random_dialogue(self):
@@ -65,12 +75,16 @@ class DialogueManagement():
             return False
 
     def update(self):
-        self.selected_dialogue.update()
+        bot_name = "anonyme"
+        self.selected_dialogue.update(bot_name)
 
     def draw(self, screen : pg.Surface):
-        screen.blit(pg.Surface((1000,125)), (200, 750)) 
-        screen.blit(self.selected_dialogue.get_text_surf(),(450, 800))
-        screen.blit(self.bot_anim.get_frame(), (200, 750))
+        
+        screen.blit(self.background, (300, 750)) 
+        for i, surf in enumerate(self.selected_dialogue.bliting_list):
+            line_height = 800 + 27 * i
+            screen.blit(surf,(500, line_height))
+        screen.blit(self.bot_anim.get_frame(), (330, 750))
 
 
 
