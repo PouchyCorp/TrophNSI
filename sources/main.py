@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 import tomllib
+import pickle
 
 
 # Open config file and dump it in a dict
@@ -20,24 +21,11 @@ CLOCK = pg.time.Clock()
 pg.display.set_caption('Creative Core')
 
 from objects.placeable import Placeable
-from objects.bot import Hivemind, BotDistributor
-from core.buildmode import BuildMode, DestructionMode
 from utils.coord import Coord
 from ui.inventory import Inventory, Shop
-from ui.popup import InfoPopup
-from utils.timermanager import TimerManager
-import ui.sprite as sprite
-from objects.dialogue_v2 import DialogueManagement
 from core.logic import Game
+import ui.sprite as sprite
 
-TIMER = TimerManager()
-
-popups: list[InfoPopup] = []  # List to manage popups
-
-incr_fondu = 0  # Variable for transition effects
-
-# Initialize Hivemind instance to manage bots
-hivemind = Hivemind(60, 600, TIMER)
 
 # Initialize inventory and add placeable items
 inventory: Inventory = Inventory()
@@ -56,19 +44,30 @@ inventory.inv.append(Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_P
 shop: Shop = Shop()
 shop.inv.append(Placeable('6545dqdfwz31', Coord(1, (121, 50)), sprite.PROP_STATUE, tag="decoration", y_constraint=620, price=10))
 
-# Instantiate build and destruction modes
-build_mode: BuildMode = BuildMode()
-destruction_mode: DestructionMode = DestructionMode()
+def save_game(game : Game):
+    with open('save.pkl', 'wb+') as file:
+        pickle.dump({'gold' : game.gold, 'beauty' : game.beauty}, file)
+        print('game saved')
+    
+def load_game() -> dict:
+    try:
+      with open('save.pkl', 'rb') as file:
+        data = pickle.load(file)
 
-dialogue_manager = DialogueManagement('data\dialogue.json')
+        if data:
+           return data
+        else:
+           return {'gold' : 0, 'beauty' : 1} # Default 
+      
+    except FileNotFoundError:
+       print('no save file to load, loading default values')
+       return {'gold' : 0, 'beauty' : 1} # Default 
 
-bot_distributor = BotDistributor(TIMER, hivemind)
+game_save_dict = load_game()
 
-moulaga = 0  # Currency variable
-money_per_robot = 10  # Rewards per robot
-
-#game initialized with all the objects as parameters instead of in the __init__ of Game, because of the eventuality that they would be loaded by a db save
-game = Game(WIN, CLOCK, TIMER, hivemind, inventory, shop, build_mode, destruction_mode, bot_distributor, dialogue_manager, moulaga)
+#game initialized with some objects as parameters instead of in the __init__ of Game, because of the eventuality that they would be loaded by a db save
+game = Game(WIN, CLOCK, inventory, shop, game_save_dict['gold'], game_save_dict['beauty'])
+   
 
 if __name__ == '__main__':
     fps = config['gameplay']['fps']  # Frame rate
@@ -80,6 +79,7 @@ if __name__ == '__main__':
         for event in events:
           if event.type == pg.QUIT:  # Check for quit event
               pg.quit()  # Quit Pygame
+              save_game(game)
               sys.exit()  # Exit the program
           game.event_handler(event, mouse_pos)
         
