@@ -1,8 +1,8 @@
 import pygame
 import time
 
-class SoundManagement():
-    def __init__(self, name, time):
+class SoundManager():
+    def __init__(self, name, time = 0):
         self.name=name
         self.time=time
 

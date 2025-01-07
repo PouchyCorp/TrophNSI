@@ -26,7 +26,7 @@ from objects.dialogue_v2 import DialogueManagement
 from math import pi
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
-from utils.sound import SoundManagement
+from utils.sound import SoundManager
 
 class Game:
     def __init__(self, win, clock, timer, hivemind, inventory, shop, build_mode, destruction_mode, bot_distributor, dialogue_manager, gold):
@@ -47,7 +47,7 @@ class Game:
         self.incr_fondu = 0
         self.clicked_this_frame = False
         self.gold : int = gold
-        self.sound = SoundManagement
+        self.sound = SoundManager
 
     def change_floor(self, direction):
         """to move up : 1
@@ -118,8 +118,7 @@ class Game:
                 self.hivemind.add_bot()
 
             case pg.K_z: 
-                door=SoundManagement('data/sounds/elevator.mp3')
-                door.played()
+                SoundManager('data/sounds/elevator.mp3').played()
 
             case pg.K_n:  # Free the last bot in the current room
                 self.hivemind.free_last_bot(self.current_room)
@@ -133,8 +132,7 @@ class Game:
 
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
                 self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
-                door=SoundManagement('data/sounds/elevator.mp3')
-                door.played()
+                SoundManager('data/sounds/elevator.mp3').played()
                 self.launch_transition()  # Start transition
                 placeable.interaction(self.timer)  # Trigger interaction
 
