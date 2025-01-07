@@ -12,6 +12,7 @@ class State(Enum):
     SHOP = auto()
 
 import pygame as pg
+import sys
 import objects.placeablesubclass as subplaceable
 from objects.bot import Hivemind, BotDistributor
 from core.buildmode import BuildMode, DestructionMode
@@ -25,6 +26,7 @@ from objects.dialogue_v2 import DialogueManagement
 from math import pi
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
+from utils.sound import SoundManagement
 
 class Game:
     def __init__(self, win, clock, timer, hivemind, inventory, shop, build_mode, destruction_mode, bot_distributor, dialogue_manager, gold):
@@ -45,6 +47,7 @@ class Game:
         self.incr_fondu = 0
         self.clicked_this_frame = False
         self.gold : int = gold
+        self.sound = SoundManagement
 
     def change_floor(self, direction):
         """to move up : 1
@@ -114,6 +117,10 @@ class Game:
             case pg.K_b:  # Add a bot
                 self.hivemind.add_bot()
 
+            case pg.K_z: 
+                door=SoundManagement('data/sounds/elevator.mp3')
+                door.played()
+
             case pg.K_n:  # Free the last bot in the current room
                 self.hivemind.free_last_bot(self.current_room)
 
@@ -125,7 +132,9 @@ class Game:
                 placeable.interaction(self.timer)  # Trigger interaction
 
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
-                self.timer.create_timer(0.75, self.change_floor, arguments=[1])  # Create a timer to move up
+                self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
+                door=SoundManagement('data/sounds/elevator.mp3')
+                door.played()
                 self.launch_transition()  # Start transition
                 placeable.interaction(self.timer)  # Trigger interaction
 

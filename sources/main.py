@@ -8,6 +8,7 @@ with open('sources/config.toml', 'rb') as f:
     config = tomllib.load(f)
 
 pg.init()
+pg.mixer.init()
 
 # Set up the display window with specified resolution using the config file
 if config['screen']['fullscreen']:
@@ -28,7 +29,6 @@ from utils.timermanager import TimerManager
 import ui.sprite as sprite
 from objects.dialogue_v2 import DialogueManagement
 from core.logic import Game
-
 
 TIMER = TimerManager()
 
