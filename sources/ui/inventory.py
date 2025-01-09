@@ -12,9 +12,9 @@ ITEMS_PER_PAGE = 8
 
 
 class Inventory:
-    def __init__(self, title: str = "Inventory") -> None:
+    def __init__(self, title: str = "Inventory", content : list[Placeable] = []) -> None:
         """Initializes the inventory with an optional title."""
-        self.inv: list[Placeable] = []  # List of owned items
+        self.inv: list[Placeable] = content  # List of owned items
         self.displayed_objects: list[tuple[Placeable, Surface]] = []  # Rendered items on the current page
         self._page: int = 0  # Current page index
         self.font = font.SysFont(None, 30)  # Font for labels

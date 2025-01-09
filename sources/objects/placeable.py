@@ -1,6 +1,7 @@
-from pygame import Surface, Rect, transform, BLEND_RGBA_MAX, BLEND_RGBA_MIN, SRCALPHA
+from pygame import Surface, Rect, transform, image
 import sys
 import os
+from pickle import dumps
 from random import randint
 #do not remove
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -88,10 +89,12 @@ class Placeable:
             setattr(self, attribute_name, value)  # Dynamically set the attribute
         else:
             raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attribute_name}'")
-
-# tests
-if __name__ == '__main__':
-    placeholder_surf = Surface((60, 60))  # Create a new surface for testing
-    placeholder_surf.fill('red')  # Fill the surface with red color
-    painting = Placeable('skibidi', Coord(1, (650, 125)), placeholder_surf)  # Create a Placeable instance
-    print(painting)  # Output the string representation of the Placeable instance
+    
+    def __getstate__(self):
+        state = self.__dict__
+        state["surf"] = (image.tostring(self.surf, "RGBA"), self.surf.get_size())
+        return state
+    
+    def __setstate__(self, state : dict):
+        self.__dict__ = state
+        self.surf = image.frombuffer(self.surf[0], self.surf[1], "RGBA") 

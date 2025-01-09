@@ -1,4 +1,4 @@
-from pygame import Surface, SRCALPHA
+from pygame import Surface, SRCALPHA, image
 
 class Spritesheet:
     def __init__(self, sprite : Surface, img_size : tuple[int]) -> None:
@@ -12,6 +12,15 @@ class Spritesheet:
         coord_y_py = coord[1]*self.img_size[1] #take the last y-coord to calculate the next position
         surf.blit(self.surf, (0,0), (coord_x_px, coord_y_py, self.img_size[0], self.img_size[1]))
         return surf
+    
+    def __getstate__(self):
+        state = self.__dict__
+        state["surf"] = (image.tostring(self.surf, "RGBA"), self.surf.get_size())
+        return state
+    
+    def __setstate__(self, state : dict):
+        self.__dict__ = state
+        self.surf = image.frombuffer(self.surf[0], self.surf[1], "RGBA") 
 
 
 class Animation:
@@ -49,3 +58,17 @@ class Animation:
     def is_finished(self):
         if self.img_index == self.length-1 : #check if it's the last picture of the spritesheet
             return True
+        
+
+if __name__ == "__main__":
+    print('launching tests')
+
+    test = Spritesheet(Surface((10,10)),(1,1))
+    
+    import pickle
+    
+    pickled_data = pickle.dumps(test)
+
+    unpickled_data = pickle.loads(pickled_data)
+
+    print(unpickled_data.__dict__)
