@@ -6,7 +6,7 @@ import pickle
 import pygame
 
 
-
+DEFAULT_SAVE = {'gold' : 0, 'beauty' : 1}
 
 class TkDataBase:
     def __init__(self):
@@ -28,6 +28,8 @@ class TkDataBase:
 
         self.btn_login = tk.Button(self.root, text="Login", command=self.login_user)
         self.btn_login.grid(row=2, column=1, padx=10, pady=10)
+
+        self.ready_to_launch = (False, None)
 
     def initialize_database(self):
         connection = sqlite3.connect(self.db_link)
@@ -56,10 +58,11 @@ class TkDataBase:
             pickled_data = result[0]
             user_data = pickle.loads(pickled_data)  # Deserialize the data
             print("got user data")
-            return user_data
-        else:
-            print("No pickled data found for user.")
-            return None
+            if type(user_data) is dict:
+                return user_data
+        
+        print("No pickled data found for user, loading default save.")
+        return DEFAULT_SAVE
 
     def register_user(self):
         username = self.entry_username.get()
@@ -98,6 +101,7 @@ class TkDataBase:
         if result and result[0] == self.hash_password(password):
             messagebox.showinfo("Success", "Login successful!")
             self.root.destroy() #-----------------------------Starts game
+            self.ready_to_launch = (True, username)
         else:
             messagebox.showerror("Error", "Invalid username or password.")
 
@@ -116,13 +120,11 @@ class TkDataBase:
         connection.close()
         print('successfuly saved')
 
-
-    def launch_game(username : str):
-        
-        user_data = self.fetch_user_data(username)
-        
-
-    def tk_ui(self):
+    def tk_ui(self) -> tuple[str, dict]:
         self.initialize_database()
 
         self.root.mainloop()
+
+        #if root terminated and ready to launch, returns game data
+        if self.ready_to_launch[0]:
+            return self.ready_to_launch[1], self.fetch_user_data(self.ready_to_launch[1])

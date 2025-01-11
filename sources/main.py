@@ -3,24 +3,9 @@ import sys
 import tomllib
 import pickle
 
-
 def get_save_dict(game):
   print('game saved')
-  return pickle.dumps({'gold' : game.gold, 'beauty' : game.beauty})
-
-def load_game(default) -> dict:
-    try:
-      with open('save.pkl', 'rb') as file:
-        data = pickle.load(file)
-
-        if data:
-           return data
-        else:
-           return {'gold' : 0, 'beauty' : 1} # Default 
-      
-    except FileNotFoundError:
-       print('no save file to load, loading default values')
-       return {'gold' : 0, 'beauty' : 1} # Default 
+  return {'gold' : game.gold, 'beauty' : game.beauty}
 
 def start_game(game_save_dict):
     # Open config file and dump it in a dict
@@ -92,6 +77,8 @@ def start_game(game_save_dict):
 
 from database import TkDataBase
 db = TkDataBase()
-db.tk_ui()
+username, user_game_data = db.tk_ui()
 
-start_game({'gold' : 10, 'beauty' : 0})
+data_to_save = start_game(user_game_data)
+
+db.save_user_data(username, data_to_save)
