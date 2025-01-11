@@ -6,11 +6,11 @@ import pickle
 import pygame
 
 
-DEFAULT_SAVE = {'gold' : 0, 'beauty' : 1}
+DEFAULT_SAVE = {'gold' : 0, 'beauty' : 1, "inventory": []}
 
 class TkDataBase:
     def __init__(self):
-        self.db_link = "testDb.db"
+        self.db_link = "userData.db"
         self.root = tk.Tk()
         self.root.title("Login window")
 
@@ -105,7 +105,7 @@ class TkDataBase:
         else:
             messagebox.showerror("Error", "Invalid username or password.")
 
-    def save_user_data(self, username, data):
+    def save_user_data(self, username, data : dict):
         """
         Save pickled user data to the database.
         Args:

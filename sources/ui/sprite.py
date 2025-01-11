@@ -1,6 +1,9 @@
-from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX
+from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display
 from math import sin, pi
 import utils.anim as anim
+
+display.init()
+display.set_mode((0,0))
 
 def load_image(path : str):
     sprite = image.load(path)
@@ -149,3 +152,5 @@ FLECHE_DROITE  = load_image("data/fleche_droite.png")
 DIALBOX = load_image("data/pop_up_dialogue.png")
 
 EXCLAMATION_SPRITESHEET = anim.Spritesheet(load_image("data/exclamation_2x9.png"),(2*6,9*6))
+
+display.quit()

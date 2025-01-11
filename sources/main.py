@@ -1,17 +1,15 @@
 import pygame as pg
-import sys
 import tomllib
-import pickle
+
+with open('sources/config.toml', 'rb') as f:
+      config = tomllib.load(f)
 
 def get_save_dict(game):
   print('game saved')
-  return {'gold' : game.gold, 'beauty' : game.beauty}
+  return {'gold' : game.gold, 'beauty' : game.beauty, 'inventory' : game.inventory.inv}
 
 def start_game(game_save_dict):
     # Open config file and dump it in a dict
-  with open('sources/config.toml', 'rb') as f:
-      config = tomllib.load(f)
-
   pg.init()
   pg.mixer.init()
 
@@ -29,22 +27,18 @@ def start_game(game_save_dict):
   from ui.inventory import Inventory, Shop
   from core.logic import Game
   import ui.sprite as sprite
+  from room_config import ROOMS
 
   # Initialize inventory and add placeable items
-  inventory= Inventory([Placeable('6545dqw231', Coord(1, (121, 50)), sprite.P3),
-                        Placeable('6545dqwz31', Coord(1, (121, 50)), sprite.PROP_STATUE, tag="decoration", y_constraint=620),
-                        Placeable('6545dqwz31', Coord(1, (39, 38)), sprite.SPRITE_PLANT_1, tag="decoration", y_constraint=700),
-                        Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620),
-                        Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620),
-                        Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620),
-                        Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620),
-                        Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620),
-                        Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620),
-                        Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620),
-                        Placeable('6545dqwz31', Coord(1, (28, 48)), sprite.SPRITE_PLANT_2, tag="decoration", y_constraint=620)])
+  inventory= Inventory("Inventory", game_save_dict['inventory'])
 
-  shop: Shop = Shop()
-  shop.inv.append(Placeable('6545dqdfwz31', Coord(1, (121, 50)), sprite.PROP_STATUE, tag="decoration", y_constraint=620, price=10))
+
+  # Places placeables in room from save
+  for placeable in inventory.inv:
+    if placeable.placed:
+      ROOMS[placeable.coord.room_num].placed.append(placeable)
+
+  shop: Shop = Shop("Shop", [Placeable('6545dqdfwz31', Coord(1, (121, 50)), sprite.PROP_STATUE, tag="decoration", y_constraint=620, price=10)])
 
   #game initialized with some objects as parameters instead of in the __init__ of Game, because of the eventuality that they would be loaded by a db save
   game = Game(WIN, CLOCK, inventory, shop, game_save_dict['gold'], game_save_dict['beauty'])
@@ -75,10 +69,13 @@ def start_game(game_save_dict):
 #       main loop        #
 #------------------------#
 
-from database import TkDataBase
-db = TkDataBase()
-username, user_game_data = db.tk_ui()
+if not config['gameplay']['no_login']:
+  from database import TkDataBase
+  db = TkDataBase()
+  username, user_game_data = db.tk_ui()
 
-data_to_save = start_game(user_game_data)
+  data_to_save = start_game(user_game_data)
 
-db.save_user_data(username, data_to_save)
+  db.save_user_data(username, data_to_save)
+else:
+  start_game({'gold' : 0, 'beauty' : 1, "inventory": []})
