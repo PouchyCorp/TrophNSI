@@ -12,6 +12,7 @@ class State(Enum):
     SHOP = auto()
 
 import pygame as pg
+import sys
 import objects.placeablesubclass as subplaceable
 from objects.bot import Hivemind, BotDistributor
 from core.buildmode import BuildMode, DestructionMode
@@ -28,25 +29,26 @@ from ui.confirmationpopup import ConfirmationPopup
 from utils.sound import SoundManager
 
 class Game:
-    def __init__(self, win, clock, timer, hivemind, inventory, shop, build_mode, destruction_mode, bot_distributor, dialogue_manager, gold):
-        self.timer : TimerManager = timer
+    def __init__(self, win, clock, inventory, shop, gold, beauty):
+        self.timer : TimerManager = TimerManager()
         self.win : pg.Surface = win
         self.clock : pg.time.Clock = clock
         self.popups : list[InfoPopup] = []
         self.confirmation_popups : list[ConfirmationPopup] = []
         self.gui_state = State.INTERACTION
-        self.hivemind : Hivemind = hivemind
+        self.hivemind : Hivemind = Hivemind(60, 600, self.timer)
         self.inventory : Inventory = inventory
         self.shop : Shop = shop
-        self.build_mode : BuildMode= build_mode
-        self.destruction_mode : DestructionMode= destruction_mode
-        self.bot_distributor : BotDistributor = bot_distributor
-        self.dialogue_manager : DialogueManagement = dialogue_manager
+        self.build_mode : BuildMode= BuildMode()
+        self.destruction_mode : DestructionMode= DestructionMode()
+        self.bot_distributor : BotDistributor = BotDistributor(self.timer, self.hivemind)
+        self.dialogue_manager : DialogueManagement = DialogueManagement('data\dialogue.json')
         self.current_room : Room = R1 #starter room always in floor 1
         self.incr_fondu = 0
         self.clicked_this_frame = False
         self.gold : int = gold
-        self.sound = SoundManagement
+        self.beauty : float = beauty
+        self.sound = SoundManager
 
     def change_floor(self, direction):
         """to move up : 1
@@ -116,6 +118,9 @@ class Game:
             case pg.K_b:  # Add a bot
                 self.hivemind.add_bot()
 
+            case pg.K_z: 
+                SoundManager('data/sounds/elevator.mp3').played()
+
             case pg.K_n:  # Free the last bot in the current room
                 self.hivemind.free_last_bot(self.current_room)
 
@@ -128,8 +133,7 @@ class Game:
 
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
                 self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
-                door=SoundManager('data/sounds/elevator.mp3', 4)
-                door.played()
+                SoundManager('data/sounds/elevator.mp3').played()
                 self.launch_transition()  # Start transition
                 placeable.interaction(self.timer)  # Trigger interaction
 
