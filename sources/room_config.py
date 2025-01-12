@@ -29,15 +29,15 @@ shop = subplaceable.ShopPlaceable('shop', Coord(2,(1000,100)), Surface((50*6,90*
 R2.placed += [stairs_up , stairs_down, test_canva, shop]
 R2.blacklist += [stairs_up , stairs_down, shop]
 
-
-
 #R3
 R3 = Room(3,sprite.BG4)
 R3.placed += [stairs_up , stairs_down]
 
-
 R4 = Room(4, sprite.BG5)
 R4.placed += [stairs_up , stairs_down]
 
-
 ROOMS : list[Room] = [R0, R1, R2, R3, R4]
+
+DEFAULT_SAVE = {'gold' : 0, 'beauty' : 1, "inventory": [], "shop": [Placeable('bust', Coord(2,(100,100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=500),
+                                                                    Placeable('plante 1', Coord(2,(100,100)), sprite.SPRITE_PLANT_1, "decoration",  y_constraint=0, price=5000),
+                                                                    Placeable('plante 2', Coord(2,(100,100)), sprite.SPRITE_PLANT_2, "decoration",  y_constraint=0, price=50)]}

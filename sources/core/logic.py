@@ -181,6 +181,7 @@ class Game:
                         self.current_room.placed.append(
                             self.build_mode.place(self.current_room.num))  # Place the object in the current room
                         self.gui_state = State.INVENTORY  # Return to interaction mode
+                        self.inventory.init() # Resets inventory gui
 
                 case State.INVENTORY:
                     self.inventory.handle_navigation(mouse_pos)

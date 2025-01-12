@@ -3,10 +3,9 @@ from hashlib import sha256
 import tkinter as tk
 from tkinter import messagebox
 import pickle
-import pygame
+from room_config import DEFAULT_SAVE
 
 
-DEFAULT_SAVE = {'gold' : 0, 'beauty' : 1, "inventory": []}
 
 class TkDataBase:
     def __init__(self):

@@ -115,7 +115,8 @@ class Inventory:
         clicked_showed_obj_id = self._select_item(mouse_pos)  # Check if an inventory item was clicked, and if the object is already placed
         if clicked_showed_obj_id:
             clicked_obj = self._search_by_id(clicked_showed_obj_id)  # Retrieve the object by its ID
-            return clicked_obj
+            if not clicked_obj.placed:
+                return clicked_obj
         return None
 
     def _select_item(self, mouse_pos: Coord) -> str | None:

@@ -152,5 +152,3 @@ FLECHE_DROITE  = load_image("data/fleche_droite.png")
 DIALBOX = load_image("data/pop_up_dialogue.png")
 
 EXCLAMATION_SPRITESHEET = anim.Spritesheet(load_image("data/exclamation_2x9.png"),(2*6,9*6))
-
-display.quit()
