@@ -19,7 +19,7 @@ def start_game(game_save_dict):
   else:
     WIN = pg.display.set_mode(config['screen']['size'])
 
-pg.display.set_icon(pg.image.load('data/big_icon.png'))
+  pg.display.set_icon(pg.image.load('data/big_icon.png'))
 
 
   CLOCK = pg.time.Clock()
