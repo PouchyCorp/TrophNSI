@@ -42,7 +42,7 @@ class Game:
         self.build_mode : BuildMode= BuildMode()
         self.destruction_mode : DestructionMode= DestructionMode()
         self.bot_distributor : BotDistributor = BotDistributor(self.timer, self.hivemind)
-        self.dialogue_manager : DialogueManagement = DialogueManagement('data\dialogue.json')
+        self.dialogue_manager : DialogueManagement = DialogueManagement('data/dialogue.json')
         self.current_room : Room = R1 #starter room always in floor 1
         self.incr_fondu = 0
         self.clicked_this_frame = False

@@ -6,5 +6,5 @@ fullscreen = false
 
 [gameplay]
 fps = 60
-cheats = false
-no_login = false
+cheats = true
+no_login = true
