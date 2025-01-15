@@ -41,7 +41,7 @@ class Game:
         self.shop : Shop = shop
         self.build_mode : BuildMode= BuildMode()
         self.destruction_mode : DestructionMode= DestructionMode()
-        self.bot_distributor : BotDistributor = BotDistributor(self.timer, self.hivemind)
+        self.bot_distributor : BotDistributor = BotDistributor(self.timer, self.hivemind, self)
         self.dialogue_manager : DialogueManagement = DialogueManagement('data/dialogue.json')
         self.current_room : Room = R1 #starter room always in floor 1
         self.incr_fondu = 0
@@ -284,7 +284,7 @@ class Game:
                 self.shop.draw(self.win, mouse_pos)
 
         self.win.blit(InfoPopup(
-            f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.gold}').text_surf, (0, 0))
+            f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.gold} / th_gold : {self.bot_distributor.theorical_gold}').text_surf, (0, 0))
         
           # Draw inventory
         

@@ -14,25 +14,25 @@ class BotStates(Enum):
     WALK = auto()
     WATCH = auto()
 
-possible_reaction = ['waw', 'bof', 'uwu', 'owo', 'noob']
-
 class BotDistributor:
-    def __init__(self, game_timer : TimerManager, hivemind):
-        self.theorical_gold = 0
+    def __init__(self, game_timer : TimerManager, hivemind, game):
+        self.theorical_gold : float = 0
         self.robot_tiers = [10, 20, 50, 100, 500, 1000]
         self.game_timer = game_timer
         self.hivemind = hivemind
+        self.game = game
 
         self.game_timer.create_timer(0.25, self.add_to_theorical_gold, True)
         self.game_timer.create_timer(1, self.distribute_to_bot, True, repeat_time_interval=[0.75,3])
 
     def add_to_theorical_gold(self):
-        gold_amount = 10
-        self.theorical_gold += gold_amount
+        if not self.hivemind.is_line_full(): #don't add if the line is full
+            gold_amount = (self.game.beauty ** 2)/4 #beauty to gold formula (divide by 4 because method called four times a second)
+            self.theorical_gold += gold_amount
     
     def distribute_to_bot(self):
         for tier in reversed(self.robot_tiers): #iterate tiers from most expensive to least expensive
-            amount_mod : int = self.theorical_gold//tier #determine how much of a tier we can fit into the theorical gold
+            amount_mod : int = int(self.theorical_gold/tier) #determine how much of a tier we can fit into the theorical gold
 
             if 3 >= amount_mod >= 1: #checks if you can distribute between 3 and 1 of this tier
 
@@ -80,7 +80,7 @@ class Hivemind:
 
     def add_bot(self, gold_amount : int = 10):
         #checks if last place is empty
-        if type(self.inline_bots[0]) is not Bot:
+        if not self.is_line_full():
             spritesheet_args = self.get_random_bot_spritesheet()
             bot_sprite_height = spritesheet_args[0].img_size[0]
             self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,958-bot_sprite_height+randint(-50,50))), gold_amount, spritesheet_args[0], spritesheet_args[1]) #spawns bot
@@ -152,16 +152,21 @@ class Hivemind:
  
         return sorted_bots
     
-    def check_last_bot_idle(self) -> bool:
+    def first_bot_idle(self) -> bool:
         if type(self.inline_bots[-1]) is Bot:
             if self.inline_bots[-1].state is BotStates.IDLE:
                 return True
         return False
 
+    def is_line_full(self) -> bool:
+        if type(self.inline_bots[0]) is Bot:
+            if self.inline_bots[0].state is BotStates.IDLE:
+                return True
+        return False
 
     def create_last_bot_clickable(self):
         #"not R1.name_exists('bot_placeable')" checks if bot placeable already exists
-        if self.check_last_bot_idle() and not R1.name_exists_in_placed('bot_placeable'):
+        if self.first_bot_idle() and not R1.name_exists_in_placed('bot_placeable'):
             last_bot : Bot = self.inline_bots[-1]
             assert type(last_bot) is Bot
 

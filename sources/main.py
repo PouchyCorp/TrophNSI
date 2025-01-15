@@ -74,4 +74,5 @@ if not config['gameplay']['no_login']:
 
   db.save_user_data(username, data_to_save)
 else:
-  start_game({'gold' : 0, 'beauty' : 1, "inventory": [], "shop" : []})
+  from room_config import DEFAULT_SAVE
+  start_game(DEFAULT_SAVE)
