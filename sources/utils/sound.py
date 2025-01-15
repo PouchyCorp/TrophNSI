@@ -10,9 +10,9 @@ class SoundManager():
 
     def played(self):
         PLAYING=pygame.mixer.Sound(self.name)
-        pygame.mixer.sound.fadeout(150)
+        pygame.mixer.Sound.fadeout(150)
         PLAYING.play(1, self.time*1000)
-        pygame.mixer.sound.unload()
+        pygame.mixer.Sound.unload()
 
     
     
