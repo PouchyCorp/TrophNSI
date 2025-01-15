@@ -8,11 +8,8 @@
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-- [Usage](#usage)
 - [Features](#features)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+- [Credits](#credits)
 
 ## About the Project
 
@@ -36,11 +33,11 @@ Follow the steps below to set up "Creative Core" on your system.
 ### Linux
 1. Clone the repository:
    ```bash
-   git clone https://github.com/PouchyCorp/creative-core
+   git clone https://github.com/PouchyCorp/Creative-Core
    
 2. Go into the repository:
    ```bash
-   cd creative-core
+   cd Creative-Core
 
 3. Start the launcher:
    ```bash
@@ -49,12 +46,18 @@ Follow the steps below to set up "Creative Core" on your system.
 ### Windows
 1. Clone the repository:
    ```shell
-   git clone https://github.com/PouchyCorp/creative-core
+   git clone https://github.com/PouchyCorp/Creative-Core
    
 2. Go into the repository:
    ```shell
-   cd creative-core
+   cd Creative-Core
 
 3. Start the launcher:
    ```shell
    setup_and_run.bat
+
+## Credits
+- PouchyCorp
+- Tioh
+- Leih
+- Ytyt
