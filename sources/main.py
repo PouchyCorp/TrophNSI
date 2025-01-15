@@ -1,8 +1,8 @@
 import pygame as pg
-import tomllib
+import tomli
 
 with open('sources/config.toml', 'rb') as f:
-      config = tomllib.load(f)
+      config = tomli.load(f)
 
 def get_save_dict(game):
   print('game saved')
