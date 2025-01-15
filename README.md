@@ -1,6 +1,6 @@
 # Creative Core
 
-![Creative Core Logo](data/icon.png)
+![Creative Core Logo](data/big_icon.png)
 
 ## Table of Contents
 - [About the Project](#about-the-project)
