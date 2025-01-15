@@ -23,8 +23,8 @@ Creative Core is our submission for the Trophée NSI 2025.
 To get a local copy up and running, follow these steps.
 
 ### Prerequisites
-- Python 3.11+
-- Git
+- [Python 3.11+](https://www.python.org/downloads/)
+- [Git](https://git-scm.com/downloads)
 
 ## Installation
 
