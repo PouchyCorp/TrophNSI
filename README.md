@@ -30,7 +30,7 @@ To get a local copy up and running, follow these steps.
 
 Follow the steps below to set up "Creative Core" on your system.
 
-### Linux
+### Linux or Mac
 1. Clone the repository:
    ```bash
    git clone https://github.com/PouchyCorp/Creative-Core

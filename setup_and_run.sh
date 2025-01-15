@@ -22,7 +22,7 @@ pip install -r requirements.txt
 # Launch the game
 echo "Launching the game..."
 echo "Credits : PouchyCorp, Tioh, Ytyt, Leih"
-python main.py
+python sources/main.py
 
 # Deactivate the environment
 deactivate
