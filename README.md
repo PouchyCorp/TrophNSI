@@ -58,7 +58,3 @@ Follow the steps below to set up "Creative Core" on your system.
 3. Start the launcher:
    ```shell
    setup_and_run.bat
-
-
-
-   
