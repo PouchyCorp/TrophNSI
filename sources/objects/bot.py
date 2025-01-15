@@ -352,7 +352,7 @@ class Bot:
 
 
         #movement
-        if self.__move_cntr >= 0:
+        if self.__move_cntr >= 1:
             if self.coord.x < target_buffer.x:
                 self.move_dir = "RIGHT"
                 self.coord.x += 6

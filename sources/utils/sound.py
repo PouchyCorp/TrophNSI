@@ -22,15 +22,14 @@ class Sound():
                         'data/sounds/wind.mp3' #a compléter...
         ]
         self.robot=['data/sounds/robot.mp3',
-                    'data/sounds/robot1.wav'
-                    'data/sounds/robot2.wav'
-                    'data/sounds/robot3.wav'
-                    'data/sounds/robot4.wav'
-                    'data/sounds/robot5.wav'
-                    'data/sounds/robot6.wav'
-                    'data/sounds/robot7.mp3'
-                    'data/sounds/robots.mp3'
-        ]
+                    'data/sounds/robot1.wav',
+                    'data/sounds/robot2.wav',
+                    'data/sounds/robot3.wav',
+                    'data/sounds/robot4.wav',
+                    'data/sounds/robot5.wav',
+                    'data/sounds/robot6.wav',
+                    'data/sounds/robot7.mp3',
+                    'data/sounds/robots.mp3']
 
     def potential_background(self):
         a=randint(0,100)
