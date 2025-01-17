@@ -69,8 +69,8 @@ def start_game(game_save_dict):
 #------------------------#
 
 if not config['gameplay']['no_login']:
-  from database import TkDataBase
-  db = TkDataBase()
+  from database import PgDataBase
+  db = PgDataBase()
   username, user_game_data = db.tk_ui()
 
   data_to_save = start_game(user_game_data)

@@ -2,9 +2,6 @@ from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display
 from math import sin, pi
 import utils.anim as anim
 
-display.init()
-display.set_mode((0,0))
-
 def load_image(path : str):
     sprite = image.load(path)
     sized_sprite = transform.scale_by(sprite, 6)
@@ -131,12 +128,11 @@ SPRITESHEET_BAS_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_bas.
 
 SPRITESHEET_DOOR_BLINK_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_anim_blink.png"),False, True), (42*6, 29*6))
 
-#PATTERN_LIST = [load_image('data/pattern_storage/pattern_'+str(k+1)+'.png') for k in range(9)]
-
 BUTTON = load_image('data/button.png')
 
 WINDOW = load_image('data/bord.png')
 
+<<<<<<< Updated upstream
 SPRITESHEET_ROBOT_1_PACK = (anim.Spritesheet(load_image('data/robots/robot_1.png'),(24*6,46*6)), [8, 8, 8, 8])
 
 SPRITESHEET_ROBOT_2_PACK = (anim.Spritesheet(load_image('data/robots/robot_2.png'),(31*6,43*6)), [8, 8, 8, 8])
@@ -150,6 +146,21 @@ SPRITESHEET_ROBOT_5_PACK = (anim.Spritesheet(load_image('data/robots/robot_5.png
 SPRITESHEET_ROBOT_MUSIQUE_PACK = (anim.Spritesheet(load_image('data/robots/robot_musique.png'),(48*6,32*6)), [8])
 
 LIST_SPRITESHEET_ROBOT = [SPRITESHEET_ROBOT_1_PACK, SPRITESHEET_ROBOT_2_PACK, SPRITESHEET_ROBOT_3_PACK, SPRITESHEET_ROBOT_4_PACK, SPRITESHEET_ROBOT_5_PACK]
+=======
+#---------------------------------------------
+#       The format for the robot anim is:
+#line 1 - Walk Right
+#line 2 - Walk Left
+#line 3 - Idle Right
+#line 4 - Watch Wall
+#---------------------------------------------
+
+SPRITESHEET_ROBOT_1_PACK = (anim.Spritesheet(load_image('data/robot_3.png'),(27*6,39*6)), [14, 14, 11, 17])
+SPRITESHEET_ROBOT_2_PACK = (anim.Spritesheet(load_image('data/robot_4.png'),(6*8*6,6*8*6)), [8, 8, 8, 8])
+SPRITESHEET_ROBOT_3_PACK = (anim.Spritesheet(load_image('data/robot_5.png'),(6*8*6,6*8*6)), [8, 8, 8, 8])
+
+LIST_SPRITESHEET_ROBOT = [SPRITESHEET_ROBOT_1_PACK, SPRITESHEET_ROBOT_2_PACK, SPRITESHEET_ROBOT_3_PACK]
+>>>>>>> Stashed changes
 
 SPRITE_PLANT_1 = load_image("data/plant_2_39x38.png")
 

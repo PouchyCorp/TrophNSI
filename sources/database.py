@@ -1,34 +1,28 @@
 import sqlite3
 from hashlib import sha256
-import tkinter as tk
 from tkinter import messagebox
+import pygame as pg
 import pickle
 from room_config import DEFAULT_SAVE
+from enum import Enum, auto
+from ui.inputbox import InputBox
+from ui.popup import InfoPopup
 
+class LoginStates(Enum):
+    HOME = auto()
+    REGISTER_USERNAME = auto()
+    REGISTER_PASSWORD = auto()
+    LOGIN_USERNAME = auto()
+    LOGIN_PASSWORD = auto()
 
-
-class TkDataBase:
+class PgDataBase:
     def __init__(self):
         self.db_link = "userData.db"
-        self.root = tk.Tk()
-        self.root.title("Login window")
-
-        tk.Label(self.root, text="Username:").grid(row=0, column=0, padx=10, pady=10)
-        self.entry_username = tk.Entry(self.root)
-        self.entry_username.grid(row=0, column=1, padx=10, pady=10)
-
-        tk.Label(self.root, text="Password:").grid(row=1, column=0, padx=10, pady=10)
-        self.entry_password = tk.Entry(self.root, show="*")
-        self.entry_password.grid(row=1, column=1, padx=10, pady=10)
-
-
-        self.btn_register = tk.Button(self.root, text="Register", command=self.register_user)
-        self.btn_register.grid(row=2, column=0, padx=10, pady=10)
-
-        self.btn_login = tk.Button(self.root, text="Login", command=self.login_user)
-        self.btn_login.grid(row=2, column=1, padx=10, pady=10)
+        self.gui_state = LoginStates.HOME
 
         self.ready_to_launch = (False, None)
+
+
 
     def initialize_database(self):
         connection = sqlite3.connect(self.db_link)
@@ -121,8 +115,32 @@ class TkDataBase:
 
     def tk_ui(self) -> tuple[str, dict]:
         self.initialize_database()
+        fps = 60  # Frame rate
+        CLOCK = pg.time.Clock
+        WIN = pg.display.set_mode((0,0),pg.FULLSCREEN)
+        WIN.fill('black')
+        pg.display.set_icon(pg.image.load('data/big_icon.png'))
 
-        self.root.mainloop()
+        quit_button = ()
+        register_button = ()
+        login_button = ()
+
+        Username_input = InputBox(10,10,600,50,'username')
+        Password_input = InputBox(10,10,600,50,'password')
+
+        while True:
+            CLOCK.tick(fps)  # Maintain frame rate
+            mouse_pos = pg.mouse.get_pos()  # Create a coordinate object for the mouse position
+            events = pg.event.get()  # Get all events from the event queue
+
+            for event in events:
+                if event.type == pg.QUIT:  # Check for quit event
+                    pg.quit()  # Quit Pygame
+                #handle events 
+
+
+            pg.display.flip()  # Update the display
+
 
         #if root terminated and ready to launch, returns game data
         if self.ready_to_launch[0]:

@@ -1,6 +1,6 @@
 from enum import Enum, auto
 from utils.coord import Coord
-from pygame import Surface, draw, Rect
+from pygame import Surface, draw, Rect, transform
 from random import choice, randint
 from core.room import Room
 from room_config import R1
@@ -199,7 +199,6 @@ class Bot:
         self.anim_walk_right = Animation(anim_spritesheet, 0, spritesheet_lenghts[0], 2)
         self.anim_walk_left = Animation(anim_spritesheet, 1, spritesheet_lenghts[1], 2)
         self.anim_idle_right = Animation(anim_spritesheet, 2, spritesheet_lenghts[2], 2)
-        #self.anim_idle_left = Animation(anim_spritesheet, 3, spritesheet_lenght, 2)
         self.anim_watch = Animation(anim_spritesheet, 3, spritesheet_lenghts[3], 6, False)
         self.exclamation_anim = Animation(sprite.EXCLAMATION_SPRITESHEET, 0, 9, 3)
 
@@ -252,9 +251,8 @@ class Bot:
                     case "RIGHT":
                         self.surf = self.anim_idle_right.get_frame()
                     case "LEFT":
-                        #self.surf = self.anim_idle_left.get_frame()
-                        pass
-                        
+                        self.surf = transform.flip(self.anim_idle_right.get_frame(), False, True) 
+
                 if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
                     self.state = BotStates.WALK
 
