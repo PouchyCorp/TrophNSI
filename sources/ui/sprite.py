@@ -137,9 +137,19 @@ BUTTON = load_image('data/button.png')
 
 WINDOW = load_image('data/bord.png')
 
-SPRITESHEET_ROBOT_1_PACK = (anim.Spritesheet(load_image('data/robot_3.png'),(27*6,39*6)), [14, 14, 11, 17])
+SPRITESHEET_ROBOT_1_PACK = (anim.Spritesheet(load_image('data/robots/robot_1.png'),(24*6,46*6)), [8, 8, 8, 8])
 
-LIST_SPRITESHEET_ROBOT = [SPRITESHEET_ROBOT_1_PACK]
+SPRITESHEET_ROBOT_2_PACK = (anim.Spritesheet(load_image('data/robots/robot_2.png'),(31*6,43*6)), [8, 8, 8, 8])
+
+SPRITESHEET_ROBOT_3_PACK = (anim.Spritesheet(load_image('data/robots/robot_3.png'),(27*6,39*6)), [14, 14, 11, 17])
+
+SPRITESHEET_ROBOT_4_PACK = (anim.Spritesheet(load_image('data/robots/robot_4.png'),(26*6,38*6)), [8, 8, 8, 8])
+
+SPRITESHEET_ROBOT_5_PACK = (anim.Spritesheet(load_image('data/robots/robot_5.png'),(31*6,48*6)), [8, 8, 8, 8])
+
+SPRITESHEET_ROBOT_MUSIQUE_PACK = (anim.Spritesheet(load_image('data/robots/robot_musique.png'),(48*6,32*6)), [8])
+
+LIST_SPRITESHEET_ROBOT = [SPRITESHEET_ROBOT_1_PACK, SPRITESHEET_ROBOT_2_PACK, SPRITESHEET_ROBOT_3_PACK, SPRITESHEET_ROBOT_4_PACK, SPRITESHEET_ROBOT_5_PACK]
 
 SPRITE_PLANT_1 = load_image("data/plant_2_39x38.png")
 
