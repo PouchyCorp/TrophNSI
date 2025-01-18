@@ -1,5 +1,6 @@
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
+from utils.sound import SoundManager
 
 
 class UnlockManager:
@@ -29,5 +30,9 @@ class UnlockManager:
          game.money-= self.floor_price[str(num)]
          self.unlocked_floors.append(str(num))
          game.popups.append(InfoPopup(f"Vous avez débloqué l'étage {num} !"))
+         success=SoundManager('data/sounds/achieve.mp3')
+         success.played(1000, 0.8, 0)
       else:
          game.popups.append(InfoPopup("Pas assez d'argent pour débloquer l'étage :("))
+         incorrect=SoundManager('data/sounds/incorrect.mp3')
+         incorrect.played(1000, 0.8, 0)
