@@ -77,6 +77,7 @@ class DoorDown(Placeable):
 
         timer.create_timer(1.5, self.set_attribute, arguments=('anim', self.anim_close))        #set the duration of the animation
         timer.create_timer(1.5, self.door_up.set_attribute, arguments=('anim', self.door_up.anim_close))
+        
 
 class BotPlaceable(Placeable):
     pass

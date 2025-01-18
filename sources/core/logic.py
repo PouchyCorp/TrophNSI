@@ -118,9 +118,6 @@ class Game:
             case pg.K_b:  # Add a bot
                 self.hivemind.add_bot()
 
-            case pg.K_z: 
-                SoundManager('data/sounds/elevator.mp3').played()
-
             case pg.K_n:  # Free the last bot in the current room
                 self.hivemind.free_last_bot(self.current_room)
 
@@ -130,13 +127,15 @@ class Game:
                 self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
                 self.launch_transition()  # Start transition
                 placeable.interaction(self.timer)  # Trigger interaction
+                down=SoundManager('data/sounds/Doordown.wav')
+                down.played(2000, 0.5, 0)
 
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
                 self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
-                up=SoundManager('data/sounds/elevator.wav')
-                up.played()
                 self.launch_transition()  # Start transition
                 placeable.interaction(self.timer)  # Trigger interaction
+                up=SoundManager('data/sounds/elevator.wav')
+                up.played(2000, 0.5, 0)
 
             case subplaceable.BotPlaceable:  # Handle interaction with BotPlaceable type
                 if placeable.name == 'bot_placeable':
@@ -181,6 +180,8 @@ class Game:
                     if self.build_mode.can_place(self.current_room):
                         self.current_room.placed.append(
                             self.build_mode.place(self.current_room.num))  # Place the object in the current room
+                        object=SoundManager('data/sounds/items.mp3')
+                        object.played(0, 0.8, 0)    
                         self.gui_state = State.INVENTORY  # Return to interaction mode
                         self.inventory.init() # Resets inventory gui
 
