@@ -8,7 +8,6 @@ class Pattern:
         self.colors : list = colors
         self.surf : pg.Surface = self.pattern_init(pattern)
         self.coord = Coord(0,(0,0))
-
     
     def paint(self, clic : Coord, canva : Canva):
         coord = Coord(canva.coord.room_num,(clic.x-canva.coord.x,clic.y-canva.coord.y))
@@ -17,6 +16,5 @@ class Pattern:
     
     def pattern_init(self,pattern):
         self.surf = pg.transform.scale_by(pattern, 2)
-        self.surf.fill(choice(self.colors)+tuple([0]), special_flags=pg.BLEND_RGBA_MAX)
         return self.surf
 

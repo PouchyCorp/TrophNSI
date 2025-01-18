@@ -28,6 +28,7 @@ from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
 from utils.sound import SoundManager
 from core.unlockmanager import UnlockManager
+from objects.pattern import Pattern
 
 class Game:
     def __init__(self, win, clock, inventory, shop, gold):
@@ -50,18 +51,21 @@ class Game:
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
         self.unlock_manager = UnlockManager()
+        self.pattern_inv : list[Pattern] = self.pattern_inv_init()
 
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
         if self.current_room.num + direction >= 0:
             self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
-
-            # Enter painting mode when moving down to room R0
-            if self.current_room == R0:
-                self.gui_state = State.PAINTING
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
+    
+    def pattern_inv_init(self):
+        inv = []
+        for pattern in sprite.PATTERN_LIST:
+            inv.append(Pattern(pattern,[]))
+        return inv
 
     def launch_dialogue(self, bot_anim):
         """# Function to initiate dialogue easily passed to other functions"""
@@ -203,8 +207,8 @@ class Game:
                 case State.INVENTORY:
                     self.inventory.handle_navigation(event)
                     clicked_placeable : Placeable | None = self.inventory.handle_click(mouse_pos)
-                    if clicked_placeable:
-                        # Prepare to enter build mode with the selected placeable
+                    if clicked_placeable and self.current_room.num != 0:
+                        # Prepare to enter build mode with the selected placeable unless player is in painting room
                         self.build_mode.selected_placeable = clicked_placeable
                         self.gui_state = State.BUILD
                 
@@ -309,6 +313,9 @@ class Game:
         self.win.blit(InfoPopup(
             f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.money} / th_gold : {self.bot_distributor.theorical_gold}').text_surf, (0, 0))
         
+        if self.current_room.num == 0:
+            for pattern in self.pattern_inv:
+                self.win.blit(pattern.surf)
           # Draw inventory
         
         # Render popups after all other drawings
