@@ -14,8 +14,6 @@ class SoundManager():
         PLAYING.set_volume(vlm)
         PLAYING.play(loop)
         
-
-    
     
 class Sound():
     def __init__(self):

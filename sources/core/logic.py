@@ -134,7 +134,7 @@ class Game:
                 if self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
                     self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
                     self.launch_transition()  # Start transition
-                    up=SoundManager('data/sounds/Doordown')
+                    up=SoundManager('data/sounds/Doordown.wav')
                     up.played(1000, 0.8, 0)
                     placeable.interaction(self.timer)  # Trigger interaction
                 else:
@@ -148,7 +148,8 @@ class Game:
                     up.played(1000, 0.8, 0)
                     self.launch_transition()  # Start transition
                     placeable.interaction(self.timer)  # Trigger interaction
-                self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self)
+                else:
+                    self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self)
 
             case subplaceable.BotPlaceable:  # Handle interaction with BotPlaceable type
                 if placeable.name == 'bot_placeable':

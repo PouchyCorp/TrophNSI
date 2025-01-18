@@ -28,6 +28,6 @@ class UnlockManager:
       if not self.is_floor_unlocked(num) and game.money-self.floor_price[str(num)] >= 0:
          game.money-= self.floor_price[str(num)]
          self.unlocked_floors.append(str(num))
-         game.popups.append(InfoPopup(f"Vous avez débloqué l'étage {num}"))
+         game.popups.append(InfoPopup(f"Vous avez débloqué l'étage {num} !"))
       else:
          game.popups.append(InfoPopup("Pas assez d'argent pour débloquer l'étage :("))
