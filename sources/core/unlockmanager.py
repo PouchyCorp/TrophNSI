@@ -1,5 +1,5 @@
 from ui.confirmationpopup import ConfirmationPopup
-from ui.popup import InfoPopup
+from ui.infopopup import InfoPopup
 
 
 class UnlockManager:

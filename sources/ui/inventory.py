@@ -3,7 +3,7 @@ from utils.coord import Coord
 from pygame import Surface, transform, BLEND_RGB_MIN, font, draw, BLEND_RGB_ADD
 from ui.sprite import WINDOW, nine_slice_scaling, ARROW_LEFT, ARROW_RIGHT
 from ui.confirmationpopup import ConfirmationPopup
-from ui.popup import InfoPopup
+from ui.infopopup import InfoPopup
 from ui.button import Button
 
 
@@ -77,7 +77,7 @@ class Inventory:
         """Resizes the window sprite based on the displayed objects."""
         width = BORDER_AROUND_WINDOW * 2 + OBJECT_SIZE*2 + 20
         height = OBJECT_SIZE*5
-        self.window_sprite = nine_slice_scaling(WINDOW, (width, height), 12)
+        self.window_sprite = nine_slice_scaling(WINDOW, (width, height), (12, 12, 12, 12))
 
     def draw(self, win: Surface, mouse_pos: Coord):
         """Draws the inventory or shop interface on the screen."""

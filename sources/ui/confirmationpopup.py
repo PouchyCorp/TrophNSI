@@ -15,7 +15,7 @@ class ConfirmationPopup:
         self.screen = screen
         self.question = question
         self.font = pg.font.Font(None, 36)
-        self.background : pg.Surface = nine_slice_scaling(WINDOW,(600,200),12)
+        self.background : pg.Surface = nine_slice_scaling(WINDOW,(600,200), (12, 12, 12, 12))
         
         self.yes_button = self._create_button(yes_func, yes_func_args, YES_BUTTON)
         self.no_button = self._create_button(no_func, no_func_args ,NO_BUTTON)
