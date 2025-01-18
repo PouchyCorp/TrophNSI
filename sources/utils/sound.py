@@ -8,11 +8,12 @@ class SoundManager():
         self.time=time
         
 
-    def played(self):
+    def played(self, fade, vlm, loop):
         PLAYING=pygame.mixer.Sound(self.name)
-        pygame.mixer.Sound.fadeout(150)
-        PLAYING.play(1, self.time*1000)
-        pygame.mixer.Sound.unload()
+        PLAYING.fadeout(fade)
+        PLAYING.set_volume(vlm)
+        PLAYING.play(loop)
+        
 
     
     

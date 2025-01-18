@@ -125,9 +125,6 @@ class Game:
             case pg.K_b:  # Add a bot
                 self.hivemind.add_bot()
 
-            case pg.K_z: 
-                SoundManager('data/sounds/elevator.mp3').played()
-
             case pg.K_n:  # Free the last bot in the current room
                 self.hivemind.free_last_bot(self.current_room)
 
@@ -137,6 +134,8 @@ class Game:
                 if self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
                     self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
                     self.launch_transition()  # Start transition
+                    up=SoundManager('data/sounds/Doordown')
+                    up.played(1000, 0.8, 0)
                     placeable.interaction(self.timer)  # Trigger interaction
                 else:
                     self.unlock_manager.try_to_unlock_floor(self.current_room.num-1, self)
@@ -146,7 +145,7 @@ class Game:
                 if self.unlock_manager.is_floor_unlocked(self.current_room.num+1):
                     self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
                     up=SoundManager('data/sounds/elevator.wav')
-                    up.played()
+                    up.played(1000, 0.8, 0)
                     self.launch_transition()  # Start transition
                     placeable.interaction(self.timer)  # Trigger interaction
                 self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self)
