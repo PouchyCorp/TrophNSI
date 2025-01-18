@@ -281,11 +281,8 @@ class Bot:
                         self.surf = self.anim_walk_left.get_frame()
 
             case BotStates.WATCH:
-                draw.rect(self.surf, "green", (0,0,10,10))
-                
-                
                 self.surf = self.anim_watch.get_frame()
-                self.walking.stop()
+
             case _:
                 raise ValueError
 
