@@ -1,9 +1,10 @@
 from objects.placeable import Placeable
 from utils.coord import Coord
-from pygame import Surface, transform, BLEND_RGB_MIN, font, Rect, draw
-from ui.sprite import ICON_1, WINDOW, nine_slice_scaling, FLECHE_GAUCHE, FLECHE_DROITE
+from pygame import Surface, transform, BLEND_RGB_MIN, font, draw, BLEND_RGB_ADD
+from ui.sprite import WINDOW, nine_slice_scaling, ARROW_LEFT, ARROW_RIGHT
 from ui.confirmationpopup import ConfirmationPopup
 from ui.popup import InfoPopup
+from ui.button import Button
 
 
 BORDER_AROUND_WINDOW = 24
@@ -20,8 +21,16 @@ class Inventory:
         self.font = font.SysFont(None, 30)  # Font for labels
         self.title = title  # Title of the inventory
         self.window_sprite: Surface = WINDOW  # Window background
-        self.button_prev_rect = FLECHE_GAUCHE.get_rect(topleft = (64,975))
-        self.button_next_rect = FLECHE_GAUCHE.get_rect(topleft = (224,975))
+
+        # Blend black to make active button
+        ARROW_LEFT_DARK = ARROW_LEFT.copy()
+        ARROW_LEFT_DARK.fill((60,60,60), special_flags=BLEND_RGB_ADD)
+
+        ARROW_RIGHT_DARK = ARROW_RIGHT.copy()
+        ARROW_RIGHT_DARK.fill((60,60,60), special_flags=BLEND_RGB_ADD)
+
+        self.button_prev = Button((60,984), self.handle_navigation_left, ARROW_LEFT_DARK, ARROW_LEFT)
+        self.button_next = Button((292,984), self.handle_navigation_right, ARROW_RIGHT_DARK, ARROW_RIGHT)
     def init(self):
         """Initializes the objects for rendering on the current page."""
         # Paginate items
@@ -43,13 +52,15 @@ class Inventory:
             thumbnail_surf = transform.scale_by(obj.surf, scale_ratio)
             thumbnail_rect = thumbnail_surf.get_rect()
 
+            thumbnail_surf.fill('red')
+
             # Apply greyscale if the object is placed
             if obj.placed:
                 thumbnail_surf.fill((50, 50, 50), special_flags=BLEND_RGB_MIN)
 
             # Position the thumbnail
-            thumbnail_rect.x = BORDER_AROUND_WINDOW + 12 if ind % 2 == 0 else BORDER_AROUND_WINDOW + OBJECT_SIZE + 20 + 12
-            thumbnail_rect.y = 72 + (220 * (ind // 2))
+            thumbnail_rect.centerx = 324-OBJECT_SIZE-20 if ind % 2 == 0 else 324
+            thumbnail_rect.y = 84 + (220 * (ind // 2))
 
             # Create a new Placeable for the thumbnail
             thumbnail_placeable = Placeable(obj.name, Coord(obj.coord.room_num, thumbnail_rect.topleft), thumbnail_surf)
@@ -66,7 +77,7 @@ class Inventory:
 
     def _resize_window_sprite(self):
         """Resizes the window sprite based on the displayed objects."""
-        width = BORDER_AROUND_WINDOW * 2 + OBJECT_SIZE + 144
+        width = BORDER_AROUND_WINDOW * 2 + OBJECT_SIZE*2 + 20
         height = OBJECT_SIZE*5
         self.window_sprite = nine_slice_scaling(WINDOW, (width, height), 12)
 
@@ -81,7 +92,7 @@ class Inventory:
         win.blits([(txt_surf, (plcb.rect.x, plcb.rect.y + 190)) for plcb, txt_surf in self.displayed_objects])
 
         # Draw navigation buttons
-        self._draw_navigation_buttons(win)
+        self._draw_navigation_buttons(win, mouse_pos)
 
     def _draw_title(self, win: Surface):
         """Draws the title of the inventory or shop."""
@@ -94,22 +105,26 @@ class Inventory:
             if placeable.rect.collidepoint(mouse_pos.xy):
                 placeable.draw_outline(win, (150, 150, 255))
 
-    def _draw_navigation_buttons(self, win: Surface):
+    def _draw_navigation_buttons(self, win: Surface, mouse_pos):
         """Draws the previous and next page buttons."""
-        #.rect(win, (100, 100, 100), self.button_prev_rect) #temp
-        draw.rect(win, (100, 100, 100), self.button_next_rect) #temp
-        win.blit(FLECHE_GAUCHE, self.button_prev_rect)
-        win.blit(FLECHE_DROITE, self.button_next_rect)
+        self.button_next.draw(win, self.button_next.rect.collidepoint(mouse_pos.xy))
+        self.button_prev.draw(win, self.button_prev.rect.collidepoint(mouse_pos.xy))
 
-    def handle_navigation(self, mouse_pos: Coord):
+    def handle_navigation_left(self):
         """Handles navigation button clicks to change pages."""
-        if self.button_prev_rect.collidepoint(mouse_pos.xy) and self._page > 0:
+        if self._page > 0:
             self._page -= 1
             self.init()
-        elif self.button_next_rect.collidepoint(mouse_pos.xy) and (self._page + 1) * ITEMS_PER_PAGE < len(self.inv):
+
+    def handle_navigation_right(self):
+        if (self._page + 1) * ITEMS_PER_PAGE < len(self.inv):
             self._page += 1
             self.init()
-    
+
+    def handle_navigation(self, event):
+        self.button_next.handle_event(event)
+        self.button_prev.handle_event(event)
+
     def handle_click(self, mouse_pos):
         """returns the placeable contained in inventory if all conditions are valid : placeable not already placed, mouse clicked on it"""
         clicked_showed_obj_id = self._select_item(mouse_pos)  # Check if an inventory item was clicked, and if the object is already placed

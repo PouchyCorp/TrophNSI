@@ -184,7 +184,7 @@ class Game:
                         self.inventory.init() # Resets inventory gui
 
                 case State.INVENTORY:
-                    self.inventory.handle_navigation(mouse_pos)
+                    self.inventory.handle_navigation(event)
                     clicked_placeable : Placeable | None = self.inventory.handle_click(mouse_pos)
                     if clicked_placeable:
                         # Prepare to enter build mode with the selected placeable

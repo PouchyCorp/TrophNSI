@@ -2,6 +2,9 @@ from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display
 from math import sin, pi
 import utils.anim as anim
 
+if not display.get_init():
+    display.set_mode((0,0))
+
 def load_image(path : str):
     sprite = image.load(path)
     sized_sprite = transform.scale_by(sprite, 6)
@@ -158,9 +161,9 @@ SPRITE_PLANT_1 = load_image("data/plant_2_39x38.png")
 
 SPRITE_PLANT_2 = load_image("data/plant_3_28x48.png")
 
-FLECHE_GAUCHE = load_image("data/fleche_gauche.png")
+ARROW_LEFT = load_image("data/fleche_gauche.png")
 
-FLECHE_DROITE  = load_image("data/fleche_droite.png")
+ARROW_RIGHT  = load_image("data/fleche_droite.png")
 
 DIALBOX = load_image("data/pop_up_dialogue.png")
 
