@@ -133,7 +133,8 @@ class Game:
 
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
                 self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
-                SoundManager('data/sounds/elevator.mp3').played()
+                up=SoundManager('data/sounds/elevator.wav')
+                up.played()
                 self.launch_transition()  # Start transition
                 placeable.interaction(self.timer)  # Trigger interaction
 
