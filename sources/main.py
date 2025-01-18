@@ -6,7 +6,7 @@ with open('sources/config.toml', 'rb') as f:
 
 def get_save_dict(game):
   print('game saved')
-  return {'gold' : game.gold, 'inventory' : game.inventory.inv, "shop" : game.shop.inv}
+  return {'gold' : game.money, 'inventory' : game.inventory.inv, "shop" : game.shop.inv}
 
 def start_game(game_save_dict):
     # Open config file and dump it in a dict

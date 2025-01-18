@@ -1,4 +1,4 @@
-from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display
+from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect
 from math import sin, pi
 import utils.anim as anim
 
@@ -10,54 +10,59 @@ def load_image(path : str):
     sized_sprite = transform.scale_by(sprite, 6)
     return sized_sprite.convert_alpha()
 
-def nine_slice_scaling(surf : Surface, size : tuple[int], border : int) -> Surface:
-    original_rect = surf.get_rect()
-    target_surf = Surface(size, flags=SRCALPHA)
-    target_rect = target_surf.get_rect()
-
-    #need to resize the image width
-    if original_rect.width != target_rect.width:
-
-        left_slice_area = (0, 0, border, original_rect.height)
-        left_slice = Surface((border, original_rect.height), flags=SRCALPHA)
-        left_slice.blit(surf, (0, 0), left_slice_area)
-
-        right_slice_area = (original_rect.width-border, 0, border, original_rect.height)
-        right_slice = Surface((border, original_rect.height), flags=SRCALPHA)
-        right_slice.blit(surf, (0, 0), right_slice_area)
-
-        middle_slice_area = (border, 0, original_rect.width-(border*2), original_rect.height)
-        middle_slice = Surface((original_rect.width-(border*2), original_rect.height), flags=SRCALPHA)
-        middle_slice.blit(surf, (0, 0), middle_slice_area)
-
-        #resize only middle slice horizontally
-        middle_slice_new_width = target_rect.width-(border*2)
-        middle_slice = transform.smoothscale(middle_slice, (middle_slice_new_width, original_rect.height))
-
-        #blit all slices together
-        target_surf.blits([(left_slice, (0,0)), (middle_slice, (border, 0)), (right_slice, (border+middle_slice_new_width,0))])
+def nine_slice_scaling(image, target_size, margins):
+    """
+    Scale an image using nine-slice scaling.
     
-    #need to resize the image height
-    if original_rect.height != target_rect.height:
-        top_slice_area = (0, 0, target_rect.width, border)
-        top_slice = Surface((target_rect.width, border), flags=SRCALPHA)
-        top_slice.blit(target_surf, (0, 0), top_slice_area)
+    Parameters:
+        image (pygame.Surface): The original image.
+        target_size (tuple): The (width, height) of the scaled image.
+        margins (tuple): The (left, right, top, bottom) margins for the slices.
+    
+    Returns:
+        pygame.Surface: The scaled image.
+    """
+    original_width, original_height = image.get_size()
+    target_width, target_height = target_size
+    left, right, top, bottom = margins
+    
+    # Calculate the coordinates for the slices
+    center_width = original_width - left - right
+    center_height = original_height - top - bottom
+    target_center_width = target_width - left - right
+    target_center_height = target_height - top - bottom
 
-        bottom_slice_area = (0, original_rect.height-border, target_rect.width, border)
-        bottom_slice = Surface((target_rect.width, border), flags=SRCALPHA)
-        bottom_slice.blit(target_surf, (0, 0), bottom_slice_area)
+    # Create a new surface for the scaled image
+    scaled_image = Surface(target_size, SRCALPHA)
+    
+    # Define the slices
+    slices = [
+        (Rect(0, 0, left, top), (0, 0)),  # Top-left
+        (Rect(left, 0, center_width, top), (left, 0, target_center_width, top)),  # Top-center
+        (Rect(original_width - right, 0, right, top), (target_width - right, 0)),  # Top-right
+        
+        (Rect(0, top, left, center_height), (0, top, left, target_center_height)),  # Middle-left
+        (Rect(left, top, center_width, center_height), (left, top, target_center_width, target_center_height)),  # Middle-center
+        (Rect(original_width - right, top, right, center_height), (target_width - right, top, right, target_center_height)),  # Middle-right
+        
+        (Rect(0, original_height - bottom, left, bottom), (0, target_height - bottom)),  # Bottom-left
+        (Rect(left, original_height - bottom, center_width, bottom), (left, target_height - bottom, target_center_width, bottom)),  # Bottom-center
+        (Rect(original_width - right, original_height - bottom, right, bottom), (target_width - right, target_height - bottom)),  # Bottom-right
+    ]
+    
+    # Blit each slice into the new surface
+    for src_rect, dest_coords in slices:
+        if len(dest_coords) == 2:
+            # For corner slices (which have fixed size)
+            dest_rect = Rect(dest_coords[0], dest_coords[1], src_rect.width, src_rect.height)
+            scaled_image.blit(image.subsurface(src_rect), dest_rect.topleft)
+        else:
+            # For scalable slices (center and edges)
+            dest_rect = Rect(dest_coords[0], dest_coords[1], dest_coords[2], dest_coords[3])
+            scaled_image.blit(transform.scale(image.subsurface(src_rect), dest_rect.size), dest_rect.topleft)
 
-        middle_slice_area = (0, border, target_rect.width, original_rect.height-(border*2))
-        middle_slice = Surface((target_rect.width, original_rect.height-(border*2)), flags=SRCALPHA)
-        middle_slice.blit(target_surf, (0, 0), middle_slice_area)
-
-        #resize only middle slice vertically
-        middle_slice_new_height = target_rect.height-(border*2)
-        middle_slice = transform.smoothscale(middle_slice, (target_rect.width, middle_slice_new_height))
-
-        #blit all slices together
-        target_surf.blits([(top_slice, (0,0)), (middle_slice, (0, border)), (bottom_slice, (0,border+middle_slice_new_height))])
-    return target_surf
+    
+    return scaled_image
 
 def get_outline(surf, color):
     outline_width = 3

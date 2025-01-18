@@ -5,7 +5,7 @@ import pygame as pg
 import pickle
 from enum import Enum, auto
 from ui.inputbox import InputBox
-from ui.popup import InfoPopup
+from sources.ui.infopopup import InfoPopup
 from ui.button import Button
 
 class LoginStates(Enum):
