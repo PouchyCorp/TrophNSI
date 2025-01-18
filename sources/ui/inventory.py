@@ -153,8 +153,8 @@ class Inventory:
 
 class Shop(Inventory):
     def buy_object(self, obj : Placeable, game):
-        if game.gold - obj.price >= 0:
-            game.gold -= obj.price
+        if game.money - obj.price >= 0:
+            game.money -= obj.price
             game.inventory.inv.append(obj)
             self.inv.remove(obj)
             self.init()
