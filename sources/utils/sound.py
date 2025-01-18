@@ -13,7 +13,10 @@ class SoundManager():
         PLAYING.fadeout(fade)
         PLAYING.set_volume(vlm)
         PLAYING.play(loop)
-        
+    
+    def stop(self):
+        PLAYING=pygame.mixer.Sound(self.name)
+        PLAYING.stop()
     
 class Sound():
     def __init__(self):

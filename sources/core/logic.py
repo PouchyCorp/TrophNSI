@@ -194,6 +194,8 @@ class Game:
                     if self.build_mode.can_place(self.current_room):
                         self.current_room.placed.append(
                             self.build_mode.place(self.current_room.num))  # Place the object in the current room
+                        pop=SoundManager('data/sounds/achieve.mp3')
+                        pop.played(1000, 0.8, 0)
                         self.beauty = self.process_total_beauty()
                         self.gui_state = State.INVENTORY  # Return to interaction mode
                         self.inventory.init() # Resets inventory gui
@@ -227,6 +229,7 @@ class Game:
                         self.gui_state = State.INTERACTION
                 
                 case State.CONFIRMATION:
+                    
                     flag = self.confirmation_popups[-1].handle_click(mouse_pos)
                     if flag is not None:
                         self.confirmation_popups.pop()
@@ -277,7 +280,7 @@ class Game:
                 self.build_mode.show_hologram(self.win, mouse_pos_coord)  # Show the hologram for placing
 
                 self.build_mode.show_room_holograms(self.win, self.current_room)  # Show room holograms
-
+                
     #        case w if w in (State.PAINTING, State.PLACING_PATTERN):
     #            pattern_inventory.draw(WIN)  # Draw the pattern inventory
     #            test_painting.draw(WIN)  # Draw the painting 

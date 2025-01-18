@@ -5,7 +5,7 @@ from ui.sprite import WINDOW, nine_slice_scaling, ARROW_LEFT, ARROW_RIGHT
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
 from ui.button import Button
-
+from utils.sound import SoundManager
 
 BORDER_AROUND_WINDOW = 24
 OBJECT_SIZE = 180
@@ -159,8 +159,12 @@ class Shop(Inventory):
             self.inv.remove(obj)
             self.init()
             game.popups.append(InfoPopup(f"{obj.name} a été ajouté à ton inventaire !"))
+            success=SoundManager('data/sounds/achieve.mp3')
+            success.played(1000, 0.8, 0)
         else:
             game.popups.append(InfoPopup("Tu n'as as assez d'argent pour acheter l'objet :("))
+            incorrect=SoundManager('data/sounds/incorrect.mp3')
+            incorrect.played(1000, 0.8, 0)
 
     def handle_click(self, mouse_pos : Coord, game):
         """checks if click event happenend on an object, and launches confirmation for buying"""

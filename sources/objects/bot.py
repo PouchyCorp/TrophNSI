@@ -8,6 +8,7 @@ import ui.sprite as sprite
 from utils.timermanager import TimerManager
 from utils.anim import Animation, Spritesheet
 import objects.placeablesubclass as subplaceable
+from utils.sound import SoundManager
 
 class BotStates(Enum):
     IDLE = auto()
@@ -189,7 +190,7 @@ class Bot:
         self.coord.xy = self.coord.get_pixel_perfect()
         self.__target_coord = self.coord.copy()
         self.visited_placeable_id : list[int] = []
-
+        self.walking=SoundManager('data/sounds/robot_moving.mp3')
         self.is_inline = True
         self.is_leaving = False
         self.state = BotStates.IDLE
@@ -229,7 +230,7 @@ class Bot:
         match self.state:
             case BotStates.IDLE:
                 draw.rect(self.surf, "red", (0,0,10,10))
-                
+                walking=SoundManager('data/sounds/robot_moving.mp3')
 
                 #search for objects to walk to if not inline
                 if not self.is_inline:
@@ -250,20 +251,25 @@ class Bot:
                 match self.move_dir:
                     case "RIGHT":
                         self.surf = self.anim_idle_right.get_frame()
+                        
                     case "LEFT":
                         self.surf = transform.flip(self.anim_idle_right.get_frame(), False, True) 
 
                 if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
                     self.state = BotStates.WALK
+                    
+                    
 
             case BotStates.WALK:
                 draw.rect(self.surf, "blue", (0,0,10,10))
-
+                
                 if self.coord.bot_movement_compare(self.target_coord):
                     if self.is_inline:
                         self.state = BotStates.IDLE
+                        self.walking.stop()
                     else:
                         self.state = BotStates.WATCH
+                        self.walking.stop()
                         TIMER.create_timer(2.75, self.set_attribute, False, arguments=('state', BotStates.IDLE))
                         TIMER.create_timer(2.75, self.anim_watch.reset_frame, False)
 
@@ -277,9 +283,9 @@ class Bot:
             case BotStates.WATCH:
                 draw.rect(self.surf, "green", (0,0,10,10))
                 
-
+                
                 self.surf = self.anim_watch.get_frame()
-
+                self.walking.stop()
             case _:
                 raise ValueError
 
