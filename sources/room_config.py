@@ -38,6 +38,10 @@ R4.placed += [stairs_up , stairs_down]
 
 ROOMS : list[Room] = [R0, R1, R2, R3, R4]
 
-DEFAULT_SAVE = {'gold' : 0, 'beauty' : 100, "inventory": [], "shop": [Placeable('bust', Coord(2,(100,100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=50),
-                                                                    Placeable('plante 1', Coord(2,(100,100)), sprite.SPRITE_PLANT_1, "decoration",  y_constraint=0, price=50),
-                                                                    Placeable('plante 2', Coord(2,(100,100)), sprite.SPRITE_PLANT_2, "decoration",  y_constraint=0, price=50)]}
+DEFAULT_SAVE = {'gold' : 0, 
+                "inventory": [Placeable('cheater beauty', Coord(2,(100,100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=50, beauty=10000000)], 
+
+
+                "shop": [Placeable('bust', Coord(2,(100,100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=50, beauty=10),
+                        Placeable('plante 1', Coord(2,(100,100)), sprite.SPRITE_PLANT_1, "decoration",  y_constraint=0, price=50, beauty=100),
+                        Placeable('plante 2', Coord(2,(100,100)), sprite.SPRITE_PLANT_2, "decoration",  y_constraint=0, price=50, beauty=1000)]}

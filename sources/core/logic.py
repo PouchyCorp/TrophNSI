@@ -29,7 +29,7 @@ from ui.confirmationpopup import ConfirmationPopup
 from utils.sound import SoundManager
 
 class Game:
-    def __init__(self, win, clock, inventory, shop, gold, beauty):
+    def __init__(self, win, clock, inventory, shop, gold):
         self.timer : TimerManager = TimerManager()
         self.win : pg.Surface = win
         self.clock : pg.time.Clock = clock
@@ -47,8 +47,7 @@ class Game:
         self.incr_fondu = 0
         self.clicked_this_frame = False
         self.gold : int = gold
-        self.beauty : float = beauty
-        self.sound = SoundManager
+        self.beauty : float = self.process_total_beauty()
 
     def change_floor(self, direction):
         """to move up : 1
@@ -68,6 +67,12 @@ class Game:
         self.temp_bg =  pg.transform.grayscale(self.win)
         self.dialogue_manager.random_dialogue()  # Trigger a random dialogue
         self.dialogue_manager.bot_anim = bot_anim.copy()  # Copy the bot's surface for display
+    
+    def process_total_beauty(self):
+        total = 0
+        for room in ROOMS:
+            total += room.get_beauty_in_room()
+        return total
 
 
     def launch_transition(self):
@@ -181,6 +186,7 @@ class Game:
                     if self.build_mode.can_place(self.current_room):
                         self.current_room.placed.append(
                             self.build_mode.place(self.current_room.num))  # Place the object in the current room
+                        self.beauty = self.process_total_beauty()
                         self.gui_state = State.INVENTORY  # Return to interaction mode
                         self.inventory.init() # Resets inventory gui
 
@@ -201,6 +207,7 @@ class Game:
                         if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
                             self.destruction_mode.remove_from_room(
                                 placeable, self.current_room)  # Remove the selected placeable from the room
+                            self.beauty = self.process_total_beauty()
 
                 case State.INTERACTION:
                     for placeable in self.current_room.placed:

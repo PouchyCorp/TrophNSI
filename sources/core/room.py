@@ -24,3 +24,10 @@ class Room:
         for placeable in self.placed:
             if placeable.temporary:
                 self.placed.remove(placeable)
+    
+    def get_beauty_in_room(self):
+        total = 0
+        for placeable in self.placed:
+            if placeable.tag == "decoration":
+                total += placeable.beauty
+        return total

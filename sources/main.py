@@ -6,7 +6,7 @@ with open('sources/config.toml', 'rb') as f:
 
 def get_save_dict(game):
   print('game saved')
-  return {'gold' : game.gold, 'beauty' : game.beauty, 'inventory' : game.inventory.inv, "shop" : game.shop.inv}
+  return {'gold' : game.gold, 'inventory' : game.inventory.inv, "shop" : game.shop.inv}
 
 def start_game(game_save_dict):
     # Open config file and dump it in a dict
@@ -40,7 +40,7 @@ def start_game(game_save_dict):
       ROOMS[placeable.coord.room_num].placed.append(placeable)
 
   #game initialized with some objects as parameters instead of in the __init__ of Game, because of the eventuality that they would be loaded by a db save
-  game = Game(WIN, CLOCK, inventory, shop, game_save_dict['gold'], game_save_dict['beauty'])
+  game = Game(WIN, CLOCK, inventory, shop, game_save_dict['gold'])
     
 
   if __name__ == '__main__':
