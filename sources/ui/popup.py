@@ -8,10 +8,11 @@ class InfoPopup:
         self.text_surf = self.font.render(self.text, True, (0, 0, 0), (255,255,255))
         self.rect = self.text_surf.get_rect()
 
-        self.lifetime : int = 60
+        self.lifetime : int = 120
         #set centered coordinates
         self.rect.y = 50
         self.rect.x = (1920/2)-(self.rect.width/2)
 
     def draw(self, screen):
+        self.lifetime -= 1
         screen.blit(self.text_surf, self.rect)
