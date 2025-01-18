@@ -27,7 +27,7 @@ class BotDistributor:
 
     def add_to_theorical_gold(self):
         if not self.hivemind.is_line_full(): #don't add if the line is full
-            gold_amount = (self.game.beauty ** 2)/4 #beauty to gold formula (divide by 4 because method called four times a second)
+            gold_amount = (self.game.beauty)/4 #beauty to gold formula (divide by 4 because method called four times a second)
             self.theorical_gold += gold_amount
     
     def distribute_to_bot(self):

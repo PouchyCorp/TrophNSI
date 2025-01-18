@@ -52,8 +52,6 @@ class Inventory:
             thumbnail_surf = transform.scale_by(obj.surf, scale_ratio)
             thumbnail_rect = thumbnail_surf.get_rect()
 
-            thumbnail_surf.fill('red')
-
             # Apply greyscale if the object is placed
             if obj.placed:
                 thumbnail_surf.fill((50, 50, 50), special_flags=BLEND_RGB_MIN)

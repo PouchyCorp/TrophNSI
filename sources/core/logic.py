@@ -27,9 +27,10 @@ from math import pi
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
 from utils.sound import SoundManager
+from core.unlockmanager import UnlockManager
 
 class Game:
-    def __init__(self, win, clock, inventory, shop, gold, beauty):
+    def __init__(self, win, clock, inventory, shop, gold):
         self.timer : TimerManager = TimerManager()
         self.win : pg.Surface = win
         self.clock : pg.time.Clock = clock
@@ -46,9 +47,9 @@ class Game:
         self.current_room : Room = R1 #starter room always in floor 1
         self.incr_fondu = 0
         self.clicked_this_frame = False
-        self.gold : int = gold
-        self.beauty : float = beauty
-        self.sound = SoundManager
+        self.money : int = gold
+        self.beauty : float = self.process_total_beauty()
+        self.unlock_manager = UnlockManager()
 
     def change_floor(self, direction):
         """to move up : 1
@@ -68,6 +69,12 @@ class Game:
         self.temp_bg =  pg.transform.grayscale(self.win)
         self.dialogue_manager.random_dialogue()  # Trigger a random dialogue
         self.dialogue_manager.bot_anim = bot_anim.copy()  # Copy the bot's surface for display
+    
+    def process_total_beauty(self):
+        total = 0
+        for room in ROOMS:
+            total += room.get_beauty_in_room()
+        return total
 
 
     def launch_transition(self):
@@ -124,22 +131,26 @@ class Game:
     def placeable_interaction_handler(self, placeable : Placeable):
         match type(placeable):
             case subplaceable.DoorDown:  # Handle interaction with DoorDown type
-                self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
-                self.launch_transition()  # Start transition
-                placeable.interaction(self.timer)  # Trigger interaction
-                down=SoundManager('data/sounds/Doordown.wav')
-                down.played(2000, 0.5, 0)
+                if self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
+                    self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
+                    self.launch_transition()  # Start transition
+                    placeable.interaction(self.timer)  # Trigger interaction
+                else:
+                    self.unlock_manager.try_to_unlock_floor(self.current_room.num-1, self)
+                
 
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
-                self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
-                self.launch_transition()  # Start transition
-                placeable.interaction(self.timer)  # Trigger interaction
-                up=SoundManager('data/sounds/elevator.wav')
-                up.played(2000, 0.5, 0)
+                if self.unlock_manager.is_floor_unlocked(self.current_room.num+1):
+                    self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
+                    up=SoundManager('data/sounds/elevator.wav')
+                    up.played()
+                    self.launch_transition()  # Start transition
+                    placeable.interaction(self.timer)  # Trigger interaction
+                self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self)
 
             case subplaceable.BotPlaceable:  # Handle interaction with BotPlaceable type
                 if placeable.name == 'bot_placeable':
-                    self.gold += self.hivemind.inline_bots[-1].gold_amount  # Increment currency
+                    self.money += self.hivemind.inline_bots[-1].gold_amount  # Increment currency
                     self.hivemind.free_last_bot(self.current_room)  # Free the last bot
                     
             case subplaceable.ShopPlaceable:
@@ -180,8 +191,7 @@ class Game:
                     if self.build_mode.can_place(self.current_room):
                         self.current_room.placed.append(
                             self.build_mode.place(self.current_room.num))  # Place the object in the current room
-                        object=SoundManager('data/sounds/items.mp3')
-                        object.played(0, 0.8, 0)    
+                        self.beauty = self.process_total_beauty()
                         self.gui_state = State.INVENTORY  # Return to interaction mode
                         self.inventory.init() # Resets inventory gui
 
@@ -202,6 +212,7 @@ class Game:
                         if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
                             self.destruction_mode.remove_from_room(
                                 placeable, self.current_room)  # Remove the selected placeable from the room
+                            self.beauty = self.process_total_beauty()
 
                 case State.INTERACTION:
                     for placeable in self.current_room.placed:
@@ -245,6 +256,10 @@ class Game:
             case State.INTERACTION:
                 self.hivemind.create_last_bot_clickable()  # Make the last bot clickable
 
+        
+        if self.confirmation_popups:
+            self.gui_state = State.CONFIRMATION
+
 
     def draw(self, mouse_pos : Coord):
         self.win.blit(self.current_room.bg_surf, (0, 0))  # Draw the background of the current room
@@ -286,7 +301,7 @@ class Game:
                 self.shop.draw(self.win, mouse_pos)
 
         self.win.blit(InfoPopup(
-            f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.gold} / th_gold : {self.bot_distributor.theorical_gold}').text_surf, (0, 0))
+            f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.money} / th_gold : {self.bot_distributor.theorical_gold}').text_surf, (0, 0))
         
           # Draw inventory
         
