@@ -1,7 +1,7 @@
 from utils.coord import Coord
 import pygame as pg
 from objects.canva import Canva
-from random import choice
+from ui.sprite import SPRITESHEET_CHIP
 
 class Pattern:
     def __init__(self, pattern, colors):

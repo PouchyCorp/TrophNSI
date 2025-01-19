@@ -138,6 +138,8 @@ SPRITESHEET_DOOR_BLINK_FLIP = anim.Spritesheet(transform.flip(load_image("data/p
 
 WINDOW = load_image('data/bord.png')
 
+SPRITESHEET_CHIP = anim.Spritesheet(load_image('data/chip.png'), (48*6, 48*6))
+
 #---------------------------------------------
 #       The format for the robot anim is:
 #line 1 - Walk Right
