@@ -1,6 +1,5 @@
 import sqlite3
 from hashlib import sha256
-from tkinter import messagebox
 import pygame as pg
 import pickle
 from enum import Enum, auto
@@ -79,7 +78,7 @@ class PgDataBase:
             connection.commit()
             self.info_popups.append(InfoPopup("User registered successfully!"))
         except sqlite3.IntegrityError:
-            self.info_popups.append(InfoPopup("Error", "Username already exists."))
+            self.info_popups.append(InfoPopup("Username already exists."))
         finally:
             connection.close()
 
