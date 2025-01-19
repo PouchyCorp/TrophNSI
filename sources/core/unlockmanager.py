@@ -9,6 +9,7 @@ class UnlockManager:
       self.unlocked_floors = ["0", "1"]
       self.unlocked_features = []
       self.floor_price = {"2" : 10, "3" : 100, "4" : 1000, "5" : 10000}
+      self.feature_price = {"other_feature" : 500, "auto_office" : 5000}
 
    def is_floor_unlocked(self, num : int):
       if str(num) in self.unlocked_floors:
@@ -34,5 +35,19 @@ class UnlockManager:
          success.played(1000, 0.8, 0)
       else:
          game.popups.append(InfoPopup("Pas assez d'argent pour débloquer l'étage :("))
+         incorrect=SoundManager('data/sounds/incorrect.mp3')
+         incorrect.played(1000, 0.8, 0)
+   
+   def unlock_feature(self, feature_name, game):
+      """unlocks the floor if possible and return left money"""
+      assert feature_name in self.feature_price, "this should not happend"
+      if not self.is_feature_unlocked(feature_name) and game.money-self.feature_price[feature_name] >= 0:
+         game.money-= self.feature_price[feature_name]
+         self.unlocked_features.append(feature_name)
+         game.popups.append(InfoPopup(f"Vous avez débloqué {feature_name} !"))
+         success=SoundManager('data/sounds/achieve.mp3')
+         success.played(1000, 0.8, 0)
+      else:
+         game.popups.append(InfoPopup(f"Pas assez d'argent pour débloquer {feature_name} :("))
          incorrect=SoundManager('data/sounds/incorrect.mp3')
          incorrect.played(1000, 0.8, 0)
