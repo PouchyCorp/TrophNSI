@@ -91,8 +91,11 @@ class Hivemind:
             self.inline_bots[-1].is_inline = False
             self.inline_bots[-1].target_coord = Coord(2,(0,0))
             self.liberated_bots.append(self.inline_bots[-1])
+            last_bot_money_amount = self.inline_bots[-1].gold_amount
             self.inline_bots[-1] = 'empty'
             self.remove_last_bot_clickable(current_room)
+            return last_bot_money_amount
+        return False
         
     
     def update(self, rooms, TIMER, clicked, mouse_pos, launch_dialogue_func, is_outline_gui_valid):

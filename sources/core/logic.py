@@ -52,6 +52,10 @@ class Game:
         self.unlock_manager = UnlockManager()
         self.pattern_inv : list[Pattern] = self.pattern_inv_init()
 
+
+        if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
+            self.timer.create_timer(3, self.accept_bot, True)
+
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
@@ -80,8 +84,9 @@ class Game:
         return total
     
     def accept_bot(self):
-        self.money += self.hivemind.inline_bots[-1].gold_amount  # Increment currency
-        self.hivemind.free_last_bot(self.current_room)  # Free the last bot
+        accepted_bot_money_amount = self.hivemind.free_last_bot(R1)
+        if accepted_bot_money_amount: # Attempt to free the last bot and checks output
+            self.money += accepted_bot_money_amount  # Increment currency
 
     def launch_transition(self):
         self.gui_state = State.TRANSITION  # Set the GUI to the transition state
@@ -168,6 +173,13 @@ class Game:
                 if self.gui_state is not State.INVENTORY:
                     self.gui_state = State.INVENTORY
                     self.inventory.init()
+            
+            case subplaceable.AutoCachierPlaceable:
+                if not self.unlock_manager.is_feature_unlocked("auto_cachier"):
+                    self.unlock_manager.try_to_unlock_feature("Auto Cachier", self)
+                else:
+                    self.popups.append(
+                    InfoPopup("Vous avez déjà débloqué l'Auto Cachier"))
 
             case _:
                 self.popups.append(

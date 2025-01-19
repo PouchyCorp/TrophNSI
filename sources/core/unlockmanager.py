@@ -9,7 +9,7 @@ class UnlockManager:
       self.unlocked_floors = ["0", "1"]
       self.unlocked_features = []
       self.floor_price = {"2" : 10, "3" : 100, "4" : 1000, "5" : 10000}
-      self.feature_price = {"other_feature" : 500, "auto_office" : 5000}
+      self.feature_price = {"other_feature" : 500, "Auto Cachier" : 5000}
 
    def is_floor_unlocked(self, num : int):
       if str(num) in self.unlocked_floors:
@@ -22,7 +22,10 @@ class UnlockManager:
       return False
    
    def try_to_unlock_floor(self, num : int, game):
-      game.confirmation_popups.append(ConfirmationPopup(game.win, f"Débloquer pour {self.floor_price[str(num)]}¥ ?", self.unlock_floor, yes_func_args=[num, game]) )   
+      game.confirmation_popups.append(ConfirmationPopup(game.win, f"Débloquer pour {self.floor_price[str(num)]}¥ ?", self.unlock_floor, yes_func_args=[num, game]) )
+
+   def try_to_unlock_feature(self, name, game):
+      game.confirmation_popups.append(ConfirmationPopup(game.win, f"Débloquer pour {self.feature_price[name]}¥ ?", self.unlock_feature, yes_func_args=[name, game]) )   
    
    def unlock_floor(self, num : int, game):
       """unlocks the floor if possible and return left money"""
@@ -44,6 +47,11 @@ class UnlockManager:
       if not self.is_feature_unlocked(feature_name) and game.money-self.feature_price[feature_name] >= 0:
          game.money-= self.feature_price[feature_name]
          self.unlocked_features.append(feature_name)
+
+         match feature_name:
+            case "Auto Cachier":
+               game.timer.create_timer(3, game.accept_bot, True)
+
          game.popups.append(InfoPopup(f"Vous avez débloqué {feature_name} !"))
          success=SoundManager('data/sounds/achieve.mp3')
          success.played(1000, 0.8, 0)
