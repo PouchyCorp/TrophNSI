@@ -125,6 +125,8 @@ ICON_1 = load_image('data/icon_inv_test.png')
 
 CHIP = load_image('data/chip.png')
 
+SPRITESHEET_INVENTORY = anim.Spritesheet(load_image('data/etagere.png'), (53*6, 31*6))
+
 SPRITESHEET_BOT = anim.Spritesheet(load_image('data/test_robot.png'), (48*6, 48*6))
 
 SPRITESHEET_HAUT = anim.Spritesheet(load_image("data/prt_haut.png"), (42*6, 29*6))
