@@ -19,8 +19,9 @@ R0.placed += [stairs_up , stairs_down]
 R1 = Room(1,sprite.BG1)
 test_canva = Placeable('test_canva', Coord(1,(1000,100)), Surface((48*6,64*6)), "decoration")
 auto_cachier = subplaceable.AutoCachierPlaceable('AutoCachierPlaceable', Coord(1,(1500,700)), Surface((10*6, 10*6)))
-R1.placed.append(test_canva)
-R1.placed += [stairs_up , stairs_down, auto_cachier]
+inventory_plcb = subplaceable.InvPlaceable("Inventory", Coord(1, (1536, 186)), Surface((53*6, 31*6)))
+R1.placed += [test_canva, stairs_up , stairs_down, auto_cachier, inventory_plcb]
+R1.blacklist += [stairs_up , stairs_down, auto_cachier, inventory_plcb]
 
 
 #R2

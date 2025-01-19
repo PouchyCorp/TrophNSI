@@ -86,7 +86,18 @@ class ShopPlaceable(Placeable):
     pass
 
 class InvPlaceable(Placeable):
-    pass
+    def __init__(self, name, coord, surf, tag = None):
+        super().__init__(name, coord, surf, tag)
+        self.blink_anim = Animation(sprite.SPRITESHEET_INVENTORY, 0, 7)
+        self.surf = self.blink_anim.get_frame()
+    
+    def update_sprite(self, is_hovered, color = (150, 150, 255)):
+        if is_hovered:
+            self.surf = self.blink_anim.get_frame()
+        else:
+            self.surf = sprite.SPRITESHEET_INVENTORY.get_img((0,0))
+
+        return super().update_sprite(is_hovered, color)
 
 class AutoCachierPlaceable(Placeable):
     pass

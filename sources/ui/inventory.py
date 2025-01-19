@@ -24,6 +24,7 @@ class Inventory:
 
         self.button_prev = Button((60,984), self.handle_navigation_left, whiten(ARROW_LEFT), ARROW_LEFT)
         self.button_next = Button((292,984), self.handle_navigation_right, whiten(ARROW_RIGHT), ARROW_RIGHT)
+        
     def init(self):
         """Initializes the objects for rendering on the current page."""
         # Paginate items
