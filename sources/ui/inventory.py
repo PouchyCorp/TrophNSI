@@ -1,7 +1,7 @@
 from objects.placeable import Placeable
 from utils.coord import Coord
 from pygame import Surface, transform, BLEND_RGB_MIN, font, draw, BLEND_RGB_ADD
-from ui.sprite import WINDOW, nine_slice_scaling, ARROW_LEFT, ARROW_RIGHT
+from ui.sprite import WINDOW, nine_slice_scaling, ARROW_LEFT, ARROW_RIGHT, whiten
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
 from ui.button import Button
@@ -22,15 +22,8 @@ class Inventory:
         self.title = title  # Title of the inventory
         self.window_sprite: Surface = WINDOW  # Window background
 
-        # Blend black to make active button
-        ARROW_LEFT_DARK = ARROW_LEFT.copy()
-        ARROW_LEFT_DARK.fill((60,60,60), special_flags=BLEND_RGB_ADD)
-
-        ARROW_RIGHT_DARK = ARROW_RIGHT.copy()
-        ARROW_RIGHT_DARK.fill((60,60,60), special_flags=BLEND_RGB_ADD)
-
-        self.button_prev = Button((60,984), self.handle_navigation_left, ARROW_LEFT_DARK, ARROW_LEFT)
-        self.button_next = Button((292,984), self.handle_navigation_right, ARROW_RIGHT_DARK, ARROW_RIGHT)
+        self.button_prev = Button((60,984), self.handle_navigation_left, whiten(ARROW_LEFT), ARROW_LEFT)
+        self.button_next = Button((292,984), self.handle_navigation_right, whiten(ARROW_RIGHT), ARROW_RIGHT)
     def init(self):
         """Initializes the objects for rendering on the current page."""
         # Paginate items

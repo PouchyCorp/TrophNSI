@@ -1,4 +1,4 @@
-from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect
+from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD
 from math import sin, pi
 import utils.anim as anim
 
@@ -10,7 +10,12 @@ def load_image(path : str):
     sized_sprite = transform.scale_by(sprite, 6)
     return sized_sprite.convert_alpha()
 
-def nine_slice_scaling(image, target_size, margins):
+def whiten(surface : Surface):
+    dest_surf = surface.copy()
+    dest_surf.fill((60,60,60), special_flags=BLEND_RGB_ADD)
+    return dest_surf
+
+def nine_slice_scaling(surface, target_size, margins):
     """
     Scale an image using nine-slice scaling.
     
@@ -22,7 +27,7 @@ def nine_slice_scaling(image, target_size, margins):
     Returns:
         pygame.Surface: The scaled image.
     """
-    original_width, original_height = image.get_size()
+    original_width, original_height = surface.get_size()
     target_width, target_height = target_size
     left, right, top, bottom = margins
     
@@ -55,11 +60,11 @@ def nine_slice_scaling(image, target_size, margins):
         if len(dest_coords) == 2:
             # For corner slices (which have fixed size)
             dest_rect = Rect(dest_coords[0], dest_coords[1], src_rect.width, src_rect.height)
-            scaled_image.blit(image.subsurface(src_rect), dest_rect.topleft)
+            scaled_image.blit(surface.subsurface(src_rect), dest_rect.topleft)
         else:
             # For scalable slices (center and edges)
             dest_rect = Rect(dest_coords[0], dest_coords[1], dest_coords[2], dest_coords[3])
-            scaled_image.blit(transform.scale(image.subsurface(src_rect), dest_rect.size), dest_rect.topleft)
+            scaled_image.blit(transform.scale(surface.subsurface(src_rect), dest_rect.size), dest_rect.topleft)
 
     
     return scaled_image
@@ -177,6 +182,14 @@ EXCLAMATION_SPRITESHEET = anim.Spritesheet(load_image("data/exclamation_2x9.png"
 YES_BUTTON = load_image("data/oui.png")
 
 NO_BUTTON = load_image("data/non.png")
+
+LOGIN_BUTTON = load_image("data/login.png")
+
+QUIT_BUTTON = load_image("data/quit.png")
+
+REGISTER_BUTTON = load_image("data/register.png")
+
+CONFIRM_BUTTON = load_image("data/confirm.png")
 
 #---------------------------------------------
 #       List of the different patterns

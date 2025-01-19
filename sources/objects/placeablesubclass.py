@@ -88,4 +88,9 @@ class ShopPlaceable(Placeable):
 class InvPlaceable(Placeable):
     pass
 
+class AutoCachierPlaceable(Placeable):
+    pass
+    
+
+
 

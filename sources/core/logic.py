@@ -12,14 +12,13 @@ class State(Enum):
     SHOP = auto()
 
 import pygame as pg
-import sys
 import objects.placeablesubclass as subplaceable
 from objects.bot import Hivemind, BotDistributor
 from core.buildmode import BuildMode, DestructionMode
 from utils.coord import Coord
 from ui.inventory import Inventory, Shop
 from ui.infopopup import InfoPopup
-from room_config import R0, R1, ROOMS, Room
+from  utils.room_config import R1, ROOMS, Room
 from utils.timermanager import TimerManager
 import ui.sprite as sprite
 from objects.dialogue_v2 import DialogueManagement
@@ -53,6 +52,10 @@ class Game:
         self.unlock_manager = UnlockManager()
         self.pattern_inv : list[Pattern] = self.pattern_inv_init()
 
+
+        if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
+            self.timer.create_timer(3, self.accept_bot, True)
+
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
@@ -79,7 +82,11 @@ class Game:
         for room in ROOMS:
             total += room.get_beauty_in_room()
         return total
-
+    
+    def accept_bot(self):
+        accepted_bot_money_amount = self.hivemind.free_last_bot(R1)
+        if accepted_bot_money_amount: # Attempt to free the last bot and checks output
+            self.money += accepted_bot_money_amount  # Increment currency
 
     def launch_transition(self):
         self.gui_state = State.TRANSITION  # Set the GUI to the transition state
@@ -144,7 +151,6 @@ class Game:
                 else:
                     self.unlock_manager.try_to_unlock_floor(self.current_room.num-1, self)
                 
-
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
                 if self.unlock_manager.is_floor_unlocked(self.current_room.num+1):
                     self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
@@ -156,9 +162,7 @@ class Game:
                     self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self)
 
             case subplaceable.BotPlaceable:  # Handle interaction with BotPlaceable type
-                if placeable.name == 'bot_placeable':
-                    self.money += self.hivemind.inline_bots[-1].gold_amount  # Increment currency
-                    self.hivemind.free_last_bot(self.current_room)  # Free the last bot
+                self.accept_bot()
                     
             case subplaceable.ShopPlaceable:
                 if self.gui_state is not State.SHOP:
@@ -169,6 +173,13 @@ class Game:
                 if self.gui_state is not State.INVENTORY:
                     self.gui_state = State.INVENTORY
                     self.inventory.init()
+            
+            case subplaceable.AutoCachierPlaceable:
+                if not self.unlock_manager.is_feature_unlocked("auto_cachier"):
+                    self.unlock_manager.try_to_unlock_feature("Auto Cachier", self)
+                else:
+                    self.popups.append(
+                    InfoPopup("Vous avez déjà débloqué l'Auto Cachier"))
 
             case _:
                 self.popups.append(
@@ -310,8 +321,9 @@ class Game:
             case State.SHOP:
                 self.shop.draw(self.win, mouse_pos)
 
+        # Debug stats
         self.win.blit(InfoPopup(
-            f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.money} / th_gold : {self.bot_distributor.theorical_gold}').text_surf, (0, 0))
+            f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.money} / th_gold : {self.bot_distributor.theorical_gold} / beauty : {self.beauty}').text_surf, (0, 0))
         
         if self.current_room.num == 0:
             for pattern in self.pattern_inv:
