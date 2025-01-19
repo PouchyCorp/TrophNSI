@@ -275,8 +275,7 @@ class Game:
 
                 case State.PLACING_PATTERN:
                     if self.canva.rect.collidepoint(mouse_pos.x, mouse_pos.y):    # Check if mouse is over the canva
-                        self.canva.surf.blit(self.selected_pattern.surf,(mouse_pos.x-self.canva.coord.x, mouse_pos.y-self.canva.coord.y))
-                        self.gui_state = State.INTERACTION
+                        self.gui_state = State.PAINTING
                     else:
                         self.popups.append(InfoPopup("you can't place a chip here"))  # Show popup if trying to go below limits
 
@@ -347,6 +346,10 @@ class Game:
 
             case State.SHOP:
                 self.shop.draw(self.win, mouse_pos)
+
+            case State.PAINTING:
+                self.canva.surf.blit(self.selected_pattern.surf,(mouse_pos.x-self.canva.coord.x, mouse_pos.y-self.canva.coord.y))
+                self.gui_state = State.INTERACTION
 
         # Debug stats
         self.win.blit(InfoPopup(
