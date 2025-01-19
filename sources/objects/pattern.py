@@ -4,8 +4,7 @@ from objects.canva import Canva
 from ui.sprite import SPRITESHEET_CHIP
 
 class Pattern:
-    def __init__(self, pattern, colors):
-        self.colors : list = colors
+    def __init__(self, pattern):
         self.surf : pg.Surface = self.pattern_init(pattern)
         self.coord = Coord(0,(0,0))
     

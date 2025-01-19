@@ -50,7 +50,7 @@ class Game:
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
         self.unlock_manager = UnlockManager()
-        self.pattern_inv : list[Pattern] = self.pattern_inv_init()
+        self.pattern_inv : list[Pattern] = [Pattern(pattern) for pattern in sprite.PATTERN_LIST]
 
 
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
@@ -63,12 +63,6 @@ class Game:
             self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
-    
-    def pattern_inv_init(self):
-        inv = []
-        for pattern in sprite.PATTERN_LIST:
-            inv.append(Pattern(pattern,[]))
-        return inv
 
     def launch_dialogue(self, bot_anim):
         """# Function to initiate dialogue easily passed to other functions"""
