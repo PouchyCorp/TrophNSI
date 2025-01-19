@@ -199,4 +199,4 @@ CHIP_BUTTON = load_image("data/chip_button.png")
 #       List of the different patterns
 #---------------------------------------------
 
-PATTERN_LIST = [load_image("data/pattern_storage/pattern_"+str(num)+".png") for num in range(1,15)]
+PATTERN_LIST = [load_image("data/pattern_storage/pattern_"+str(num)+".png") for num in range(1,16)]

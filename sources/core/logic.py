@@ -28,6 +28,7 @@ from ui.confirmationpopup import ConfirmationPopup
 from utils.sound import SoundManager
 from core.unlockmanager import UnlockManager
 from objects.pattern import Pattern
+from objects.canva import Canva
 
 class Game:
     def __init__(self, win, clock, inventory, shop, gold):
@@ -50,7 +51,8 @@ class Game:
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
         self.unlock_manager = UnlockManager()
-        self.pattern_inv : list[Pattern] = [Pattern(pattern) for pattern in sprite.PATTERN_LIST]
+        self.pattern_inv : list[Pattern] = self.pattern_inv_init()
+        self.canva : Canva = Canva()
 
 
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
@@ -63,6 +65,18 @@ class Game:
             self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
+
+    def pattern_inv_init(self):
+        inv = []
+        x,y = 100,180
+        for pattern in sprite.PATTERN_LIST:
+            inv.append(Pattern(pattern,(x,y)))
+            if x < 400:
+                x += 150
+            else:
+                y += 150
+                x = 100
+        return inv
 
     def launch_dialogue(self, bot_anim):
         """# Function to initiate dialogue easily passed to other functions"""
@@ -132,6 +146,16 @@ class Game:
 
             case pg.K_n:  # Free the last bot in the current room
                 self.hivemind.free_last_bot(self.current_room)
+
+            case pg.K_i:
+                if self.current_room.num == 0 and self.gui_state == State.INTERACTION:
+                    self.inventory.inv.append(subplaceable.InvPlaceable("painting",self.canva.coord,self.canva.surf))
+                    self.saved_canva = self.canva.surf
+                    self.canva = Canva()
+
+    def chip_placement(self,pattern : Pattern):
+        self.gui_state = State.PLACING_PATTERN
+        self.selected_pattern = pattern
 
     def placeable_interaction_handler(self, placeable : Placeable):
         match type(placeable):
@@ -232,7 +256,10 @@ class Game:
                     for placeable in self.current_room.placed:
                         if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):  # Check if mouse is over a placeable
                             self.placeable_interaction_handler(placeable)
-                                    
+                    for pattern in self.pattern_inv:
+                        if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y):  # Check if mouse is over a chip button
+                            self.chip_placement(pattern)
+
                 case State.DIALOG:
                     if self.dialogue_manager.click_interaction():
                         self.gui_state = State.INTERACTION
@@ -245,7 +272,13 @@ class Game:
 
                     if not len(self.confirmation_popups):
                         self.gui_state = State.INTERACTION
-                               
+
+                case State.PLACING_PATTERN:
+                    if self.canva.rect.collidepoint(mouse_pos.x, mouse_pos.y):    # Check if mouse is over the canva
+                        self.canva.surf.blit(self.selected_pattern.surf,(mouse_pos.x-self.canva.coord.x, mouse_pos.y-self.canva.coord.y))
+                        self.gui_state = State.INTERACTION
+                    else:
+                        self.popups.append(InfoPopup("you can't place a chip here"))  # Show popup if trying to go below limits
 
     def update(self, mouse_pos):
         
@@ -321,8 +354,17 @@ class Game:
         
         if self.current_room.num == 0:
             for pattern in self.pattern_inv:
-                self.win.blit(pattern.surf)
-          # Draw inventory
+                self.win.blit(pattern.button,(pattern.rect.x,pattern.rect.y))
+                self.win.blit(self.canva.surf, self.canva.coord.xy)
+          # Draw canva and buttons
         
+        # ----- TEST
+        if self.current_room.num == 3:
+            try:
+                self.win.blit(self.saved_canva,(100,100))
+            except:
+                pass
+        # ----- TEST
+
         # Render popups after all other drawings
         self.render_popups()
