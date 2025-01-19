@@ -3,7 +3,7 @@ from utils.coord import Coord
 from pygame import Surface, draw, Rect, transform
 from random import choice, randint
 from core.room import Room
-from room_config import R1
+from  utils.room_config import R1
 import ui.sprite as sprite
 from utils.timermanager import TimerManager
 from utils.anim import Animation, Spritesheet

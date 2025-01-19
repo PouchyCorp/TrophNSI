@@ -5,7 +5,7 @@ import pygame as pg
 import pickle
 from enum import Enum, auto
 from ui.inputbox import InputBox
-from sources.ui.infopopup import InfoPopup
+from  ui.infopopup import InfoPopup
 from ui.button import Button
 
 class LoginStates(Enum):
@@ -24,6 +24,10 @@ class PgDataBase:
         self.password_input = InputBox(10,70,600,50)
 
         self.info_popups : list[InfoPopup]= []
+
+#-------------------------------------------------
+#               DATABASE PART
+#-------------------------------------------------
 
     def initialize_database(self):
         connection = sqlite3.connect(self.db_link)
@@ -44,7 +48,7 @@ class PgDataBase:
     def fetch_user_data(self, username):
         connection = sqlite3.connect(self.db_link)
         cursor = connection.cursor()
-        cursor.execute('SELECT pickled_data FROM users WHERE username = ?', (username,))
+        cursor.execute('SELECT pickled_data FROM users WHERE username = ?', (username))
         result = cursor.fetchone()
         connection.close()
 
@@ -56,7 +60,7 @@ class PgDataBase:
                 return user_data
         
         print("No pickled data found for user, loading default save.")
-        from room_config import DEFAULT_SAVE
+        from  utils.room_config import DEFAULT_SAVE
         return DEFAULT_SAVE
 
     def register_user(self):
@@ -113,7 +117,11 @@ class PgDataBase:
         connection.commit()
         connection.close()
         print('successfuly saved')
-    
+
+
+#-------------------------------------------------
+#               GUI PART
+#-------------------------------------------------
     def quit(self):
         if self.gui_state is LoginStates.HOME:
             from sys import exit
@@ -144,18 +152,13 @@ class PgDataBase:
         WIN.fill('black')
         pg.display.set_icon(pg.image.load('data/big_icon.png'))
 
-        # Temp
-        white_surf = pg.Surface((50,50)); white_surf.fill('white')
-        gray_surf = pg.Surface((50,50)); gray_surf.fill('gray')
-        green_surf = pg.Surface((50,50)); green_surf.fill('green')
+        import ui.sprite as sprite
 
-
-
-        quit_button = Button((10,200), self.quit, white_surf, gray_surf)
-        register_button = Button((10,300), self.change_gui_to_register, white_surf, gray_surf)
-        login_button = Button((10,400), self.change_gui_to_login, white_surf, gray_surf)
-        accept_login_button = Button((10,300), self.login_user, green_surf, gray_surf)
-        accept_register_button = Button((10,300), self.register_user, green_surf, gray_surf)
+        quit_button = Button((10,200), self.quit, sprite.whiten(sprite.QUIT_BUTTON) , sprite.QUIT_BUTTON)
+        register_button = Button((10,300), self.change_gui_to_register, sprite.whiten(sprite.REGISTER_BUTTON), sprite.REGISTER_BUTTON)
+        login_button = Button((10,400), self.change_gui_to_login, sprite.whiten(sprite.LOGIN_BUTTON), sprite.LOGIN_BUTTON)
+        accept_login_button = Button((10,300), self.login_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
+        accept_register_button = Button((10,300), self.register_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
 
 
         while not self.ready_to_launch[0]:
@@ -167,6 +170,8 @@ class PgDataBase:
             for event in events:
                 if event.type == pg.QUIT:  # Check for quit event
                     pg.quit()  # Quit Pygame
+                    from sys import exit
+                    exit()
 
                 if event.type in [pg.MOUSEBUTTONUP, pg.KEYDOWN]:
                     match self.gui_state:

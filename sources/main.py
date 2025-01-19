@@ -28,7 +28,7 @@ def start_game(game_save_dict):
   from utils.coord import Coord
   from ui.inventory import Inventory, Shop
   from core.logic import Game
-  from room_config import ROOMS
+  from  utils.room_config import ROOMS
 
   # Initialize inventory and shop fromm save
   inventory= Inventory("Inventory", game_save_dict['inventory'])
@@ -69,7 +69,7 @@ def start_game(game_save_dict):
 #------------------------#
 
 if not config['gameplay']['no_login']:
-  from database import PgDataBase
+  from  core.database import PgDataBase
   db = PgDataBase()
   username, user_game_data = db.tk_ui()
 
@@ -77,5 +77,5 @@ if not config['gameplay']['no_login']:
 
   db.save_user_data(username, data_to_save)
 else:
-  from room_config import DEFAULT_SAVE
+  from  utils.room_config import DEFAULT_SAVE
   start_game(DEFAULT_SAVE)

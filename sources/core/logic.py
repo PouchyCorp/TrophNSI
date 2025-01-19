@@ -19,7 +19,7 @@ from core.buildmode import BuildMode, DestructionMode
 from utils.coord import Coord
 from ui.inventory import Inventory, Shop
 from ui.infopopup import InfoPopup
-from room_config import R0, R1, ROOMS, Room
+from  utils.room_config import R0, R1, ROOMS, Room
 from utils.timermanager import TimerManager
 import ui.sprite as sprite
 from objects.dialogue_v2 import DialogueManagement
