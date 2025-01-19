@@ -193,6 +193,8 @@ REGISTER_BUTTON = load_image("data/register.png")
 
 CONFIRM_BUTTON = load_image("data/confirm.png")
 
+CHIP_BUTTON = load_image("data/chip_button.png")
+
 #---------------------------------------------
 #       List of the different patterns
 #---------------------------------------------

@@ -1,12 +1,13 @@
 from utils.coord import Coord
 import pygame as pg
 from objects.canva import Canva
-from ui.sprite import SPRITESHEET_CHIP
+from ui.sprite import SPRITESHEET_CHIP, CHIP_BUTTON
 
 class Pattern:
     def __init__(self, pattern):
         self.surf : pg.Surface = self.pattern_init(pattern)
         self.coord = Coord(0,(0,0))
+        self.button = CHIP_BUTTON
     
     def paint(self, clic : Coord, canva : Canva):
         coord = Coord(canva.coord.room_num,(clic.x-canva.coord.x,clic.y-canva.coord.y))
