@@ -97,6 +97,6 @@ class Placeable:
         state['temp_surf'] = state['surf']
         return state
     
-    def __setstate__(self, state : dict):
-        self.__dict__ = state
-        self.surf = image.frombuffer(self.surf[0], self.surf[1], "RGBA") 
+    #def __setstate__(self, state : dict):
+    #    self.__dict__ = state
+    #    self.surf = image.frombuffer(self.surf[0], self.surf[1], "RGBA") 

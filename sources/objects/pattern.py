@@ -16,7 +16,7 @@ class Pattern:
         self.anim_down = Animation(SPRITESHEET_CHIP, 2, 4, 2)
     
     def pattern_init(self,pattern):
-        self.surf = pg.transform.scale_by(pattern, 6)
+        self.surf = pg.transform.scale_by(pattern, 2)
         return self.surf
 
     #def painting(self,xy,pattern,state):

@@ -149,9 +149,13 @@ class Game:
 
             case pg.K_i:
                 if self.current_room.num == 0 and self.gui_state == State.INTERACTION:
-                    self.inventory.inv.append(subplaceable.InvPlaceable("painting",self.canva.coord,self.canva.surf))
-                    self.saved_canva = self.canva.surf
-                    self.canva = Canva()
+                    if self.canva.pattern_num == 0:
+                        self.popups.append(InfoPopup("you can't save a blank canva"))
+                    else:
+                        self.canva.surf.blit(self.canva.surf)
+                        self.inventory.inv.append(Placeable("painting",self.canva.coord,pg.transform.scale(self.canva.surf,(self.canva.surf.width/2,self.canva.surf.height/2))))
+                        self.saved_canva = self.canva.surf
+                        self.canva = Canva()
 
     def chip_placement(self,pattern : Pattern):
         self.gui_state = State.PLACING_PATTERN
@@ -160,7 +164,9 @@ class Game:
     def placeable_interaction_handler(self, placeable : Placeable):
         match type(placeable):
             case subplaceable.DoorDown:  # Handle interaction with DoorDown type
-                if self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
+                if self.current_room.num == 0:
+                    self.popups.append(InfoPopup("you can't go further down"))  # Add error popup if matching type fails
+                elif self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
                     self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
                     self.launch_transition()  # Start transition
                     up=SoundManager('data/sounds/Doordown.wav')
@@ -275,6 +281,7 @@ class Game:
 
                 case State.PLACING_PATTERN:
                     if self.canva.rect.collidepoint(mouse_pos.x, mouse_pos.y):    # Check if mouse is over the canva
+                        self.canva.pattern_num += 1
                         self.gui_state = State.PAINTING
                     else:
                         self.popups.append(InfoPopup("you can't place a chip here"))  # Show popup if trying to go below limits
@@ -315,6 +322,12 @@ class Game:
 
         self.hivemind.draw(self.win, current_room_num=self.current_room.num)  # Draw bots in the current room
 
+        if self.current_room.num == 0:
+            for pattern in self.pattern_inv:
+                self.win.blit(pattern.button,(pattern.rect.x,pattern.rect.y))
+                self.win.blit(self.canva.surf, self.canva.coord.xy)
+          # Draw canva and buttons
+
         match self.gui_state:
             case State.BUILD:
                 mouse_pos_coord = Coord(self.current_room.num, (mouse_pos.x - self.build_mode.get_width() // 2, mouse_pos.y - self.build_mode.get_height() // 2))  # Center the mouse on the hologram
@@ -348,18 +361,13 @@ class Game:
                 self.shop.draw(self.win, mouse_pos)
 
             case State.PAINTING:
+                mouse_pos.xy = mouse_pos.get_pixel_perfect(0,12)
                 self.canva.surf.blit(self.selected_pattern.surf,(mouse_pos.x-self.canva.coord.x, mouse_pos.y-self.canva.coord.y))
                 self.gui_state = State.INTERACTION
 
         # Debug stats
         self.win.blit(InfoPopup(
             f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.money} / th_gold : {self.bot_distributor.theorical_gold} / beauty : {self.beauty}').text_surf, (0, 0))
-        
-        if self.current_room.num == 0:
-            for pattern in self.pattern_inv:
-                self.win.blit(pattern.button,(pattern.rect.x,pattern.rect.y))
-                self.win.blit(self.canva.surf, self.canva.coord.xy)
-          # Draw canva and buttons
         
         # ----- TEST
         if self.current_room.num == 3:
