@@ -51,7 +51,7 @@ if not config['gameplay']['no_login']:
     from core.database import PgDataBase
     from core.spectator import Spectator
     db = PgDataBase()
-    username, user_game_data = db.tk_ui()
+    username, user_game_data = db.home_screen()
 
     print('launching spectator mode')
     Spectator(user_game_data).start_spectating()

@@ -40,6 +40,20 @@ class PgDataBase:
         ''')
         connection.commit()
         connection.close()
+    
+    def fetch_all_user_data(self):
+        connection = sqlite3.connect(self.db_link)
+        cursor = connection.cursor()
+        cursor.execute('SELECT username, pickled_data FROM users')
+        result = cursor.fetchall()
+        connection.close()
+
+        result = [pickle.loads(row[1]) for row in result]
+
+        return result
+        
+
+
 
     def hash_password(self, password):
         return sha256(password.encode()).hexdigest()
@@ -143,7 +157,7 @@ class PgDataBase:
                 popup.draw(win)  # Render the popup on the window
                 popup.lifetime -= 1  # Decrement popup's lifetime
 
-    def tk_ui(self) -> tuple[str, dict]:
+    def home_screen(self) -> tuple[str, dict]:
         self.initialize_database()
 
         pg.init()

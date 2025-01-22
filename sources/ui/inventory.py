@@ -20,7 +20,10 @@ class Inventory:
         self._page: int = 0  # Current page index
         self.font = font.SysFont(None, 30)  # Font for labels
         self.title = title  # Title of the inventory
-        self.window_sprite: Surface = WINDOW  # Window background
+
+        width = BORDER_AROUND_WINDOW * 2 + OBJECT_SIZE*2 + 20
+        height = OBJECT_SIZE*5
+        self.window_sprite = nine_slice_scaling(WINDOW, (width, height), (12, 12, 12, 12))
 
         self.button_prev = Button((60,984), self.handle_navigation_left, whiten(ARROW_LEFT), ARROW_LEFT)
         self.button_next = Button((292,984), self.handle_navigation_right, whiten(ARROW_RIGHT), ARROW_RIGHT)
@@ -33,7 +36,6 @@ class Inventory:
         self.displayed_objects = self.inv[start:end]
 
         self._process_objects()
-        self._resize_window_sprite()
 
     def _process_objects(self):
         """Processes each object for rendering on the current page."""
@@ -66,12 +68,6 @@ class Inventory:
             processed_objects.append((thumbnail_placeable, label_surf))
 
         self.displayed_objects = processed_objects
-
-    def _resize_window_sprite(self):
-        """Resizes the window sprite based on the displayed objects."""
-        width = BORDER_AROUND_WINDOW * 2 + OBJECT_SIZE*2 + 20
-        height = OBJECT_SIZE*5
-        self.window_sprite = nine_slice_scaling(WINDOW, (width, height), (12, 12, 12, 12))
 
     def draw(self, win: Surface, mouse_pos: Coord):
         """Draws the inventory or shop interface on the screen."""

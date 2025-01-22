@@ -112,23 +112,11 @@ BG6 = load_image("data/R5.png")
 
 BG2 = load_image("data/bg_test_paint.png")
 
-P1 = load_image('data/p1.png')
-
-P2 = load_image('data/p2.png')
- 
-P3 = load_image('data/p3.png')
-
-P4 = load_image('data/p4.png')
-
-P5 = load_image('data/p5.png')
-
 ICON_1 = load_image('data/icon_inv_test.png')
 
 CHIP = load_image('data/chip.png')
 
 SPRITESHEET_INVENTORY = anim.Spritesheet(load_image('data/etagere.png'), (53*6, 31*6))
-
-SPRITESHEET_BOT = anim.Spritesheet(load_image('data/test_robot.png'), (48*6, 48*6))
 
 SPRITESHEET_HAUT = anim.Spritesheet(load_image("data/prt_haut.png"), (42*6, 29*6))
 

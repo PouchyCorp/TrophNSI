@@ -394,7 +394,7 @@ class Game:
 
     def get_save_dict(self):
         print('game saved')
-        return {'gold': self.money, 'inventory': self.inventory.inv, "shop": self.shop.inv, "unlocks": self.unlock_manager}
+        return {'gold': self.money, 'inventory': self.inventory.inv, "shop": self.shop.inv, "unlocks": self.unlock_manager, "beauty" : self.beauty}
 
     def main_loop(self) -> dict:
         fps = self.config['gameplay']['fps']  # Frame rate
