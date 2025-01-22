@@ -21,7 +21,7 @@ from ui.infopopup import InfoPopup
 from  utils.room_config import R1, ROOMS, Room
 from utils.timermanager import TimerManager
 import ui.sprite as sprite
-from objects.dialogue_v2 import DialogueManagement
+from objects.dialogue import DialogueManagement
 from math import pi
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
@@ -152,9 +152,8 @@ class Game:
                     if self.canva.pattern_num == 0:
                         self.popups.append(InfoPopup("you can't save a blank canva"))
                     else:
-                        self.canva.surf.blit(self.canva.surf)
-                        self.inventory.inv.append(Placeable("painting",self.canva.coord,pg.transform.scale(self.canva.surf,(self.canva.surf.width/2,self.canva.surf.height/2))))
-                        self.saved_canva = self.canva.surf
+                        self.inventory.inv.append(Placeable("painting",self.canva.coord,pg.transform.scale_by(self.canva.surf,0.5)))
+                        self.saved_canva = self.canva.surf.copy()
                         self.canva = Canva()
 
     def chip_placement(self,pattern : Pattern):
@@ -376,6 +375,9 @@ class Game:
             except:
                 pass
         # ----- TEST
+
+        if self.current_room.num == 2:
+            self.win.blit(self.canva.surf, (0,0))
 
         # Render popups after all other drawings
         self.render_popups()

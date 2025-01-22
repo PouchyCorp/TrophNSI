@@ -1,4 +1,4 @@
-from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD
+from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD, BLEND_RGBA_MULT
 from math import sin, pi
 import utils.anim as anim
 
@@ -81,6 +81,7 @@ def get_outline(surf, color):
                 outline_surface.blit(surf, (dx + outline_width, dy + outline_width))
 
     outline_surface.fill(color+tuple([0]), special_flags=BLEND_RGBA_MAX)
+    outline_surface.fill(color, special_flags=BLEND_RGBA_MULT)
     return outline_surface
 
 
