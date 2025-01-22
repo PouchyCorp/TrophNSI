@@ -98,7 +98,7 @@ class Hivemind:
         return False
         
     
-    def update(self, rooms, TIMER, clicked, mouse_pos, launch_dialogue_func, is_outline_gui_valid):
+    def update(self, rooms, TIMER):
         """
         Update the AI logic for the bots in the game.
         @param self - the object itself
@@ -110,16 +110,20 @@ class Hivemind:
         @return None
         """
         for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
-            bot.logic(rooms, TIMER, clicked, mouse_pos, launch_dialogue_func, is_outline_gui_valid)
+            bot.logic(rooms, TIMER)
 
         new_liberated_bots = self.liberated_bots.copy()
         for bot in self.liberated_bots:
-            bot.logic(rooms, TIMER, clicked, mouse_pos, launch_dialogue_func, is_outline_gui_valid)
+            bot.logic(rooms, TIMER)
             #if bot not leaving and on exit, don't remove it
             if bot.is_leaving and bot.coord.bot_movement_compare(bot.exit_coords):
                 new_liberated_bots.remove(bot)
 
         self.liberated_bots = new_liberated_bots
+    
+    def handle_bot_click(self, mouse_pos : Coord, launch_dialogue_func):
+        for bot in self.liberated_bots:
+            bot.handle_click(mouse_pos, launch_dialogue_func)
             
 
     def order_inline_bots(self):
@@ -130,7 +134,7 @@ class Hivemind:
                 self.inline_bots[i].target_coord.x = self.x_lookup_table[i+1]+randint(-30,30)
                 self.inline_bots[i], self.inline_bots[i+1] = self.inline_bots[i+1], self.inline_bots[i]
 
-    def draw(self, win : Surface, current_room_num : int): 
+    def draw(self, win : Surface, current_room_num : int, mouse_pos: Coord): 
         #list of background bots
         list_of_bots = [bot for bot in self.inline_bots if type(bot) is Bot] + self.liberated_bots
         sorted_bots = self.sorted_bot_by_y(list_of_bots)
@@ -142,7 +146,7 @@ class Hivemind:
         #draw bots in background first
         for bot in sorted_bots:
             if bot.coord.room_num == current_room_num:
-                bot.draw(win)
+                bot.draw(win, mouse_pos)
     
     def sorted_bot_by_y(self, bots : list):
         sorted_bots : list[Bot] = bots
@@ -227,13 +231,12 @@ class Bot:
         #makes sure that target coord is reachable
         self.__target_coord.x -= self.__target_coord.x%6
 
-    def logic(self, rooms : list[Room], TIMER : TimerManager, clicked, mouse_pos, launch_dialogue_func, is_outline_gui_valid):
+    def logic(self, rooms : list[Room], TIMER : TimerManager):
         '''finite state machine (FSM) implementation for bot ai'''
 
         match self.state:
             case BotStates.IDLE:
                 draw.rect(self.surf, "red", (0,0,10,10))
-                walking=SoundManager('data/sounds/robot_moving.mp3')
 
                 #search for objects to walk to if not inline
                 if not self.is_inline:
@@ -289,22 +292,13 @@ class Bot:
             case _:
                 raise ValueError
 
-        #checks if need to react
-        self.react_logic(clicked, mouse_pos,launch_dialogue_func, is_outline_gui_valid)
-
-    def react_logic(self, clicked : bool, mouse_pos : Coord, launch_dialogue_func, is_outline_gui_valid : bool):
-        #checks if mouse on self
-        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy) and is_outline_gui_valid:
+    def handle_click(self, mouse_pos : Coord, launch_dialogue_func):
+        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):
             #checks click
-            self.is_mouse_on_self = True
+            self.is_reacting = False
+            #launches the dialogue
+            launch_dialogue_func(self.anim_idle_right)
 
-            if clicked:
-                self.is_reacting = False
-                #launches the dialogue
-                launch_dialogue_func(self.anim_idle_right)
-
-        else:
-            self.is_mouse_on_self = False
 
     def update_placeable(self, rooms : list[Room]):
         self.placeable.rect.topleft = self.coord.xy
@@ -379,9 +373,9 @@ class Bot:
         else:
             self.__move_cntr += 1
 
-    def draw(self, win : Surface):
+    def draw(self, win : Surface, mouse_pos : Coord):
         '''needs to be called after hivemind.update_bot_ai'''
-        if self.is_mouse_on_self:  
+        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):  
             temp_surf = sprite.get_outline(self.surf, (150, 150, 255))
             temp_surf.blit(self.surf, (3,3))
             win.blit(temp_surf, (self.coord.x-3, self.coord.y-3))

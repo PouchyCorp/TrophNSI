@@ -31,10 +31,11 @@ from objects.pattern import Pattern
 from objects.canva import Canva
 
 class Game:
-    def __init__(self, win, clock, inventory, shop, gold, unlock_manager):
+    def __init__(self, win, config, inventory, shop, gold, unlock_manager):
+        self.config = config
         self.timer : TimerManager = TimerManager()
         self.win : pg.Surface = win
-        self.clock : pg.time.Clock = clock
+        self.clock : pg.time.Clock = pg.time.Clock()
         self.popups : list[InfoPopup] = []
         self.confirmation_popups : list[ConfirmationPopup] = []
         self.gui_state = State.INTERACTION
@@ -47,13 +48,14 @@ class Game:
         self.dialogue_manager : DialogueManagement = DialogueManagement('data/dialogue.json')
         self.current_room : Room = R1 #starter room always in floor 1
         self.incr_fondu = 0
-        self.clicked_this_frame = False
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
         self.unlock_manager = unlock_manager
         self.pattern_inv : list[Pattern] = self.pattern_inv_init()
         self.canva : Canva = Canva()
+        self.paused = False
 
+        self.on_click_cooldown = False
 
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
             self.timer.create_timer(3, self.accept_bot, True)
@@ -220,12 +222,10 @@ class Game:
         Returns:
             None
         """
-        self.clicked_this_frame = False  # If not supplanted below, set false for this frame 
         if event.type == pg.KEYDOWN:  # Check for key down events
             self.keydown_handler(event)
 
         if event.type == pg.MOUSEBUTTONUP:  # Handle mouse button release
-            self.clicked_this_frame = True
             # Handle interactions based on the current GUI state
             match self.gui_state:
                 case State.BUILD:
@@ -264,10 +264,12 @@ class Game:
                     for pattern in self.pattern_inv:
                         if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y):  # Check if mouse is over a chip button
                             self.chip_placement(pattern)
+                    self.hivemind.handle_bot_click(mouse_pos, self.launch_dialogue)
 
                 case State.DIALOG:
                     if self.dialogue_manager.click_interaction():
                         self.gui_state = State.INTERACTION
+                        self.paused = False
                 
                 case State.CONFIRMATION:
                     
@@ -303,7 +305,7 @@ class Game:
 
         # Manage bot behavior
         self.hivemind.order_inline_bots()  # Arrange bots in a line
-        self.hivemind.update(ROOMS, self.timer, self.clicked_this_frame, mouse_pos, self.launch_dialogue, self.gui_state in [State.INTERACTION])  # Update bot AI
+        self.hivemind.update(ROOMS, self.timer)  # Update bot AI
 
         match self.gui_state:      
             case State.INTERACTION:
@@ -319,7 +321,7 @@ class Game:
         # Draw all placed objects in the current room
         self.current_room.draw_placed(self.win)
 
-        self.hivemind.draw(self.win, current_room_num=self.current_room.num)  # Draw bots in the current room
+        self.hivemind.draw(self.win, self.current_room.num, mouse_pos)  # Draw bots in the current room
 
         if self.current_room.num == 0:
             for pattern in self.pattern_inv:
@@ -339,7 +341,7 @@ class Game:
     #            test_painting.draw(WIN)  # Draw the painting 
             
             case State.DIALOG:
-                self.win.blit(self.temp_bg, (0,0))  # Apply grayscale effect on the background
+                self.paused = True
                 self.dialogue_manager.update() #update the dialogue manager and it's subclasses
                 self.dialogue_manager.draw(self.win)    
 
@@ -370,3 +372,34 @@ class Game:
         
         # Render popups after all other drawings
         self.render_popups()
+
+    def get_save_dict(self):
+        print('game saved')
+        return {'gold': self.money, 'inventory': self.inventory.inv, "shop": self.shop.inv, "unlocks": self.unlock_manager}
+
+    def main_loop(self) -> dict:
+        fps = self.config['gameplay']['fps']  # Frame rate
+        while True:
+            self.clock.tick(fps)  # Maintain frame rate
+            mouse_pos: Coord = Coord(self.current_room.num, pg.mouse.get_pos())  # Create a coordinate object for the mouse position
+            events = pg.event.get()  # Get all events from the event queue
+
+            for event in events:
+                if event.type == pg.QUIT:  # Check for quit event
+                    pg.quit()  # Quit Pygame
+                    return self.get_save_dict()
+
+                #tests ---------
+                if event.type == pg.KEYDOWN and event.key == pg.K_p:
+                    self.paused = not self.paused
+                # --------------
+                
+                self.event_handler(event, mouse_pos)
+            
+            if not self.paused:
+                self.update(mouse_pos)
+
+            self.draw(mouse_pos)
+
+
+            pg.display.flip()  # Update the display
