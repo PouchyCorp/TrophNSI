@@ -145,6 +145,8 @@ class PgDataBase:
 
     def tk_ui(self) -> tuple[str, dict]:
         self.initialize_database()
+
+        pg.init()
         fps = 60  # Frame rate
         CLOCK = pg.time.Clock()
         WIN = pg.display.set_mode((0,0),pg.FULLSCREEN)

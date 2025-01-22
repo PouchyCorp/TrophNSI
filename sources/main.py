@@ -6,7 +6,7 @@ with open('sources/config.toml', 'rb') as f:
 
 def get_save_dict(game):
   print('game saved')
-  return {'gold' : game.money, 'inventory' : game.inventory.inv, "shop" : game.shop.inv}
+  return {'gold' : game.money, 'inventory' : game.inventory.inv, "shop" : game.shop.inv, "unlocks" : game.unlock_manager}
 
 def start_game(game_save_dict):
     # Open config file and dump it in a dict
@@ -39,7 +39,7 @@ def start_game(game_save_dict):
       ROOMS[placeable.coord.room_num].placed.append(placeable)
 
   #game initialized with some objects as parameters instead of in the __init__ of Game, because of the eventuality that they would be loaded by a db save
-  game = Game(WIN, CLOCK, inventory, shop, game_save_dict['gold'])
+  game = Game(WIN, CLOCK, inventory, shop, game_save_dict['gold'], game_save_dict['unlocks'])
     
 
   if __name__ == '__main__':
@@ -69,9 +69,14 @@ def start_game(game_save_dict):
 
 if not config['gameplay']['no_login']:
   from  core.database import PgDataBase
+  from core.spectator import Spectator
   db = PgDataBase()
   username, user_game_data = db.tk_ui()
 
+  print('launching spectator mode')
+  Spectator(user_game_data).start_spectating()
+
+  print('launching game')
   data_to_save = start_game(user_game_data)
 
   db.save_user_data(username, data_to_save)

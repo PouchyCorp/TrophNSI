@@ -4,6 +4,7 @@ from core.room import Room
 import ui.sprite as sprite
 from pygame import Surface
 import objects.placeablesubclass as subplaceable
+from core.unlockmanager import UnlockManager
 
 stairs_up = subplaceable.DoorUp('R1_stairs', Coord(1,(1594,546)), Surface((335,220)))
 stairs_down = subplaceable.DoorDown('R1_stairs_down', Coord(1,(1594,516 + 33*6)), Surface((335,220)))
@@ -46,4 +47,6 @@ DEFAULT_SAVE = {'gold' : 0,
 
                 "shop": [Placeable('bust', Coord(2,(100,100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=50, beauty=10),
                         Placeable('plante 1', Coord(2,(100,100)), sprite.SPRITE_PLANT_1, "decoration",  y_constraint=0, price=50, beauty=100),
-                        Placeable('plante 2', Coord(2,(100,100)), sprite.SPRITE_PLANT_2, "decoration",  y_constraint=0, price=50, beauty=1000)]}
+                        Placeable('plante 2', Coord(2,(100,100)), sprite.SPRITE_PLANT_2, "decoration",  y_constraint=0, price=50, beauty=1000)],
+                        
+                "unlocks" : UnlockManager()}

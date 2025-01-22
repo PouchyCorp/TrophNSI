@@ -31,7 +31,7 @@ from objects.pattern import Pattern
 from objects.canva import Canva
 
 class Game:
-    def __init__(self, win, clock, inventory, shop, gold):
+    def __init__(self, win, clock, inventory, shop, gold, unlock_manager):
         self.timer : TimerManager = TimerManager()
         self.win : pg.Surface = win
         self.clock : pg.time.Clock = clock
@@ -50,7 +50,7 @@ class Game:
         self.clicked_this_frame = False
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
-        self.unlock_manager = UnlockManager()
+        self.unlock_manager = unlock_manager
         self.pattern_inv : list[Pattern] = self.pattern_inv_init()
         self.canva : Canva = Canva()
 
