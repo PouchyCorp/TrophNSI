@@ -10,6 +10,7 @@ class State(Enum):
     TRANSITION = auto()
     CONFIRMATION = auto()
     SHOP = auto()
+    PAUSED = auto()
 
 import pygame as pg
 import objects.placeablesubclass as subplaceable
@@ -26,9 +27,9 @@ from math import pi
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
 from utils.sound import SoundManager
-from core.unlockmanager import UnlockManager
 from objects.pattern import Pattern
 from objects.canva import Canva
+from ui.button import Button
 
 class Game:
     def __init__(self, win, config, inventory, shop, gold, unlock_manager):
@@ -83,10 +84,19 @@ class Game:
     def launch_dialogue(self, bot_anim):
         """# Function to initiate dialogue easily passed to other functions"""
         self.gui_state = State.DIALOG
-        self.temp_bg =  pg.transform.grayscale(self.win)
+        self.temp_bg = pg.transform.grayscale(self.win)
         self.dialogue_manager.random_dialogue()  # Trigger a random dialogue
         self.dialogue_manager.bot_anim = bot_anim.copy()  # Copy the bot's surface for display
     
+    def pause(self):
+        self.gui_state = State.PAUSED
+        self.temp_bg = pg.transform.grayscale(self.win)
+        self.quit_button = Button((0,0), self.quit, sprite.whiten(sprite.QUIT_BUTTON), sprite.QUIT_BUTTON)
+        self.quit_button.rect.center = self.win.get_rect().center
+        
+    def quit(self):
+        pg.event.post(pg.event.Event(pg.QUIT))
+
     def process_total_beauty(self):
         total = 0
         for room in ROOMS:
@@ -134,8 +144,10 @@ class Game:
                     self.gui_state = State.INTERACTION  # Return to interaction
             
             case pg.K_ESCAPE:
-                if self.gui_state not in [State.TRANSITION, State.CONFIRMATION]:
+                if self.gui_state not in [State.TRANSITION, State.CONFIRMATION, State.INTERACTION]:
                     self.gui_state = State.INTERACTION
+                elif self.gui_state is State.INTERACTION:
+                    self.pause()
 
             case pg.K_UP:  # Move up a floor
                 self.change_floor(1)
@@ -286,6 +298,9 @@ class Game:
                         self.gui_state = State.PAINTING
                     else:
                         self.popups.append(InfoPopup("you can't place a chip here"))  # Show popup if trying to go below limits
+                
+                case State.PAUSED:
+                    self.quit_button.handle_event(event)
 
     def update(self, mouse_pos):
         
@@ -310,7 +325,6 @@ class Game:
         match self.gui_state:      
             case State.INTERACTION:
                 self.hivemind.create_last_bot_clickable()  # Make the last bot clickable
-
         
         if self.confirmation_popups:
             self.gui_state = State.CONFIRMATION
@@ -341,9 +355,14 @@ class Game:
     #            test_painting.draw(WIN)  # Draw the painting 
             
             case State.DIALOG:
+                self.win.blit(self.temp_bg, (0,0))
                 self.paused = True
                 self.dialogue_manager.update() #update the dialogue manager and it's subclasses
-                self.dialogue_manager.draw(self.win)    
+                self.dialogue_manager.draw(self.win)  
+
+            case State.PAUSED:
+                self.win.blit(self.temp_bg, (0,0))
+                self.quit_button.draw(self.win, self.quit_button.rect.collidepoint(mouse_pos.xy))
 
             case State.TRANSITION:
                 if self.incr_fondu <= pi:
@@ -387,7 +406,7 @@ class Game:
             for event in events:
                 if event.type == pg.QUIT:  # Check for quit event
                     pg.quit()  # Quit Pygame
-                    return self.get_save_dict()
+                    return self.get_save_dict() # Return data to be saved in the DB
 
                 #tests ---------
                 if event.type == pg.KEYDOWN and event.key == pg.K_p:
