@@ -368,16 +368,5 @@ class Game:
         self.win.blit(InfoPopup(
             f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.money} / th_gold : {self.bot_distributor.theorical_gold} / beauty : {self.beauty}').text_surf, (0, 0))
         
-        # ----- TEST
-        if self.current_room.num == 3:
-            try:
-                self.win.blit(self.saved_canva,(100,100))
-            except:
-                pass
-        # ----- TEST
-
-        if self.current_room.num == 2:
-            self.win.blit(self.canva.surf, (0,0))
-
         # Render popups after all other drawings
         self.render_popups()
