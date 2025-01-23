@@ -6,6 +6,8 @@ from enum import Enum, auto
 from ui.inputbox import InputBox
 from  ui.infopopup import InfoPopup
 from ui.button import Button
+from ui.userlist import UserList
+from  utils.room_config import DEFAULT_SAVE
 
 class LoginStates(Enum):
     HOME = auto()
@@ -48,11 +50,9 @@ class PgDataBase:
         result = cursor.fetchall()
         connection.close()
 
-        result = [pickle.loads(row[1]) for row in result]
+        result = [(row[0], pickle.loads(row[1])) for row in result]
 
         return result
-        
-
 
 
     def hash_password(self, password):
@@ -73,7 +73,6 @@ class PgDataBase:
                 return user_data
         
         print("No pickled data found for user, loading default save.")
-        from  utils.room_config import DEFAULT_SAVE
         return DEFAULT_SAVE
 
     def register_user(self):
@@ -87,8 +86,8 @@ class PgDataBase:
         connection = sqlite3.connect(self.db_link)
         cursor = connection.cursor()
         try:
-            cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', 
-                        (username, self.hash_password(password)))
+            cursor.execute('INSERT INTO users (username, password, pickled_data) VALUES (?, ?, ?)', 
+                        (username, self.hash_password(password), pickle.dumps(DEFAULT_SAVE)))
             connection.commit()
             self.info_popups.append(InfoPopup("User registered successfully!"))
         except sqlite3.IntegrityError:
@@ -175,6 +174,7 @@ class PgDataBase:
         accept_login_button = Button((10,300), self.login_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
         accept_register_button = Button((10,300), self.register_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
 
+        userlist = UserList((800,20), self.fetch_all_user_data())
 
         while not self.ready_to_launch[0]:
             CLOCK.tick(fps)  # Maintain frame rate
@@ -206,6 +206,8 @@ class PgDataBase:
                             quit_button.handle_event(event)
                             register_button.handle_event(event)
                             login_button.handle_event(event)
+                    
+                    userlist.handle_event(event)
             
             #draw
             match self.gui_state:
@@ -225,6 +227,8 @@ class PgDataBase:
                     quit_button.draw(WIN, quit_button.rect.collidepoint(mouse_pos))
                     register_button.draw(WIN, register_button.rect.collidepoint(mouse_pos))
                     login_button.draw(WIN, login_button.rect.collidepoint(mouse_pos))
+            
+            userlist.draw(WIN)
 
             
             self.render_popups(WIN)
