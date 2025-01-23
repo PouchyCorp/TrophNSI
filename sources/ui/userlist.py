@@ -37,4 +37,4 @@ class UserList:
             mouse_pos = event.pos
             for i, tab in enumerate(self.processed_tabs):
                 if tab[1].collidepoint(mouse_pos):
-                    Spectator(self.displayed_content[i][1]).start_spectating()
+                    Spectator(self.displayed_content[i][1].copy()).start_spectating()

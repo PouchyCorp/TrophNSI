@@ -54,7 +54,7 @@ if not config['gameplay']['no_login']:
     username, user_game_data = db.home_screen()
 
     print('launching spectator mode')
-    Spectator(user_game_data).start_spectating()
+    Spectator(user_game_data.copy()).start_spectating()
 
     print('launching game')
     data_to_save = start_game(user_game_data)
