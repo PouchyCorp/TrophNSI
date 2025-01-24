@@ -379,8 +379,7 @@ class Game:
                 self.shop.draw(self.win, mouse_pos)
 
             case State.PAINTING:
-                mouse_pos.xy = mouse_pos.get_pixel_perfect(0,12)
-                self.canva.surf.blit(self.selected_pattern.surf,(mouse_pos.x-self.canva.coord.x, mouse_pos.y-self.canva.coord.y))
+                self.canva.paint(mouse_pos,self.selected_pattern)
                 self.gui_state = State.INTERACTION
 
         # Debug stats
