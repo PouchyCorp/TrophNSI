@@ -1,5 +1,6 @@
 import pygame as pg
 from utils.coord import Coord
+from objects.placeable import Placeable
 
 class Canva:
     def __init__(self): 
@@ -10,3 +11,9 @@ class Canva:
         self.rect.x, self.rect.y = self.coord.xy
         self.name = None
         self.pattern_num = 0
+
+    def save(self,inv):
+        inv.append(Placeable("painting",self.canva.coord,pg.transform.scale_by(self.canva.surf,0.5)))
+        self.surf.fill(pg.Color(0,255,0))
+        return self.canva.surf.copy()
+

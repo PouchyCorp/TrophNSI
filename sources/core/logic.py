@@ -166,9 +166,7 @@ class Game:
                     if self.canva.pattern_num == 0:
                         self.popups.append(InfoPopup("you can't save a blank canva"))
                     else:
-                        self.inventory.inv.append(Placeable("painting",self.canva.coord,pg.transform.scale_by(self.canva.surf,0.5)))
-                        self.saved_canva = self.canva.surf.copy()
-                        self.canva = Canva()
+                        self.saved_canva = self.canva.save(self.inventory.inv)
 
     def chip_placement(self,pattern : Pattern):
         self.gui_state = State.PLACING_PATTERN
