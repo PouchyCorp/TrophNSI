@@ -166,9 +166,7 @@ class Game:
                     if self.canva.pattern_num == 0:
                         self.popups.append(InfoPopup("you can't save a blank canva"))
                     else:
-                        self.inventory.inv.append(Placeable("painting",self.canva.coord,pg.transform.scale_by(self.canva.surf,0.5)))
-                        self.saved_canva = self.canva.surf.copy()
-                        self.canva = Canva()
+                        self.saved_canva = self.canva.save(self.inventory.inv)
 
     def chip_placement(self,pattern : Pattern):
         self.gui_state = State.PLACING_PATTERN
@@ -381,8 +379,7 @@ class Game:
                 self.shop.draw(self.win, mouse_pos)
 
             case State.PAINTING:
-                mouse_pos.xy = mouse_pos.get_pixel_perfect(0,12)
-                self.canva.surf.blit(self.selected_pattern.surf,(mouse_pos.x-self.canva.coord.x, mouse_pos.y-self.canva.coord.y))
+                self.canva.paint(mouse_pos,self.selected_pattern)
                 self.gui_state = State.INTERACTION
 
         # Debug stats
