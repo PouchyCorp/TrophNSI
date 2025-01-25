@@ -8,7 +8,6 @@ import ui.sprite as sprite
 from utils.timermanager import TimerManager
 from utils.anim import Animation, Spritesheet
 import objects.placeablesubclass as subplaceable
-from utils.sound import SoundManager
 
 class BotStates(Enum):
     IDLE = auto()
@@ -197,7 +196,6 @@ class Bot:
         self.coord.xy = self.coord.get_pixel_perfect()
         self.__target_coord = self.coord.copy()
         self.visited_placeable_id : list[int] = []
-        self.walking=SoundManager('data/sounds/robot_moving.mp3')
         self.is_inline = True
         self.is_leaving = False
         self.state = BotStates.IDLE
@@ -272,10 +270,8 @@ class Bot:
                 if self.coord.bot_movement_compare(self.target_coord):
                     if self.is_inline:
                         self.state = BotStates.IDLE
-                        self.walking.stop()
                     else:
                         self.state = BotStates.WATCH
-                        self.walking.stop()
                         TIMER.create_timer(2.75, self.set_attribute, False, arguments=('state', BotStates.IDLE))
                         TIMER.create_timer(2.75, self.anim_watch.reset_frame, False)
 
