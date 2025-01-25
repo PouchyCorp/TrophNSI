@@ -44,6 +44,7 @@ def init_rooms():
 ROOMS : list[Room] = init_rooms()
 
 DEFAULT_SAVE = {'gold' : 0, 
+                "beauty" : 0,
                 "inventory": [Placeable('cheater beauty', Coord(2,(100,100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=50, beauty=10000000)], 
 
 
