@@ -207,6 +207,7 @@ class PgDataBase:
                             register_button.handle_event(event)
                             login_button.handle_event(event)
                     
+                    userlist.init(self.fetch_all_user_data())
                     userlist.handle_event(event)
             
             #draw

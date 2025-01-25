@@ -2,16 +2,18 @@ import pygame as pg
 import tomli
 from utils.coord import Coord
 from ui.inventory import Inventory
-from utils.room_config import ROOMS
+from utils.room_config import init_rooms
 from ui.sprite import ARROW_LEFT, ARROW_RIGHT, whiten, QUIT_BUTTON
 from ui.button import Button
 from ui.infopopup import InfoPopup
 
 class Spectator:
     def __init__(self, game_save_dict):
-        self.game_save_dict = game_save_dict
-
-        self.current_room = ROOMS[1]
+        self.username, self.game_save_dict = game_save_dict
+        print("spectating : ", self.username)
+        
+        self.rooms = init_rooms()
+        self.current_room = self.rooms[1]
         
         self.run = True
 
@@ -48,16 +50,17 @@ class Spectator:
         # Places placeables in room from inventory
         for placeable in inventory.inv:
             if placeable.placed:
-                ROOMS[placeable.coord.room_num].placed.append(placeable)
+                self.rooms[placeable.coord.room_num].placed.append(placeable)
     
     def quit(self):
         self.run=False
+        print("quitting spectating : ", self.username)
 
     def go_floor_up(self):
         """to move up : 1
             to move down : -1"""
         if self.game_save_dict["unlocks"].is_floor_unlocked(str(self.current_room.num + 1)):
-            self.current_room = ROOMS[self.current_room.num + 1]  # Move to the previous room
+            self.current_room = self.rooms[self.current_room.num + 1]  # Move to the previous room
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
 
@@ -65,7 +68,7 @@ class Spectator:
         """to move up : 1
             to move down : -1"""
         if self.game_save_dict["unlocks"].is_floor_unlocked(str(self.current_room.num - 1)):
-            self.current_room = ROOMS[self.current_room.num - 1]  # Move to the previous room
+            self.current_room = self.rooms[self.current_room.num - 1]  # Move to the previous room
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
 

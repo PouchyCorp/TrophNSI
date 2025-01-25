@@ -10,10 +10,10 @@ class UserList:
         self.lengh = len(content)
         self.page = 1
         self.processed_tabs = []
-        self.init()
+        self.init(self.content)
 
-    def init(self):
-        self.displayed_content = self.content[(self.page-1)*4:self.page*4]
+    def init(self, content):
+        self.displayed_content = content[(self.page-1)*4:self.page*4]
         self.process_tabs()
 
     def process_tabs(self) -> list[tuple[Surface, Rect]]:
@@ -37,4 +37,4 @@ class UserList:
             mouse_pos = event.pos
             for i, tab in enumerate(self.processed_tabs):
                 if tab[1].collidepoint(mouse_pos):
-                    Spectator(self.displayed_content[i][1].copy()).start_spectating()
+                    Spectator(self.displayed_content[i]).start_spectating()
