@@ -49,12 +49,8 @@ def start_game(game_save_dict):
 # ------------------------#
 if not config['gameplay']['no_login']:
     from core.database import PgDataBase
-    from core.spectator import Spectator
     db = PgDataBase()
     username, user_game_data = db.home_screen()
-
-    print('launching spectator mode')
-    Spectator((username, user_game_data.copy())).start_spectating()
 
     print('launching game')
     data_to_save = start_game(user_game_data)

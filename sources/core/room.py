@@ -1,11 +1,19 @@
 from objects.placeable import Placeable
+from utils.anim import Animation
 
 class Room:
-    def __init__(self, num, bg_surf) -> None:
+    def __init__(self, num, bg_surf = None, anim = None) -> None:
+        assert bg_surf or anim, "you should define at least one of the following : bg_surf, anim"
+
         self.size_px = (320,180)
         self.num = num
         self.placed : list[Placeable] = []
-        self.bg_surf = bg_surf
+        
+        self.anim : Animation = anim
+        if self.anim:
+            self.bg_surf = self.anim.get_frame()
+        else:
+            self.bg_surf = bg_surf
         #permanent objects that can not be edited (still place in placed to render the object)
         self.blacklist : list[Placeable] = []
 
@@ -31,3 +39,7 @@ class Room:
             if placeable.tag == "decoration":
                 total += placeable.beauty
         return total
+    
+    def update_sprite(self):
+        if self.anim:
+            self.bg_surf = self.anim.get_frame()

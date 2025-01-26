@@ -5,6 +5,7 @@ import ui.sprite as sprite
 from pygame import Surface
 import objects.placeablesubclass as subplaceable
 from core.unlockmanager import UnlockManager
+from utils.anim import Animation
 
 def init_rooms():
     stairs_up = subplaceable.DoorUp('R1_stairs', Coord(1,(1594,546)), Surface((335,220)))
@@ -14,7 +15,7 @@ def init_rooms():
     stairs_up.pair_door_down(stairs_down)
     #R0
     R0 = Room(0,sprite.BG2)
-    R0.placed += [stairs_up , stairs_down]
+    R0.placed += [stairs_up]
 
     #R1
     R1 = Room(1,sprite.BG1)
@@ -39,7 +40,10 @@ def init_rooms():
     R4 = Room(4, sprite.BG5)
     R4.placed += [stairs_up , stairs_down]
 
-    return [R0, R1, R2, R3, R4]
+    R5 = Room(5, anim=Animation(sprite.SPRITESHEET_ROOFTOP, 0, 14, 8))
+    R5.placed += [stairs_down]
+
+    return [R0, R1, R2, R3, R4, R5]
 
 ROOMS : list[Room] = init_rooms()
 
@@ -48,10 +52,11 @@ R1 = ROOMS[1]
 R2 = ROOMS[2]
 R3 = ROOMS[3]
 R4 = ROOMS[4]
+R5 = ROOMS[5]
 
 DEFAULT_SAVE = {'gold' : 0, 
                 "beauty" : 0,
-                "inventory": [Placeable('cheater beauty', Coord(2,(100,100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=50, beauty=10000000)], 
+                "inventory": [Placeable('cheater beauty', Coord(2,(100,100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=50, beauty=1000)], 
 
 
                 "shop": [Placeable('bust', Coord(2,(100,100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=50, beauty=10),

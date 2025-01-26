@@ -305,15 +305,16 @@ class Game:
         # Update timers
         self.timer.update()
 
+        self.current_room.update_sprite()
         # Iterate through the placed objects in the current room
         for placeable in self.current_room.placed:
             # If the mouse is hovering over it
             if placeable.rect.collidepoint(mouse_pos.xy) and self.gui_state in [State.DESTRUCTION, State.INTERACTION]:
-                color = (150, 150, 255) if self.gui_state != State.DESTRUCTION else (255, 0, 0)  # Change color based on state
+                color = (170,170,230) if self.gui_state != State.DESTRUCTION else (255, 0, 0)  # Change color based on state
                 placeable.update_sprite(True, color)  # Update sprite to indicate hover
             # If not hovered
             else:
-                placeable.update_sprite(False)  # Reset sprite
+                placeable.update_sprite(False)  # Reset sprite\
 
 
         # Manage bot behavior

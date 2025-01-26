@@ -80,7 +80,7 @@ class Hivemind:
         self.liberated_bots: list[Bot] = []
         self.line_start_x = line_start
         self.line_stop_x = line_stop
-        self.react_time_min, self.react_time_max = 1, 2
+        self.react_time_min, self.react_time_max = 30, 60
         self.bot_placeable_pointer: subplaceable.BotPlaceable = None
 
         assert self.line_stop_x > self.line_start_x, "stop before start"
@@ -423,7 +423,7 @@ class Bot:
     def draw(self, win : Surface, mouse_pos : Coord):
         '''needs to be called after hivemind.update_bot_ai'''
         if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):  
-            temp_surf = sprite.get_outline(self.surf, (150, 150, 255))
+            temp_surf = sprite.get_outline(self.surf, (170,170,230))
             temp_surf.blit(self.surf, (3,3))
             win.blit(temp_surf, (self.coord.x-3, self.coord.y-3))
         else:

@@ -68,7 +68,7 @@ class Placeable:
         """Placeholder method for interaction logic; meant to be overridden in subclasses."""
         pass
 
-    def update_sprite(self, is_hovered: bool, color: tuple = (150, 150, 255)):
+    def update_sprite(self, is_hovered: bool, color: tuple = (170,170,230)):
         """Updates the sprite based on hover state and modifies visual aspects if necessary."""
         if self.anim:
             self.surf = self.anim.get_frame()  # Update the surface if an animation is used

@@ -136,6 +136,8 @@ WINDOW = load_image('data/bord.png')
 
 SPRITESHEET_CHIP = anim.Spritesheet(load_image('data/chip.png'), (48*6, 48*6))
 
+SPRITESHEET_ROOFTOP = anim.Spritesheet(load_image('data/rooftop.png'), (320*6,180*6))
+
 #---------------------------------------------
 #       The format for the robot anim is:
 #line 1 - Walk Right
