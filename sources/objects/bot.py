@@ -3,87 +3,128 @@ from utils.coord import Coord
 from pygame import Surface, draw, Rect, transform
 from random import choice, randint
 from core.room import Room
-from  utils.room_config import R1
+from utils.room_config import R1
 import ui.sprite as sprite
 from utils.timermanager import TimerManager
 from utils.anim import Animation, Spritesheet
 import objects.placeablesubclass as subplaceable
 
 class BotStates(Enum):
+    """Enumeration for the different states a bot can have."""
     IDLE = auto()
     WALK = auto()
     WATCH = auto()
 
 class BotDistributor:
-    def __init__(self, game_timer : TimerManager, hivemind, game):
-        self.theorical_gold : float = 0
+    """Manages the distribution of bots based on theoretical gold and robot tiers."""
+
+    def __init__(self, game_timer: TimerManager, hivemind, game):
+        """
+        Initialize the BotDistributor.
+
+        Args:
+            game_timer (TimerManager): TimerManager instance for game timing.
+            hivemind: The Hivemind controlling bots.
+            game: The game instance.
+        """
+        self.theorical_gold: float = 0
         self.robot_tiers = [10, 20, 50, 100, 500, 1000]
         self.game_timer = game_timer
         self.hivemind = hivemind
         self.game = game
 
         self.game_timer.create_timer(0.25, self.add_to_theorical_gold, True)
-        self.game_timer.create_timer(1, self.distribute_to_bot, True, repeat_time_interval=[0.75,3])
+        self.game_timer.create_timer(1, self.distribute_to_bot, True, repeat_time_interval=[0.75, 3])
 
     def add_to_theorical_gold(self):
-        if not self.hivemind.is_line_full(): #don't add if the line is full
-            gold_amount = (self.game.beauty)/4 #beauty to gold formula (divide by 4 because method called four times a second)
+        """
+        Add gold based on the game's beauty attribute.
+        Called periodically by a timer.
+        """
+        if not self.hivemind.is_line_full():
+            gold_amount = (self.game.beauty) / 4
             self.theorical_gold += gold_amount
-    
+
     def distribute_to_bot(self):
-        for tier in reversed(self.robot_tiers): #iterate tiers from most expensive to least expensive
-            amount_mod : int = int(self.theorical_gold/tier) #determine how much of a tier we can fit into the theorical gold
+        """
+        Distribute theoretical gold to create bots of various tiers.
+        Handles tier prioritization and ensures proper timing.
+        """
+        for tier in reversed(self.robot_tiers):
+            amount_mod: int = int(self.theorical_gold / tier)
 
-            if 3 >= amount_mod >= 1: #checks if you can distribute between 3 and 1 of this tier
-
-                for j in range(amount_mod): #distribute the correct bot tier the proper amount
-                    self.game_timer.create_timer(j*0.5, self.hivemind.add_bot, False, [tier]) 
-
+            if 3 >= amount_mod >= 1:
+                for j in range(amount_mod):
+                    self.game_timer.create_timer(j * 0.5, self.hivemind.add_bot, False, [tier])
                     self.theorical_gold -= tier
 
-            elif amount_mod >= 1 and self.robot_tiers.index(tier) == len(self.robot_tiers)-1: #if condition above not met and no higher tier, distribute bots
-
-                for j in range(amount_mod): 
-                    self.game_timer.create_timer(j*0.5, self.hivemind.add_bot, False, [tier]) 
-
+            elif amount_mod >= 1 and self.robot_tiers.index(tier) == len(self.robot_tiers) - 1:
+                for j in range(amount_mod):
+                    self.game_timer.create_timer(j * 0.5, self.hivemind.add_bot, False, [tier])
                     self.theorical_gold -= tier
                 return
 
 class Hivemind:
-    def __init__(self, line_start : int, line_stop : int, TIMER : TimerManager) -> None:
-        """supreme entity governing the bots
-            All hail the hivemind,
-            All hail the hivemind !"""
-        self.inline_bots : list[Bot | str] = ["empty","empty","empty","empty", "empty", "empty"]
-        self.liberated_bots : list[Bot] = []
+    """Supreme entity governing bots' behavior and interactions."""
+
+    def __init__(self, line_start: int, line_stop: int, TIMER: TimerManager) -> None:
+        """
+        Initialize the Hivemind.
+
+        Args:
+            line_start (int): X-coordinate of the line start.
+            line_stop (int): X-coordinate of the line stop.
+            TIMER (TimerManager): TimerManager instance for managing timers.
+        """
+        self.inline_bots: list[Bot | str] = ["empty", "empty", "empty", "empty", "empty", "empty"]
+        self.liberated_bots: list[Bot] = []
         self.line_start_x = line_start
         self.line_stop_x = line_stop
         self.react_time_min, self.react_time_max = 1, 2
-        self.bot_placeable_pointer : subplaceable.BotPlaceable = None
+        self.bot_placeable_pointer: subplaceable.BotPlaceable = None
 
         assert self.line_stop_x > self.line_start_x, "stop before start"
 
         step = (self.line_stop_x - self.line_start_x) // len(self.inline_bots)
-        self.x_lookup_table = [(step*i)+self.line_start_x for i in range(len(self.inline_bots))]
-        TIMER.create_timer(randint(self.react_time_min,self.react_time_max),self.create_react_bot, arguments=[TIMER])
+        self.x_lookup_table = [(step * i) + self.line_start_x for i in range(len(self.inline_bots))]
+        TIMER.create_timer(randint(self.react_time_min, self.react_time_max), self.create_react_bot, arguments=[TIMER])
 
-    def create_react_bot(self, TIMER : TimerManager):
+    def create_react_bot(self, TIMER: TimerManager):
+        """
+        Periodically selects a random bot to react.
+
+        Args:
+            TIMER (TimerManager): TimerManager instance for managing timers.
+        """
         if self.liberated_bots:
             random_bot = choice(self.liberated_bots)
             random_bot.is_reacting = True
-        TIMER.create_timer(randint(self.react_time_min,self.react_time_max),self.create_react_bot, arguments=[TIMER])
+        TIMER.create_timer(randint(self.react_time_min, self.react_time_max), self.create_react_bot, arguments=[TIMER])
 
     def get_random_bot_spritesheet(self) -> tuple[Spritesheet, list]:
+        """
+        Fetch a random bot spritesheet.
+
+        Returns:
+            tuple: A tuple containing the spritesheet and associated data.
+        """
         spritesheet_choice = choice(sprite.LIST_SPRITESHEET_ROBOT)
         assert type(spritesheet_choice) is tuple
         return spritesheet_choice
 
-    def add_bot(self, gold_amount : int = 10):
-        #checks if last place is empty
+    def add_bot(self, gold_amount: int = 10):
+        """
+        Add a bot to the inline bot list if space is available.
+
+        Args:
+            gold_amount (int): The amount of gold assigned to the bot.
+        """
         if not self.is_line_full():
             spritesheet_args = self.get_random_bot_spritesheet()
             bot_sprite_height = spritesheet_args[0].img_size[0]
-            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x,958-bot_sprite_height+randint(-50,50))), gold_amount, spritesheet_args[0], spritesheet_args[1]) #spawns bot
+            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x, 958 - bot_sprite_height + randint(-50, 50))),
+                                      gold_amount, spritesheet_args[0], spritesheet_args[1])
+
     
     def free_last_bot(self, current_room):
         if type(self.inline_bots[-1]) is Bot:
@@ -148,6 +189,7 @@ class Hivemind:
                 bot.draw(win, mouse_pos)
     
     def sorted_bot_by_y(self, bots : list):
+        """sorts bots depending on y axis, to be blited in the right order (respecting perspective)"""
         sorted_bots : list[Bot] = bots
         for k in range(len(sorted_bots)):
             val = sorted_bots[k].coord.y
@@ -160,12 +202,19 @@ class Hivemind:
         return sorted_bots
     
     def first_bot_idle(self) -> bool:
+        
         if type(self.inline_bots[-1]) is Bot:
             if self.inline_bots[-1].state is BotStates.IDLE:
                 return True
         return False
 
     def is_line_full(self) -> bool:
+        """
+        Check if the bot line is full.
+
+        Returns:
+            bool: True if no empty spaces are available, False otherwise.
+        """
         if type(self.inline_bots[0]) is Bot:
             if self.inline_bots[0].state is BotStates.IDLE:
                 return True
@@ -191,7 +240,17 @@ class Hivemind:
         
 
 class Bot:
+    """Represents an individual bot with unique attributes and behavior."""
     def __init__(self, coord : Coord, gold_amount : int, anim_spritesheet : Spritesheet, spritesheet_lenghts) -> None:
+        """
+        Initialize the Bot instance.
+
+        Args:
+            coord (Coord): Initial coordinates of the bot.
+            gold (int): Gold value associated with the bot.
+            spritesheet (Spritesheet): Spritesheet for the bot's animations.
+            animations (list): List of animations for the bot.
+        """
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
         self.__target_coord = self.coord.copy()
@@ -230,7 +289,13 @@ class Bot:
         self.__target_coord.x -= self.__target_coord.x%6
 
     def logic(self, rooms : list[Room], TIMER : TimerManager):
-        '''finite state machine (FSM) implementation for bot ai'''
+        """
+        Implements the finite state machine (FSM) for bot AI.
+
+        Args:
+            rooms (list[Room]): List of all rooms in the game environment.
+            TIMER (TimerManager): Timer manager to handle timed events.
+        """
 
         match self.state:
             case BotStates.IDLE:
@@ -289,32 +354,18 @@ class Bot:
                 raise ValueError
 
     def handle_click(self, mouse_pos : Coord, launch_dialogue_func):
+        """
+        Handles user interaction when the bot is clicked.
+
+        Args:
+            mouse_pos (Coord): Current mouse position.
+            launch_dialogue_func (callable): Function to launch a dialogue with the bot.
+        """
         if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):
             #checks click
             self.is_reacting = False
             #launches the dialogue
             launch_dialogue_func(self.anim_idle_right)
-
-
-    def update_placeable(self, rooms : list[Room]):
-        self.placeable.rect.topleft = self.coord.xy
-        self.placeable.surf = self.surf
-                
-        if self.placeable.coord.room_num != self.coord.room_num:
-            self.remove_placeable(rooms)
-            self.placeable.coord.room_num = self.coord.room_num
-            self.add_placeable(rooms)
-
-    def add_placeable(self, rooms : list[Room]):
-        self.placeable = subplaceable.BotPlaceable('react_placeable', self.coord.copy(), self.surf)
-        if self.placeable not in rooms[self.coord.room_num].placed:
-            rooms[self.coord.room_num].placed.append(self.placeable)
-        
-    def remove_placeable(self, rooms : list[Room]):
-        if self.placeable in rooms[self.placeable.coord.room_num].placed:
-            rooms[self.placeable.coord.room_num].placed.remove(self.placeable)
-    
-
                 
     def get_potential_destinations(self, rooms : list[Room]) -> list[tuple[Coord, str]]:
         """returns a list of potential destinations for the robot according to some criteria"""
