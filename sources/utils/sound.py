@@ -2,22 +2,14 @@ import pygame
 
 from random import *
 
-class SoundManager():
-    def __init__(self, name, time=0):
-        self.name=name
-        self.time=time
-        
+class CustomSound():
+    def __init__(self, name):
+        self.name = name
 
-    def played(self, fade, vlm, loop):
-        PLAYING.fadeout(fade)
-        PLAYING.set_volume(vlm)
-        PLAYING.play(loop)
     
-    def stop(self):
-        PLAYING=pygame.mixer.Sound(self.name)
-        PLAYING.stop()
-    
-class Sound():
+
+
+class SoundManagement():
     def __init__(self):
         self.accrocher = pygame.mixer.Sound('data/sound/accrocher_tableau.mp3')
         self.accrocher2 = pygame.mixer.Sound('data/sound/accrocher.mp3')
@@ -51,12 +43,11 @@ class Sound():
         self.walk = pygame.mixer.Sound('data/sound/walk.wav')
         self.wind = pygame.mixer.Sound('data/sound/wind.mp3')
 
-
-
         self.noise_blank=[self.wind,
                           self.rain,
                           self.floorcracking
         ]
+
         self.robot=[self.robot, 
                     self.robot1,
                     self.robot2,  
@@ -66,7 +57,16 @@ class Sound():
                     self.robot6, 
                     self.robot7, 
                     self.robots]
+        
+    def played(self, name, fade, vlm, loop):
+        name.fadeout(fade)
+        name.set_volume(vlm)
+        name.play(loop)
 
+    def stop(self):
+        PLAYING=pygame.mixer.Sound(self.name)
+        PLAYING.stop()
+        
     def potential_background(self):
         a=randint(0,100)
         if a==69:
@@ -75,4 +75,6 @@ class Sound():
 
     def sound_dialogue(self):
         a=randint(0, len(self.robot))
-        return SoundManager(self.robot[a]).played()
+        self.played(a, 0.5, 0.8, 0)
+    
+        
