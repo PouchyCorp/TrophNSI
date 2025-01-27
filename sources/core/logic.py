@@ -44,6 +44,7 @@ class Game:
         self.inventory : Inventory = inventory
         self.shop : Shop = shop
         self.build_mode : BuildMode= BuildMode()
+        self.sound_manager = SoundManager(self.timer)
         self.destruction_mode : DestructionMode= DestructionMode()
         self.bot_distributor : BotDistributor = BotDistributor(self.timer, self.hivemind, self)
         self.dialogue_manager : DialogueManagement = DialogueManagement('data/dialogue.json')

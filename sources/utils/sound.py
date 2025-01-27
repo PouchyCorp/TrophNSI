@@ -1,16 +1,9 @@
 import pygame
 
-from random import *
+class SoundManager:
+    def __init__(self, timermanager):
+        self.timer = timermanager
 
-class CustomSound():
-    def __init__(self, name):
-        self.name = name
-
-    
-
-
-class SoundManagement():
-    def __init__(self):
         self.accrocher = pygame.mixer.Sound('data/sound/accrocher_tableau.mp3')
         self.accrocher2 = pygame.mixer.Sound('data/sound/accrocher.mp3')
         self.achieve = pygame.mixer.Sound('data/sound/achieve.mp3')
@@ -57,24 +50,11 @@ class SoundManagement():
                     self.robot6, 
                     self.robot7, 
                     self.robots]
-        
-    def played(self, name, fade, vlm, loop):
-        name.fadeout(fade)
-        name.set_volume(vlm)
-        name.play(loop)
-
-    def stop(self):
-        PLAYING=pygame.mixer.Sound(self.name)
-        PLAYING.stop()
-        
-    def potential_background(self):
-        a=randint(0,100)
-        if a==69:
-            return randint(0, len(self.noise_blank))
-        return False
-
-    def sound_dialogue(self):
-        a=randint(0, len(self.robot))
-        self.played(a, 0.5, 0.8, 0)
     
-        
+
+sm = SoundManager()
+
+
+sm.wind.play()
+
+from utils.timermanager import TimerManager
