@@ -53,20 +53,19 @@ class Sound():
 
 
 
-        self.noise_blank=['data/sounds/rain.mp3',
-                        'data/sounds/wind.mp3',
-                        'data/sounds/floorcracking.mp3',
-                         #a compléter...
+        self.noise_blank=[self.wind,
+                          self.rain,
+                          self.floorcracking
         ]
-        self.robot=['data/sounds/robot.mp3',
-                    'data/sounds/robot1.wav',
-                    'data/sounds/robot2.wav',
-                    'data/sounds/robot3.wav',
-                    'data/sounds/robot4.wav',
-                    'data/sounds/robot5.wav',
-                    'data/sounds/robot6.wav',
-                    'data/sounds/robot7.mp3',
-                    'data/sounds/robots.mp3''a']
+        self.robot=[self.robot, 
+                    self.robot1,
+                    self.robot2,  
+                    self.robot3, 
+                    self.robot4, 
+                    self.robot5, 
+                    self.robot6, 
+                    self.robot7, 
+                    self.robots]
 
     def potential_background(self):
         a=randint(0,100)
