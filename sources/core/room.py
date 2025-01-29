@@ -1,3 +1,17 @@
+"""                                
+  _ __ ___   ___  _ __ ___  ___ 
+ | '__/ _ \ / _ \| '_ ` _ \/ __|
+ | | | (_) | (_) | | | | | \__ \
+ |_|  \___/ \___/|_| |_| |_|___/
+                                                       
+Key Features:
+-------------
+- Tracks placed objects and prevents editing of blacklisted items.
+- Handles rendering of placed objects within the room.
+- Calculates the beauty score of a room based on decorative objects.
+- Supports animated background.
+"""
+
 from objects.placeable import Placeable
 from utils.anim import Animation
 

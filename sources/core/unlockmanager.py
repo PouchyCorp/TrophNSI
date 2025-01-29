@@ -1,7 +1,25 @@
+"""
+              _            _                                                   
+             | |          | |                                                  
+  _   _ _ __ | | ___   ___| | __   _ __ ___   __ _ _ __   __ _  __ _  ___ _ __ 
+ | | | | '_ \| |/ _ \ / __| |/ /  | '_ ` _ \ / _` | '_ \ / _` |/ _` |/ _ \ '__|
+ | |_| | | | | | (_) | (__|   <   | | | | | | (_| | | | | (_| | (_| |  __/ |   
+  \__,_|_| |_|_|\___/ \___|_|\_\  |_| |_| |_|\__,_|_| |_|\__,_|\__, |\___|_|   
+                                                                __/ |          
+                                                               |___/ 
+
+Key Features:
+-------------
+- Keeps a record of unlocked floors and features.
+- Fully serializable using Pickle
+- Uses confirmation popups to prompt the user before unlocking.
+- Handles the constraints (costs) associated with unlocking floors and features.
+- Triggers sound effects and notifications upon unlocking.
+"""
+
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
 from utils.sound import SoundManager
-
 
 class UnlockManager:
    def __init__(self):

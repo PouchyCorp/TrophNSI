@@ -4,7 +4,7 @@ class SoundManager:
     def __init__(self, timermanager):
         self.timer = timermanager
 
-        self.accrocher = pygame.mixer.Sound('data/sound/accrocher_tableau.mp3')
+        self.accrocher = pygame.mixer.Sound('data/sounds/accrocher_tableau.wav')
         self.accrocher2 = pygame.mixer.Sound('data/sound/accrocher.mp3')
         self.achieve = pygame.mixer.Sound('data/sound/achieve.mp3')
         self.blank_sound = pygame.mixer.Sound('data/sound/blank_sound.mp3')
@@ -50,11 +50,3 @@ class SoundManager:
                     self.robot6, 
                     self.robot7, 
                     self.robots]
-    
-
-sm = SoundManager()
-
-
-sm.wind.play()
-
-from utils.timermanager import TimerManager

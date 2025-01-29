@@ -1,3 +1,48 @@
+"""
+  _           _         _ _     _        _ _           _             
+ | |         | |       | (_)   | |      (_) |         | |            
+ | |__   ___ | |_    __| |_ ___| |_ _ __ _| |__  _   _| |_ ___  _ __ 
+ | '_ \ / _ \| __|  / _` | / __| __| '__| | '_ \| | | | __/ _ \| '__|
+ | |_) | (_) | |_  | (_| | \__ \ |_| |  | | |_) | |_| | || (_) | |   
+ |_.__/ \___/ \__|  \__,_|_|___/\__|_|  |_|_.__/ \__,_|\__\___/|_|   
+
+ Key Features:
+-------------
+- Manages the distribution of bots based on theoretical gold and robot tiers.
+- Calculates the proper amount of gold a player should be earning each seconds.
+- Distributes bots of various tiers by deducting the appropriate gold.
+
+  _     _                     _           _ 
+ | |   (_)                   (_)         | |
+ | |__  ___   _____ _ __ ___  _ _ __   __| |
+ | '_ \| \ \ / / _ \ '_ ` _ \| | '_ \ / _` |
+ | | | | |\ V /  __/ | | | | | | | | | (_| |
+ |_| |_|_| \_/ \___|_| |_| |_|_|_| |_|\__,_|
+
+ Key Features:
+-------------
+- Governs bot behaviors and interactions within the game world.
+- Manages a list of inline bots and liberated bots.
+- Controls bot spawning and logic updates.
+
+
+  _           _   
+ | |         | |  
+ | |__   ___ | |_ 
+ | '_ \ / _ \| __|
+ | |_) | (_) | |_ 
+ |_.__/ \___/ \__|
+
+Key Features:
+-------------
+- Represents an individual bot with its own unique attributes and behavior.
+- Implements a finite state machine (FSM) for bot actions (Idle, Walk, Watch).
+- Full movement logic, including movement to specific coordinates and room transitions.
+- Handles user interaction via mouse clicks, launching dialogues and reactions.
+- Supports animation through sprite sheets for various actions.
+"""
+
+
 from enum import Enum, auto
 from utils.coord import Coord
 from pygame import Surface, draw, Rect, transform
@@ -237,7 +282,6 @@ class Hivemind:
             current_room.placed.remove(self.bot_placeable_pointer)
             current_room.blacklist.remove(self.bot_placeable_pointer)
             self.bot_placeable_pointer = None
-        
 
 class Bot:
     """Represents an individual bot with unique attributes and behavior."""

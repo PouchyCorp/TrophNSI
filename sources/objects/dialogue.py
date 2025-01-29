@@ -1,10 +1,43 @@
+"""
+      _ _       _                         
+     | (_)     | |                        
+   __| |_  __ _| | ___   __ _ _   _  ___  
+  / _` | |/ _` | |/ _ \ / _` | | | |/ _ \ 
+ | (_| | | (_| | | (_) | (_| | |_| |  __/ 
+  \__,_|_|\__,_|_|\___/ \__, |\__,_|\___| 
+                         __/ |            
+                        |___/             
+
+Key Features:
+-------------
+- Dialogue instance containing one dialogue option. 
+- Handles text for each dialogue line.
+- Updates the dialogue text progressively with animation effects.
+
+
+      _ _       _                                                                      
+     | (_)     | |                                                                     
+   __| |_  __ _| | ___   __ _ _   _  ___   _ __ ___   __ _ _ __   __ _  __ _  ___ _ __ 
+  / _` | |/ _` | |/ _ \ / _` | | | |/ _ \ | '_ ` _ \ / _` | '_ \ / _` |/ _` |/ _ \ '__|
+ | (_| | | (_| | | (_) | (_| | |_| |  __/ | | | | | | (_| | | | | (_| | (_| |  __/ |   
+  \__,_|_|\__,_|_|\___/ \__, |\__,_|\___| |_| |_| |_|\__,_|_| |_|\__,_|\__, |\___|_|   
+                         __/ |                                          __/ |          
+                        |___/                                          |___/           
+
+Key Features:
+-------------
+- Manages multiple dialogues instances (above) loaded from a JSON file.
+- Allows random selection of dialogues for interaction.
+- Enhance the interaction with a robot character.
+"""
+
+
 import random as rand
 import pygame as pg
 import json
 from utils.anim import Animation
 import ui.sprite as sprite
 from utils.fonts import TERMINAL_FONT
-
 
 pg.init()
 

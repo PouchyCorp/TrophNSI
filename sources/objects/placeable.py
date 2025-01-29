@@ -1,7 +1,24 @@
+"""
+        _                      _     _      
+       | |                    | |   | |     
+  _ __ | | __ _  ___ ___  __ _| |__ | | ___ 
+ | '_ \| |/ _` |/ __/ _ \/ _` | '_ \| |/ _ \
+ | |_) | | (_| | (_|  __/ (_| | |_) | |  __/
+ | .__/|_|\__,_|\___\___|\__,_|_.__/|_|\___|
+ | |                                        
+ |_|                                        
+
+Key Features:
+-------------
+- Placeables are all the things placed in a room that can be edited and interacted with.
+- Supports static surfaces and animations with frame updates.
+- Pixelization and hover-based outline effects.
+- Custom pickling for object persistence.
+"""
+
 from pygame import Surface, Rect, transform, image
 import sys
 import os
-from pickle import dumps
 from random import randint
 #do not remove
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))

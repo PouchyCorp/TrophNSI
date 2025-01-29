@@ -1,3 +1,21 @@
+"""
+                      _        _             
+                     | |      | |            
+  ___ _ __   ___  ___| |_ __ _| |_ ___  _ __ 
+ / __| '_ \ / _ \/ __| __/ _` | __/ _ \| '__|
+ \__ \ |_) |  __/ (__| || (_| | || (_) | |   
+ |___/ .__/ \___|\___|\__\__,_|\__\___/|_|   
+     | |                                     
+     |_|          
+
+Key Features:
+-------------
+- Launches a separate autonomous window to spectate a game save.
+- Handles navigation between unlocked floors but not interaction. 
+- Uses the same game save as the normal game, to enhance usability.
+"""
+
+
 import pygame as pg
 import tomli
 from utils.coord import Coord

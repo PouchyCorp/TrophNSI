@@ -1,3 +1,17 @@
+"""
+                  _         _             _      
+                 (_)       | |           (_)     
+  _ __ ___   __ _ _ _ __   | | ___   __ _ _  ___ 
+ | '_ ` _ \ / _` | | '_ \  | |/ _ \ / _` | |/ __|
+ | | | | | | (_| | | | | | | | (_) | (_| | | (__ 
+ |_| |_| |_|\__,_|_|_| |_| |_|\___/ \__, |_|\___|
+                                     __/ |       
+                                    |___/        
+
+"""
+
+
+
 from enum import Enum, auto
 class State(Enum):
     INTERACTION = auto()
@@ -26,7 +40,7 @@ from objects.dialogue import DialogueManagement
 from math import pi
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
-from utils.sound import SoundManager
+#from utils.sound import SoundManager
 from objects.pattern import Pattern
 from objects.canva import Canva
 from ui.button import Button
@@ -44,7 +58,7 @@ class Game:
         self.inventory : Inventory = inventory
         self.shop : Shop = shop
         self.build_mode : BuildMode= BuildMode()
-        self.sound_manager = SoundManager(self.timer)
+        #self.sound_manager = SoundManager(self.timer)
         self.destruction_mode : DestructionMode= DestructionMode()
         self.bot_distributor : BotDistributor = BotDistributor(self.timer, self.hivemind, self)
         self.dialogue_manager : DialogueManagement = DialogueManagement('data/dialogue.json')
@@ -181,8 +195,6 @@ class Game:
                 elif self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
                     self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
                     self.launch_transition()  # Start transition
-                    up=SoundManager('data/sounds/Doordown.wav')
-                    up.played(1000, 0.8, 0)
                     placeable.interaction(self.timer)  # Trigger interaction
                 else:
                     self.unlock_manager.try_to_unlock_floor(self.current_room.num-1, self)
@@ -190,8 +202,6 @@ class Game:
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
                 if self.unlock_manager.is_floor_unlocked(self.current_room.num+1):
                     self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
-                    up=SoundManager('data/sounds/elevator.wav')
-                    up.played(1000, 0.8, 0)
                     self.launch_transition()  # Start transition
                     placeable.interaction(self.timer)  # Trigger interaction
                 else:
@@ -243,7 +253,6 @@ class Game:
                     if self.build_mode.can_place(self.current_room):
                         self.current_room.placed.append(
                             self.build_mode.place(self.current_room.num))  # Place the object in the current room
-                        pop=SoundManager('data/sounds/achieve.mp3')
                         pop.played(1000, 0.8, 0)
                         self.beauty = self.process_total_beauty()
                         self.gui_state = State.INVENTORY  # Return to interaction mode
