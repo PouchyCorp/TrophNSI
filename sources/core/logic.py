@@ -1,4 +1,4 @@
-"""
+r"""
                   _         _             _      
                  (_)       | |           (_)     
   _ __ ___   __ _ _ _ __   | | ___   __ _ _  ___ 
@@ -252,8 +252,7 @@ class Game:
                 case State.BUILD:
                     if self.build_mode.can_place(self.current_room):
                         self.current_room.placed.append(
-                            self.build_mode.place(self.current_room.num))  # Place the object in the current room
-                        pop.played(1000, 0.8, 0)
+                        self.build_mode.place(self.current_room.num))  # Place the object in the current room
                         self.beauty = self.process_total_beauty()
                         self.gui_state = State.INVENTORY  # Return to interaction mode
                         self.inventory.init() # Resets inventory gui

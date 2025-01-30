@@ -19,4 +19,4 @@ class Canva:
 
     def paint(self,mouse_pos,pattern):
         mouse_pos.xy = mouse_pos.get_pixel_perfect(0,12)
-        self.surf.blit(pattern.surf.copy(),(mouse_pos.x-self.canva.coord.x, mouse_pos.y-self.canva.coord.y))
+        self.surf.blit(pattern.surf.copy(),(mouse_pos.x-self.coord.x, mouse_pos.y-self.coord.y))
