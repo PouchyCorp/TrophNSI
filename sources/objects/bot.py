@@ -51,6 +51,7 @@ from utils.room_config import R1
 import ui.sprite as sprite
 from utils.timermanager import TimerManager
 from utils.anim import Animation, Spritesheet
+from utils.sound import SoundManager
 import objects.placeablesubclass as subplaceable
 
 class BotStates(Enum):
@@ -111,7 +112,7 @@ class BotDistributor:
 class Hivemind:
     """Supreme entity governing bots' behavior and interactions."""
 
-    def __init__(self, line_start: int, line_stop: int, TIMER: TimerManager) -> None:
+    def __init__(self, line_start: int, line_stop: int, TIMER: TimerManager, sound_manager : SoundManager) -> None:
         """
         Initialize the Hivemind.
 
@@ -126,7 +127,7 @@ class Hivemind:
         self.line_stop_x = line_stop
         self.react_time_min, self.react_time_max = 30, 60
         self.bot_placeable_pointer: subplaceable.BotPlaceable = None
-
+        self.sound_manager = sound_manager
         assert self.line_stop_x > self.line_start_x, "stop before start"
 
         step = (self.line_stop_x - self.line_start_x) // len(self.inline_bots)
@@ -178,6 +179,7 @@ class Hivemind:
             last_bot_money_amount = self.inline_bots[-1].gold_amount
             self.inline_bots[-1] = 'empty'
             self.remove_last_bot_clickable(current_room)
+            self.sound_manager.achieve.play()
             return last_bot_money_amount
         return False
         

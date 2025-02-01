@@ -40,7 +40,7 @@ from objects.dialogue import DialogueManagement
 from math import pi
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
-#from utils.sound import SoundManager
+from utils.sound import SoundManager
 from objects.pattern import Pattern
 from objects.canva import Canva
 from ui.button import Button
@@ -49,16 +49,16 @@ class Game:
     def __init__(self, win, config, inventory, shop, gold, unlock_manager):
         self.config = config
         self.timer : TimerManager = TimerManager()
+        self.sound_manager = SoundManager(self.timer)
         self.win : pg.Surface = win
         self.clock : pg.time.Clock = pg.time.Clock()
         self.popups : list[InfoPopup] = []
         self.confirmation_popups : list[ConfirmationPopup] = []
         self.gui_state = State.INTERACTION
-        self.hivemind : Hivemind = Hivemind(60, 600, self.timer)
+        self.hivemind : Hivemind = Hivemind(60, 600, self.timer, self.sound_manager)
         self.inventory : Inventory = inventory
         self.shop : Shop = shop
         self.build_mode : BuildMode= BuildMode()
-        #self.sound_manager = SoundManager(self.timer)
         self.destruction_mode : DestructionMode= DestructionMode()
         self.bot_distributor : BotDistributor = BotDistributor(self.timer, self.hivemind, self)
         self.dialogue_manager : DialogueManagement = DialogueManagement('data/dialogue.json')
