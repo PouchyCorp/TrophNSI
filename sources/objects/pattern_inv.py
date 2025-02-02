@@ -38,9 +38,7 @@ class PatternInv:
             else:
                 y += 100
                 x = 100
-
-            
-
+                
 
     def select_pattern(self, mouse_pos : Coord) -> str | None:
         for pattern in self.inv:

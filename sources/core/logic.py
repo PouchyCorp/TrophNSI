@@ -41,7 +41,7 @@ from math import pi
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
 from utils.sound import SoundManager
-from objects.pattern import Pattern
+from objects.pattern_inv import Pattern
 from objects.canva import Canva
 from ui.button import Button
 from core.database import PgDataBase
