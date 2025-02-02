@@ -46,7 +46,7 @@ from objects.canva import Canva
 from ui.button import Button
 
 class Game:
-    def __init__(self, win : pg.Surface, config, inventory, shop, gold, unlock_manager):
+    def __init__(self, win : pg.Surface, config : dict, inventory, shop, gold, unlock_manager):
         self.config = config
         self.win : pg.Surface = win
         self.timer : TimerManager = TimerManager()
@@ -155,13 +155,6 @@ class Game:
                     self.gui_state = State.DESTRUCTION
                 else:
                     self.gui_state = State.INTERACTION  # Return to interaction
-
-            case pg.K_s:
-                if self.gui_state is State.INTERACTION:
-                    self.gui_state = State.SHOP  # Open inventory
-                    self.shop.init()
-                elif self.gui_state is State.SHOP:
-                    self.gui_state = State.INTERACTION  # Return to interaction
             
             case pg.K_ESCAPE:
                 if self.gui_state not in [State.TRANSITION, State.CONFIRMATION, State.INTERACTION]:
@@ -169,24 +162,34 @@ class Game:
                 elif self.gui_state is State.INTERACTION:
                     self.pause()
 
-            case pg.K_UP:  # Move up a floor
-                self.change_floor(1)
-
-            case pg.K_DOWN:  # Move down a floor
-                self.change_floor(-1)
-
-            case pg.K_b:  # Add a bot
-                self.hivemind.add_bot()
-
-            case pg.K_n:  # Free the last bot in the current room
-                self.hivemind.free_last_bot(self.current_room)
-
             case pg.K_i:
                 if self.current_room.num == 0 and self.gui_state == State.INTERACTION:
                     if self.canva.pattern_num == 0:
                         self.popups.append(InfoPopup("you can't save a blank canva"))
                     else:
                         self.saved_canva = self.canva.save(self.inventory.inv)
+        
+        #cheater macros
+        if self.config['gameplay']['cheats']:
+            match event.key:
+                case pg.K_UP:  # Move up a floor
+                    self.change_floor(1)
+
+                case pg.K_DOWN:  # Move down a floor
+                    self.change_floor(-1)
+
+                case pg.K_b:  # Add a bot
+                    self.hivemind.add_bot()
+
+                case pg.K_n:  # Free the last bot in the current room
+                    self.hivemind.free_last_bot(self.current_room)
+
+                case pg.K_s:
+                    if self.gui_state is State.INTERACTION:
+                        self.gui_state = State.SHOP  # Open shop
+                        self.shop.init()
+                    elif self.gui_state is State.SHOP:
+                        self.gui_state = State.INTERACTION  # Return to interaction
 
     def chip_placement(self,pattern : Pattern):
         self.gui_state = State.PLACING_PATTERN

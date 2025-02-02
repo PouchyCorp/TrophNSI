@@ -24,7 +24,6 @@ class InputBox:
             
         if event.type == pg.KEYDOWN and self.active:
             if event.key == pg.K_RETURN:
-                print(self.text)
                 self.text = ''
             elif event.key == pg.K_BACKSPACE:
                 self.text = self.text[:-1]
@@ -40,6 +39,6 @@ class InputBox:
 
     def draw(self, screen):
         # Blit the text.
-        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        screen.blit(self.txt_surface, (self.rect.x+12, self.rect.y+12))
         # Blit the rect.
         pg.draw.rect(screen, self.color, self.rect, 2)

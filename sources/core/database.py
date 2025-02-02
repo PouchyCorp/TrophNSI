@@ -16,7 +16,7 @@ class LoginStates(Enum):
 
 class PgDataBase:
     def __init__(self):
-        self.db_link = "userData.db"
+        self.db_link = "data/userData.db"
         self.gui_state = LoginStates.HOME
 
         self.ready_to_launch = (False, None)
@@ -164,17 +164,26 @@ class PgDataBase:
         CLOCK = pg.time.Clock()
         WIN = pg.display.set_mode((0,0),pg.FULLSCREEN)
         WIN.fill('black')
+        win_rect = WIN.get_rect()
         pg.display.set_icon(pg.image.load('data/big_icon.png'))
 
         import ui.sprite as sprite
 
-        quit_button = Button((10,200), self.quit, sprite.whiten(sprite.QUIT_BUTTON) , sprite.QUIT_BUTTON)
-        register_button = Button((10,300), self.change_gui_to_register, sprite.whiten(sprite.REGISTER_BUTTON), sprite.REGISTER_BUTTON)
-        login_button = Button((10,400), self.change_gui_to_login, sprite.whiten(sprite.LOGIN_BUTTON), sprite.LOGIN_BUTTON)
-        accept_login_button = Button((10,300), self.login_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
-        accept_register_button = Button((10,300), self.register_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
+        quit_button = Button((0,0), self.quit, sprite.whiten(sprite.QUIT_BUTTON) , sprite.QUIT_BUTTON)
+        register_button = Button((0,0), self.change_gui_to_register, sprite.whiten(sprite.REGISTER_BUTTON), sprite.REGISTER_BUTTON)
+        login_button = Button((0,0), self.change_gui_to_login, sprite.whiten(sprite.LOGIN_BUTTON), sprite.LOGIN_BUTTON)
+        accept_login_button = Button((0,0), self.login_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
+        accept_register_button = Button((0,0), self.register_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
+ 
+        userlist = UserList((0,0), self.fetch_all_user_data())
 
-        userlist = UserList((800,20), self.fetch_all_user_data())
+        login_button.rect.center = win_rect.center
+        register_button.rect.center = (login_button.rect.centerx, login_button.rect.centery+login_button.rect.height+30)
+        quit_button.rect.center = (register_button.rect.centerx, register_button.rect.centery+register_button.rect.height+30)
+        accept_login_button.rect.center = register_button.rect.center
+        accept_register_button.rect.center = register_button.rect.center
+        self.password_input.rect.center = login_button.rect.center
+        self.username_input.rect.center = (self.password_input.rect.centerx, self.password_input.rect.centery-self.password_input.rect.height-30)
 
         while not self.ready_to_launch[0]:
             CLOCK.tick(fps)  # Maintain frame rate
