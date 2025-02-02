@@ -1,4 +1,4 @@
-r"""
+"""
                   _         _             _      
                  (_)       | |           (_)     
   _ __ ___   __ _ _ _ __   | | ___   __ _ _  ___ 
@@ -397,7 +397,7 @@ class Game:
                 self.shop.draw(self.win, mouse_pos)
 
             case State.PAINTING:
-                self.canva.paint(mouse_pos,self.selected_pattern)
+                self.canva.paint(mouse_pos,self.selected_pattern,(255,0,0))
                 self.gui_state = State.INTERACTION
 
         # Debug stats
