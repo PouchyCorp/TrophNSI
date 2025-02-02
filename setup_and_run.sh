@@ -9,10 +9,10 @@ fi
 
 # Create a virtual environment
 echo "Creating a virtual environment..."
-python3 -m venv venv
+python3 -m venv creative_core_venv
 
 # Activate the virtual environment
-source venv/bin/activate
+source creative_core_venv/bin/activate
 
 # Install dependencies
 echo "Installing dependencies..."
