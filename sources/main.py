@@ -38,7 +38,7 @@ def start_game(game_save_dict):
 
 
     # ------------------------#
-    #        game loop        #
+    #     start game loop     #
     # ------------------------#
     return game.main_loop()
 
