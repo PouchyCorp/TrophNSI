@@ -180,6 +180,8 @@ LOGIN_BUTTON = load_image("data/login.png")
 
 QUIT_BUTTON = load_image("data/quit.png")
 
+CLOSE_BUTTON = load_image("data/close.png")
+
 REGISTER_BUTTON = load_image("data/register.png")
 
 CONFIRM_BUTTON = load_image("data/confirm.png")
