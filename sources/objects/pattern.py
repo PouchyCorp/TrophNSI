@@ -18,5 +18,3 @@ class Pattern:
     def pattern_init(self,pattern):
         self.surf = pg.transform.scale_by(pattern, 2)
         return self.surf
-
-    #def painting(self,xy,pattern,state):

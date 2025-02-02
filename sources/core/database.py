@@ -138,9 +138,10 @@ class PgDataBase:
         if self.gui_state is LoginStates.HOME:
             from sys import exit
             exit()
-        else:
-            self.gui_state = LoginStates.HOME
     
+    def close(self):
+        self.gui_state = LoginStates.HOME
+
     def change_gui_to_login(self):
         self.gui_state = LoginStates.LOGIN
     
@@ -170,6 +171,7 @@ class PgDataBase:
         import ui.sprite as sprite
 
         quit_button = Button((0,0), self.quit, sprite.whiten(sprite.QUIT_BUTTON) , sprite.QUIT_BUTTON)
+        close_button = Button((0,0), self.close, sprite.whiten(sprite.CLOSE_BUTTON) , sprite.CLOSE_BUTTON)
         register_button = Button((0,0), self.change_gui_to_register, sprite.whiten(sprite.REGISTER_BUTTON), sprite.REGISTER_BUTTON)
         login_button = Button((0,0), self.change_gui_to_login, sprite.whiten(sprite.LOGIN_BUTTON), sprite.LOGIN_BUTTON)
         accept_login_button = Button((0,0), self.login_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
@@ -180,6 +182,7 @@ class PgDataBase:
         login_button.rect.center = win_rect.center
         register_button.rect.center = (login_button.rect.centerx, login_button.rect.centery+login_button.rect.height+30)
         quit_button.rect.center = (register_button.rect.centerx, register_button.rect.centery+register_button.rect.height+30)
+        close_button.rect.center = (register_button.rect.centerx, register_button.rect.centery+register_button.rect.height+30)
         accept_login_button.rect.center = register_button.rect.center
         accept_register_button.rect.center = register_button.rect.center
         self.password_input.rect.center = login_button.rect.center
@@ -202,13 +205,13 @@ class PgDataBase:
                         case LoginStates.LOGIN:
                             self.password_input.handle_event(event)
                             self.username_input.handle_event(event)
-                            quit_button.handle_event(event)
+                            close_button.handle_event(event)
                             accept_login_button.handle_event(event)
 
                         case LoginStates.REGISTER:
                             self.password_input.handle_event(event)
                             self.username_input.handle_event(event)
-                            quit_button.handle_event(event)
+                            close_button.handle_event(event)
                             accept_register_button.handle_event(event)
 
                         case LoginStates.HOME:
@@ -224,13 +227,13 @@ class PgDataBase:
                 case LoginStates.LOGIN:
                     self.password_input.draw(WIN)
                     self.username_input.draw(WIN)
-                    quit_button.draw(WIN, quit_button.rect.collidepoint(mouse_pos))
+                    close_button.draw(WIN, close_button.rect.collidepoint(mouse_pos))
                     accept_login_button.draw(WIN, accept_login_button.rect.collidepoint(mouse_pos))
 
                 case LoginStates.REGISTER:
                     self.password_input.draw(WIN)
                     self.username_input.draw(WIN)
-                    quit_button.draw(WIN, quit_button.rect.collidepoint(mouse_pos))
+                    close_button.draw(WIN, close_button.rect.collidepoint(mouse_pos))
                     accept_register_button.draw(WIN, accept_register_button.rect.collidepoint(mouse_pos))
 
                 case LoginStates.HOME:

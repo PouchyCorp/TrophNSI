@@ -1,4 +1,4 @@
-r"""
+"""
                   _         _             _      
                  (_)       | |           (_)     
   _ __ ___   __ _ _ _ __   | | ___   __ _ _  ___ 
@@ -173,6 +173,7 @@ class Game:
                         self.popups.append(InfoPopup("you can't save a blank canva"))
                     else:
                         self.saved_canva = self.canva.save(self.inventory.inv)
+                        self.canva.pattern_num = 0
         
         #cheater macros
         if self.config['gameplay']['cheats']:
@@ -410,7 +411,7 @@ class Game:
                 self.shop.draw(self.win, mouse_pos)
 
             case State.PAINTING:
-                self.canva.paint(mouse_pos,self.selected_pattern)
+                self.canva.paint(mouse_pos,self.selected_pattern,(0,0,0))
                 self.gui_state = State.INTERACTION
 
         # Debug stats
