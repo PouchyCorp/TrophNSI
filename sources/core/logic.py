@@ -1,4 +1,4 @@
-"""
+r"""
                   _         _             _      
                  (_)       | |           (_)     
   _ __ ___   __ _ _ _ __   | | ___   __ _ _  ___ 
@@ -44,6 +44,7 @@ from utils.sound import SoundManager
 from objects.pattern import Pattern
 from objects.canva import Canva
 from ui.button import Button
+from core.database import PgDataBase
 
 class Game:
     def __init__(self, win : pg.Surface, config : dict, inventory, shop, gold, unlock_manager):
@@ -81,10 +82,14 @@ class Game:
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
             self.timer.create_timer(3, self.accept_bot, True)
 
+        self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), PgDataBase())
+        ROOMS[5].placed.append(self.spectating_placeable)
+        ROOMS[5].blacklist.append(self.spectating_placeable)
+
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
-        if self.current_room.num + direction >= 0:
+        if 0 <= self.current_room.num + direction <= 5:
             self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
@@ -236,6 +241,11 @@ class Game:
                     self.popups.append(
                     InfoPopup("Vous avez déjà débloqué l'Auto Cachier"))
 
+            case subplaceable.SpectatorPlaceable:
+                placeable.interaction()
+                if placeable.open:
+                    self.popups.append(
+                        InfoPopup("Cliquez sur les fenetres pour visiter le musée d'un autre joueur !"))
             case _:
                 self.popups.append(
                     InfoPopup('bip boup erreur erreur'))  # Add error popup if matching type fails
@@ -254,6 +264,9 @@ class Game:
         """
         if event.type == pg.KEYDOWN:  # Check for key down events
             self.keydown_handler(event)
+        
+        if self.spectating_placeable.open and self.current_room.num == 5:
+            self.spectating_placeable.user_list.handle_event(event)
 
         if event.type == pg.MOUSEBUTTONUP:  # Handle mouse button release
             # Handle interactions based on the current GUI state
@@ -289,8 +302,9 @@ class Game:
                     for placeable in self.current_room.placed:
                         if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):  # Check if mouse is over a placeable
                             self.placeable_interaction_handler(placeable)
+                            
                     for pattern in self.pattern_inv:
-                        if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y):  # Check if mouse is over a chip button
+                        if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y) and self.current_room.num == 0:  # Check if mouse is over a chip button
                             self.chip_placement(pattern)
                     self.hivemind.handle_bot_click(mouse_pos, self.launch_dialogue)
 
@@ -361,15 +375,15 @@ class Game:
           # Draw canva and buttons
 
         match self.gui_state:
+            case State.INTERACTION:
+                if self.spectating_placeable.open and self.current_room.num == 5:
+                    self.spectating_placeable.user_list.draw(self.win)
+
             case State.BUILD:
                 mouse_pos_coord = Coord(self.current_room.num, (mouse_pos.x - self.build_mode.get_width() // 2, mouse_pos.y - self.build_mode.get_height() // 2))  # Center the mouse on the hologram
                 self.build_mode.show_hologram(self.win, mouse_pos_coord)  # Show the hologram for placing
 
                 self.build_mode.show_room_holograms(self.win, self.current_room)  # Show room holograms
-                
-    #        case w if w in (State.PAINTING, State.PLACING_PATTERN):
-    #            pattern_inventory.draw(WIN)  # Draw the pattern inventory
-    #            test_painting.draw(WIN)  # Draw the painting 
             
             case State.DIALOG:
                 self.win.blit(self.temp_bg, (0,0))
