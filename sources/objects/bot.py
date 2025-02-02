@@ -173,12 +173,16 @@ class Hivemind:
     
     def free_last_bot(self, current_room):
         if type(self.inline_bots[-1]) is Bot:
+
+            #Updates all the attributes needed to init a working bot.
             self.inline_bots[-1].is_inline = False
             self.inline_bots[-1].target_coord = Coord(2,(0,0))
             self.liberated_bots.append(self.inline_bots[-1])
             last_bot_money_amount = self.inline_bots[-1].gold_amount
             self.inline_bots[-1] = 'empty'
             self.remove_last_bot_clickable(current_room)
+
+            #plays sound
             self.sound_manager.achieve.play()
             return last_bot_money_amount
         return False
@@ -216,7 +220,6 @@ class Hivemind:
         #print(self.bots)
         for i in range(len(self.inline_bots)-1):
             if type(self.inline_bots[i]) is Bot and type(self.inline_bots[i+1]) is not Bot:
-                #print(f"moving bot to {self.x_lookup_table[i+1]}")
                 self.inline_bots[i].target_coord.x = self.x_lookup_table[i+1]+randint(-30,30)
                 self.inline_bots[i], self.inline_bots[i+1] = self.inline_bots[i+1], self.inline_bots[i]
 

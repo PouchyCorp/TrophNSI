@@ -46,11 +46,16 @@ from objects.canva import Canva
 from ui.button import Button
 
 class Game:
-    def __init__(self, win, config, inventory, shop, gold, unlock_manager):
+    def __init__(self, win : pg.Surface, config, inventory, shop, gold, unlock_manager):
         self.config = config
-        self.timer : TimerManager = TimerManager()
-        self.sound_manager = SoundManager(self.timer)
         self.win : pg.Surface = win
+        self.timer : TimerManager = TimerManager()
+
+        #loading backgound while the sounds and sprites load
+        self.win.blit(pg.image.load('data/loading_bg.png'),(0,0))
+        pg.display.flip()
+
+        self.sound_manager = SoundManager(self.timer)
         self.clock : pg.time.Clock = pg.time.Clock()
         self.popups : list[InfoPopup] = []
         self.confirmation_popups : list[ConfirmationPopup] = []
