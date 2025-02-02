@@ -101,7 +101,20 @@ class InvPlaceable(Placeable):
 
 class AutoCachierPlaceable(Placeable):
     pass
-    
+
+class SpectatorPlaceable(Placeable):
+    def __init__(self, name, coord, surf, pg_database, tag = None):
+        super().__init__(name, coord, surf, tag)
+        self.pg_database = pg_database
+        from ui.userlist import UserList
+        self.user_list = UserList(self.coord.xy, self.pg_database.fetch_all_user_data())
+        self.open = False
+        
+    def interaction(self):
+        print(self.open)
+        self.open = not self.open
+        if self.open:
+            self.user_list.init(self.pg_database.fetch_all_user_data())
 
 
 
