@@ -304,7 +304,7 @@ class Game:
                             self.placeable_interaction_handler(placeable)
                             
                     for pattern in self.pattern_inv:
-                        if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y) and self.current_room == 0:  # Check if mouse is over a chip button
+                        if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y) and self.current_room.num == 0:  # Check if mouse is over a chip button
                             self.chip_placement(pattern)
                     self.hivemind.handle_bot_click(mouse_pos, self.launch_dialogue)
 
