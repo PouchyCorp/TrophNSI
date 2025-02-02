@@ -1,4 +1,4 @@
-"""
+r"""
                   _         _             _      
                  (_)       | |           (_)     
   _ __ ___   __ _ _ _ __   | | ___   __ _ _  ___ 
@@ -240,6 +240,7 @@ class Game:
                 else:
                     self.popups.append(
                     InfoPopup("Vous avez déjà débloqué l'Auto Cachier"))
+
             case subplaceable.SpectatorPlaceable:
                 placeable.interaction()
                 if placeable.open:
