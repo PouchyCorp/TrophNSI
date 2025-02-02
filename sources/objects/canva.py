@@ -4,8 +4,8 @@ from objects.placeable import Placeable
 
 class Canva:
     def __init__(self): 
-        self.coord = Coord(0,(620,28))
-        self.surf = pg.Surface((680,1024))
+        self.coord = Coord(0,(621,30))
+        self.surf = pg.Surface((678,1020))
         self.surf.fill(pg.Color(0,255,0))
         self.rect = self.surf.get_rect()
         self.rect.x, self.rect.y = self.coord.xy
