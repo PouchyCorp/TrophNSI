@@ -8,7 +8,20 @@ r"""
                                      __/ |       
                                     |___/        
 
-"""
+This game loop operates with a FSM (Finite State Machine), transitionning between states such as interaction,
+building, destruction, inventory management, painting, placing patterns, dialogue, and shop navigation.
+
+Each frame (60fps):
+-------------
+1. Event Handling: Processes player inputs to update the game state.
+                            |
+                            v
+2. Update: Advances timers, updates AI behaviors, and refreshes objects based on the current state.
+                            |
+                            v
+3. Rendering: Draws objects, UI elements, and overlays according to the active state.
+
+Certain states, like confirmation prompts and transitions, override standard interactions."""
 
 
 
