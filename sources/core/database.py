@@ -61,7 +61,7 @@ class PgDataBase:
     def fetch_user_data(self, username):
         connection = sqlite3.connect(self.db_link)
         cursor = connection.cursor()
-        cursor.execute('SELECT pickled_data FROM users WHERE username = ?', (username))
+        cursor.execute('SELECT pickled_data FROM users WHERE username == ?', (username,))
         result = cursor.fetchone()
         connection.close()
 
