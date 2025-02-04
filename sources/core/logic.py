@@ -136,12 +136,14 @@ class Game:
         pg.event.post(pg.event.Event(pg.QUIT))
 
     def process_total_beauty(self):
+        """sums the overall beauty score to be used by the Bot_Manager"""
         total = 0
         for room in ROOMS:
             total += room.get_beauty_in_room()
         return total
     
     def accept_bot(self):
+        """when liberating a bot, add the proper money amount given by hivemind.free_last_bot (which updates the bots logic)"""
         accepted_bot_money_amount = self.hivemind.free_last_bot(R1)
         if accepted_bot_money_amount: # Attempt to free the last bot and checks output
             self.money += accepted_bot_money_amount  # Increment currency
@@ -266,15 +268,14 @@ class Game:
 
     def event_handler(self, event: pg.event.Event, mouse_pos: Coord):
         """
-        Handle events such as key presses and mouse button releases.
+        Manages all events, evenutally dispaching to sub functions like placeable_interaction_handler
+        or keydown_handler
 
         Args:
             event (pg.event.Event): The event to handle.
             mouse_pos (Coord): The current position of the mouse.
-
-        Returns:
-            None
         """
+
         if event.type == pg.KEYDOWN:  # Check for key down events
             self.keydown_handler(event)
         
@@ -450,11 +451,6 @@ class Game:
                 if event.type == pg.QUIT:  # Check for quit event
                     pg.quit()  # Quit Pygame
                     return self.get_save_dict() # Return data to be saved in the DB
-
-                #tests ---------
-                if event.type == pg.KEYDOWN and event.key == pg.K_p:
-                    self.paused = not self.paused
-                # --------------
                 
                 self.event_handler(event, mouse_pos)
             
