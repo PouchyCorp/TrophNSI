@@ -90,9 +90,10 @@ class Game:
         self.canva : Canva = Canva()
         self.paused = False
 
-        self.on_click_cooldown = False
+        self.particle_spawners : dict[int : list] = {}
 
-        if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
+        #init unlocks effects
+        if self.unlock_manager.is_feature_unlocked("Auto Cachier"): 
             self.timer.create_timer(3, self.accept_bot, True)
 
         self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), PgDataBase())
