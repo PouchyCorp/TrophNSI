@@ -4,16 +4,16 @@ class SoundManager:
     def __init__(self, timermanager):
         self.timer = timermanager
 
-        self.accrocher = pygame.mixer.Sound('data/sounds/accrocher_tableau.wav')
-        self.accrocher2 = pygame.mixer.Sound('data/sounds/accrocher.mp3')
-        self.achieve = pygame.mixer.Sound('data/sounds/achieve.mp3')
+        self.accrocher = pygame.mixer.Sound('data/sounds/accrocher_tableau.wav') #
+        self.accrocher2 = pygame.mixer.Sound('data/sounds/accrocher.mp3') #
+        self.achieve = pygame.mixer.Sound('data/sounds/achieve.mp3') #
         self.blank_sound = pygame.mixer.Sound('data/sounds/blank_sound.mp3')
         self.bott = pygame.mixer.Sound('data/sounds/bot or mites.mp3')
-        self.doordown = pygame.mixer.Sound('data/sounds/Doordown.wav')
-        self.elevator = pygame.mixer.Sound('data/sounds/elevator.wav')
+        self.down = pygame.mixer.Sound('data/sounds/Doordown.wav') #
+        self.up = pygame.mixer.Sound('data/sounds/elevator.wav') #
         self.floorcracking = pygame.mixer.Sound('data/sounds/floorcracking.mp3')
-        self.incorrect = pygame.mixer.Sound('data/sounds/incorrect.mp3')
-        self.items = pygame.mixer.Sound('data/sounds/items.mp3')
+        self.incorrect = pygame.mixer.Sound('data/sounds/incorrect.mp3') #
+        self.items = pygame.mixer.Sound('data/sounds/items.mp3') #
         self.mite = pygame.mixer.Sound('data/sounds/mite.mp3')
         self.mites = pygame.mixer.Sound('data/sounds/mites.mp3')
         self.mites2 = pygame.mixer.Sound('data/sounds/mites2.mp3')
@@ -32,7 +32,7 @@ class SoundManager:
         self.robot6 = pygame.mixer.Sound('data/sounds/robot6.wav')
         self.robot7 = pygame.mixer.Sound('data/sounds/robot7.mp3')
         self.robots = pygame.mixer.Sound('data/sounds/robots.mp3')
-        self.shop = pygame.mixer.Sound('data/sounds/shop.wav')
+        self.shop = pygame.mixer.Sound('data/sounds/shop.wav') #
         self.walk = pygame.mixer.Sound('data/sounds/walk.wav')
         self.wind = pygame.mixer.Sound('data/sounds/wind.mp3')
 

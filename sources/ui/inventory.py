@@ -13,17 +13,17 @@ ITEMS_PER_PAGE = 8
 
 
 class Inventory:
-    def __init__(self, title: str = "Inventory", content : list[Placeable] = []) -> None:
+    def __init__(self, title: str = "Inventory",content : list[Placeable] = []) -> None:
         """Initializes the inventory with an optional title."""
         self.inv: list[Placeable] = content  # List of owned items
         self.displayed_objects: list[tuple[Placeable, Surface]] = []  # Rendered items on the current page
         self._page: int = 0  # Current page index
         self.font = font.SysFont(None, 30)  # Font for labels
         self.title = title  # Title of the inventory
-
         width = BORDER_AROUND_WINDOW * 2 + OBJECT_SIZE*2 + 20
         height = OBJECT_SIZE*5
         self.window_sprite = nine_slice_scaling(WINDOW, (width, height), (12, 12, 12, 12))
+        self.sound_manager = None
 
         self.button_prev = Button((60,984), self.handle_navigation_left, whiten(ARROW_LEFT), ARROW_LEFT)
         self.button_next = Button((292,984), self.handle_navigation_right, whiten(ARROW_RIGHT), ARROW_RIGHT)
@@ -149,12 +149,11 @@ class Shop(Inventory):
             self.inv.remove(obj)
             self.init()
             game.popups.append(InfoPopup(f"{obj.name} a été ajouté à ton inventaire !"))
-            success=SoundManager('data/sounds/achieve.mp3')
-            success.played(1000, 0.8, 0)
+            self.sound_manager.items.play()
         else:
             game.popups.append(InfoPopup("Tu n'as as assez d'argent pour acheter l'objet :("))
-            incorrect=SoundManager('data/sounds/incorrect.mp3')
-            incorrect.played(1000, 0.8, 0)
+            self.sound_manager.incorrect.play()
+            
 
     def handle_click(self, mouse_pos : Coord, game):
         """checks if click event happenend on an object, and launches confirmation for buying"""

@@ -76,6 +76,7 @@ class Game:
         self.gui_state = State.INTERACTION
         self.hivemind : Hivemind = Hivemind(60, 600, self.timer, self.sound_manager)
         self.inventory : Inventory = inventory
+        
         self.shop : Shop = shop
         self.build_mode : BuildMode= BuildMode()
         self.destruction_mode : DestructionMode= DestructionMode()
@@ -86,6 +87,7 @@ class Game:
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
         self.unlock_manager = unlock_manager
+        self.unlock_manager.sound_manager = self.sound_manager
         self.pattern_inv : list[Pattern] = self.pattern_inv_init()
         self.canva : Canva = Canva()
         self.paused = False
@@ -209,6 +211,7 @@ class Game:
                 case pg.K_s:
                     if self.gui_state is State.INTERACTION:
                         self.gui_state = State.SHOP  # Open shop
+                        self.sound_manager.shop.play()
                         self.shop.init()
                     elif self.gui_state is State.SHOP:
                         self.gui_state = State.INTERACTION  # Return to interaction
@@ -224,6 +227,8 @@ class Game:
                     self.popups.append(InfoPopup("you can't go further down"))  # Add error popup if matching type fails
                 elif self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
                     self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
+                    self.sound_manager.down.play()
+
                     self.launch_transition()  # Start transition
                     placeable.interaction(self.timer)  # Trigger interaction
                 else:
@@ -232,6 +237,8 @@ class Game:
             case subplaceable.DoorUp:  # Handle interaction with DoorUp type
                 if self.unlock_manager.is_floor_unlocked(self.current_room.num+1):
                     self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
+                    self.sound_manager.up.play()
+
                     self.launch_transition()  # Start transition
                     placeable.interaction(self.timer)  # Trigger interaction
                 else:
@@ -290,6 +297,8 @@ class Game:
                     if self.build_mode.can_place(self.current_room):
                         self.current_room.placed.append(
                         self.build_mode.place(self.current_room.num))  # Place the object in the current room
+                        self.sound_manager.items.play()
+
                         self.beauty = self.process_total_beauty()
                         self.gui_state = State.INVENTORY  # Return to interaction mode
                         self.inventory.init() # Resets inventory gui
