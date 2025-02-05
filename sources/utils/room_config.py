@@ -17,6 +17,7 @@ from pygame import Surface
 import objects.placeablesubclass as subplaceable
 from core.unlockmanager import UnlockManager
 from utils.anim import Animation
+from utils.sound import SoundManager
 
 def init_rooms():
     stairs_up = subplaceable.DoorUp('R1_stairs', Coord(1,(1594,546)), Surface((335,220)))

@@ -22,12 +22,13 @@ from ui.infopopup import InfoPopup
 from utils.sound import SoundManager
 
 class UnlockManager:
-   def __init__(self):
+   def __init__(self)-> None :
       """class to manage all game unlocks, it needs to be fully picklable"""
       self.unlocked_floors = ["0", "1"]
       self.unlocked_features = []
       self.floor_price = {"2" : 10, "3" : 100, "4" : 1000, "5" : 10000}
       self.feature_price = {"other_feature" : 500, "Auto Cachier" : 5000}
+      self.sound_manager = None
 
    def is_floor_unlocked(self, num : int):
       if str(num) in self.unlocked_floors:
@@ -52,12 +53,10 @@ class UnlockManager:
          game.money-= self.floor_price[str(num)]
          self.unlocked_floors.append(str(num))
          game.popups.append(InfoPopup(f"Vous avez débloqué l'étage {num} !"))
-         success=SoundManager('data/sounds/achieve.mp3')
-         success.played(1000, 0.8, 0)
+         self.sound_manager.achieve.play()
       else:
          game.popups.append(InfoPopup("Pas assez d'argent pour débloquer l'étage :("))
-         incorrect=SoundManager('data/sounds/incorrect.mp3')
-         incorrect.played(1000, 0.8, 0)
+         self.sound_manager.incorrect.play()
    
    def unlock_feature(self, feature_name, game):
       """unlocks the floor if possible and return left money"""
@@ -71,9 +70,8 @@ class UnlockManager:
                game.timer.create_timer(3, game.accept_bot, True)
 
          game.popups.append(InfoPopup(f"Vous avez débloqué {feature_name} !"))
-         success=SoundManager('data/sounds/achieve.mp3')
-         success.played(1000, 0.8, 0)
+         self.sound_manager.achieve.play()
+
       else:
          game.popups.append(InfoPopup(f"Pas assez d'argent pour débloquer {feature_name} :("))
-         incorrect=SoundManager('data/sounds/incorrect.mp3')
-         incorrect.played(1000, 0.8, 0)
+         self.sound_manager.incorrect.play()
