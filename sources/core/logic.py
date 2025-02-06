@@ -58,6 +58,7 @@ from objects.pattern_inv import Pattern
 from objects.canva import Canva
 from ui.button import Button
 from core.database import PgDataBase
+from objects.particlesspawner import ParticleSpawner
 
 class Game:
     def __init__(self, win : pg.Surface, config : dict, inventory, shop, gold, unlock_manager):
@@ -87,12 +88,11 @@ class Game:
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
         self.unlock_manager = unlock_manager
-        self.unlock_manager.sound_manager = self.sound_manager
         self.pattern_inv : list[Pattern] = self.pattern_inv_init()
         self.canva : Canva = Canva()
         self.paused = False
 
-        self.particle_spawners : dict[int : list] = {}
+        self.particle_spawners : dict[int : list] = {}#{1 : [ParticleSpawner(Coord(1, (500,500)), pg.Vector2(0,1),'red', 500, dir_randomness=1)]}
 
         #init unlocks effects
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"): 
@@ -361,6 +361,15 @@ class Game:
         # Update timers
         self.timer.update()
 
+        #particles
+        spawners : list[ParticleSpawner]= self.particle_spawners.get(self.current_room.num, None)
+        if spawners is not None:
+            for spawner in spawners:
+                spawner.spawn()
+                spawner.update_all()
+                if spawner.finished:
+                    spawners.remove(spawner)
+
         self.current_room.update_sprite()
         # Iterate through the placed objects in the current room
         for placeable in self.current_room.placed:
@@ -439,6 +448,12 @@ class Game:
                 self.canva.paint(mouse_pos,self.selected_pattern,(0,0,0))
                 self.gui_state = State.INTERACTION
 
+        #particles
+        spawners : list[ParticleSpawner]= self.particle_spawners.get(self.current_room.num, None)
+        if spawners is not None:
+            for spawner in spawners:
+                spawner.draw_all(self.win)
+
         # Debug stats
         self.win.blit(InfoPopup(
             f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.money} / th_gold : {self.bot_distributor.theorical_gold} / beauty : {self.beauty}').text_surf, (0, 0))
@@ -447,7 +462,6 @@ class Game:
         self.render_popups()
 
     def get_save_dict(self):
-        print('game saved')
         return {'gold': self.money, 'inventory': self.inventory.inv, "shop": self.shop.inv, "unlocks": self.unlock_manager, "beauty" : self.beauty}
 
     def main_loop(self) -> dict:

@@ -111,7 +111,6 @@ class SpectatorPlaceable(Placeable):
         self.open = False
         
     def interaction(self):
-        print(self.open)
         self.open = not self.open
         if self.open:
             self.user_list.init(self.pg_database.fetch_all_user_data())

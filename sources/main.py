@@ -54,7 +54,7 @@ if not config['gameplay']['no_login']:
 
     print('launching game')
     data_to_save = start_game(user_game_data)
-
+    print('saving game ...')
     db.save_user_data(username, data_to_save)
 else:
     from utils.room_config import DEFAULT_SAVE
