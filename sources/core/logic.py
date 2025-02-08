@@ -92,7 +92,7 @@ class Game:
         self.canva : Canva = Canva()
         self.paused = False
 
-        self.particle_spawners : dict[int : list] = {}#{1 : [ParticleSpawner(Coord(1, (500,500)), pg.Vector2(0,1),'red', 500, dir_randomness=1)]}
+        self.particle_spawners : dict[int : list] = {1 : [ParticleSpawner(Coord(1, (500,500)), pg.Vector2(0,-1),'blue', 500, dir_randomness=0.2)]}
 
         #init unlocks effects
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"): 
@@ -406,6 +406,12 @@ class Game:
                 self.win.blit(pattern.button,(pattern.rect.x,pattern.rect.y))
                 self.win.blit(self.canva.surf, self.canva.coord.xy)
           # Draw canva and buttons
+        
+        #particles
+        spawners : list[ParticleSpawner]= self.particle_spawners.get(self.current_room.num, None)
+        if spawners is not None:
+            for spawner in spawners:
+                spawner.draw_all(self.win)
 
         match self.gui_state:
             case State.INTERACTION:
@@ -447,12 +453,6 @@ class Game:
             case State.PAINTING:
                 self.canva.paint(mouse_pos,self.selected_pattern,(0,0,0))
                 self.gui_state = State.INTERACTION
-
-        #particles
-        spawners : list[ParticleSpawner]= self.particle_spawners.get(self.current_room.num, None)
-        if spawners is not None:
-            for spawner in spawners:
-                spawner.draw_all(self.win)
 
         # Debug stats
         self.win.blit(InfoPopup(

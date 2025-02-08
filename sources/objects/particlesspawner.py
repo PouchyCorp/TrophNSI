@@ -4,13 +4,13 @@ from typing_extensions import Optional
 from random import randint, uniform
 
 class Particle:
-    def __init__(self, coord : Coord, radius : float, direction : Vector2, color : Optional[tuple], gravity = 0):
+    def __init__(self, coord : Coord, radius : float, direction : Vector2, color : Optional[tuple], gravity = 0, lifetime = 60):
         self.coord = coord
         self.radius = radius 
         self.direction = direction
         self.color = color
         self.dead = False
-        self.lifetime = 60
+        self.lifetime = lifetime
         self.gravity = gravity
 
     def update(self):
@@ -59,7 +59,7 @@ class ParticleSpawner:
                           self.direction.y + uniform(-self.dir_randomness, self.dir_randomness))
         rng_dir = rng_dir.normalize()*self.speed
 
-        return Particle(self.coord.copy(), rng_rad, rng_dir, self.color)
+        return Particle(self.coord.copy(), rng_rad, rng_dir, self.color, self.gravity, self.particle_lifetime)
 
     def spawn_on_line(self):
         pass
