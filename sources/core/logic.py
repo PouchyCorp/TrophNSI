@@ -365,7 +365,7 @@ class Game:
         spawners : list[ParticleSpawner]= self.particle_spawners.get(self.current_room.num, None)
         if spawners is not None:
             for spawner in spawners:
-                spawner.spawn()
+                spawner.spawn_confetti()
                 spawner.update_all()
                 if spawner.finished:
                     spawners.remove(spawner)

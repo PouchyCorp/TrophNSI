@@ -76,8 +76,15 @@ class ParticleSpawner:
 
         return Particle(self.coord.copy(), rng_rad, rng_dir, rng_col , self.gravity, self.particle_lifetime)
 
-    def spawn_on_line(self):
-        pass
+    def spawn_confetti(self):
+        for _ in range(10):
+            coord = Coord(self.coord.room_num,(randint(0,1920),0))
+            rng_rad = randint(5,15)
+            rng_dir = Vector2(uniform(-0.2, 0.2), 
+                            1 + uniform(-0.2, 0.2))
+            rng_dir = rng_dir.normalize()*7
+            rng_col = (randint(0,255),randint(0,255),randint(0,255))
+            self.particles.append(Particle(coord, rng_rad, rng_dir, rng_col , 0, 1000)) 
 
     
     def update_all(self):
