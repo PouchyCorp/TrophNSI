@@ -58,7 +58,7 @@ from objects.pattern_inv import Pattern
 from objects.canva import Canva
 from ui.button import Button
 from core.database import PgDataBase
-from objects.particlesspawner import ParticleSpawner
+from objects.particlesspawner import ParticleSpawner, ConfettiSpawner
 
 class Game:
     def __init__(self, win : pg.Surface, config : dict, inventory, shop, gold, unlock_manager):
@@ -77,8 +77,9 @@ class Game:
         self.gui_state = State.INTERACTION
         self.hivemind : Hivemind = Hivemind(60, 600, self.timer, self.sound_manager)
         self.inventory : Inventory = inventory
-        
         self.shop : Shop = shop
+        self.inventory.sound_manager = self.sound_manager
+        self.shop.sound_manager = self.sound_manager
         self.build_mode : BuildMode= BuildMode()
         self.destruction_mode : DestructionMode= DestructionMode()
         self.bot_distributor : BotDistributor = BotDistributor(self.timer, self.hivemind, self)
@@ -92,7 +93,7 @@ class Game:
         self.canva : Canva = Canva()
         self.paused = False
 
-        self.particle_spawners : dict[int : list] = {1 : [ParticleSpawner(Coord(1, (500,500)), pg.Vector2(0,-1),(0,0,255), 500, dir_randomness=0.2)]}
+        self.particle_spawners : dict[int:list] = {1 : [ConfettiSpawner(Coord(1,(0,0)),500)]}
 
         #init unlocks effects
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"): 
@@ -365,7 +366,7 @@ class Game:
         spawners : list[ParticleSpawner]= self.particle_spawners.get(self.current_room.num, None)
         if spawners is not None:
             for spawner in spawners:
-                spawner.spawn_confetti()
+                spawner.spawn()
                 spawner.update_all()
                 if spawner.finished:
                     spawners.remove(spawner)

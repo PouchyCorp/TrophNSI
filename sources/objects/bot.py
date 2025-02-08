@@ -44,7 +44,7 @@ Key Features:
 
 from enum import Enum, auto
 from utils.coord import Coord
-from pygame import Surface, draw, Rect, transform
+from pygame import Surface, draw, Rect, transform, Vector2
 from random import choice, randint
 from core.room import Room
 from utils.room_config import R1
@@ -52,6 +52,7 @@ import ui.sprite as sprite
 from utils.timermanager import TimerManager
 from utils.anim import Animation, Spritesheet
 from utils.sound import SoundManager
+from objects.particlesspawner import ParticleSpawner
 import objects.placeablesubclass as subplaceable
 
 class BotStates(Enum):
@@ -318,6 +319,8 @@ class Bot:
         self.surf = self.anim_walk_right.get_frame()
         self.rect = self.surf.get_rect()
 
+        self.dust_spawner = ParticleSpawner(self.coord, Vector2(0,0), (50,50,50), 60, dir_randomness=0, density=1)
+
         self.door_x = 1998
         self.exit_coords = Coord(1, (0,0))
 
@@ -344,7 +347,6 @@ class Bot:
             rooms (list[Room]): List of all rooms in the game environment.
             TIMER (TimerManager): Timer manager to handle timed events.
         """
-
         match self.state:
             case BotStates.IDLE:
                 draw.rect(self.surf, "red", (0,0,10,10))
@@ -400,6 +402,8 @@ class Bot:
 
             case _:
                 raise ValueError
+            
+        self.dust_spawner.update_all() #updates particles
 
     def handle_click(self, mouse_pos : Coord, launch_dialogue_func):
         """
@@ -444,6 +448,7 @@ class Bot:
         if self.coord.room_num != self.target_coord.room_num:
             if self.coord.x == self.door_x:
                 self.coord.room_num = self.target_coord.room_num
+                self.dust_spawner.particles = []
             else:
                 #if not on door, change target_buffer to door
                 target_buffer.x = self.door_x
@@ -454,10 +459,14 @@ class Bot:
             if self.coord.x < target_buffer.x:
                 self.move_dir = "RIGHT"
                 self.coord.x += 6
+                self.dust_spawner.coord = Coord(self.coord.room_num, (self.coord.x, self.coord.y+self.rect.h))
+                self.dust_spawner.spawn()
 
             elif self.coord.x > target_buffer.x:
                 self.move_dir = "LEFT"
                 self.coord.x -= 6
+                self.dust_spawner.coord = Coord(self.coord.room_num, (self.coord.x+self.rect.w, self.coord.y+self.rect.h))
+                self.dust_spawner.spawn()
 
             else:
                 #do nothing if already on target
@@ -480,6 +489,8 @@ class Bot:
         if self.is_reacting:
             coord_over_head_of_bot = (self.coord.x+(self.surf.get_width()//2)-6, self.coord.y - 10*6)
             win.blit(self.exclamation_anim.get_frame(), coord_over_head_of_bot)
+        
+        self.dust_spawner.draw_all(win)
     
     def __repr__(self):
         return str(self.__dict__)
