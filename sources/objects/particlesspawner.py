@@ -13,6 +13,7 @@ class Particle:
         self.dead = False
         self.lifetime = lifetime
         self.gravity = gravity
+        #print(self.color)
 
     def update(self):
         self.radius -= 0.1
@@ -25,9 +26,8 @@ class Particle:
         self.coord.x += self.direction.x
         self.coord.y += self.direction.y
 
-    def draw_particle(self, win):
-        #print(self.color)
-        draw.circle(win, self.color, self.coord.xy, self.radius)
+    def draw_particle(self, transparency_win):
+        draw.circle(transparency_win, self.color, self.coord.xy, self.radius)
 
 
 class ParticleSpawner:
@@ -41,8 +41,9 @@ class ParticleSpawner:
         self.particle_lifetime = particle_lifetime
         self.gravity = gravity 
         self.particles : list[Particle] = []
-        self.amount = total_amount
+        self.total_amount = total_amount
         self.finished = False
+        self.color = color
         self.active = True
         self.density = density
         self.speed = speed
@@ -62,8 +63,8 @@ class ParticleSpawner:
 
     def spawn(self):
         if self.active:
-            if self.amount:
-                for _ in range(self.amount):
+            if self.total_amount:
+                for _ in range(self.total_amount):
                     self.particles.append(self.get_particle())
                 self.finished = True
             else:
@@ -93,6 +94,10 @@ class ParticleSpawner:
     def draw_all(self, win):
         for particle in self.particles:
             particle.draw_particle(win)
+    
+    def copy(self):
+        return ParticleSpawner(self.coord, self.direction, self.color, self.particle_lifetime, 
+                               self.gravity, self.total_amount, self.speed, self.dir_randomness, self.density)
 
 
 class ConfettiSpawner(ParticleSpawner):

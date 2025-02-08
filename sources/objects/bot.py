@@ -169,7 +169,7 @@ class Hivemind:
             spritesheet_args = self.get_random_bot_spritesheet()
             bot_sprite_height = spritesheet_args[0].img_size[0]
             self.inline_bots[0] = Bot(Coord(1, (self.line_start_x, 958 - bot_sprite_height + randint(-50, 50))),
-                                      gold_amount, spritesheet_args[0], spritesheet_args[1])
+                                      gold_amount, spritesheet_args[0], spritesheet_args[1], spritesheet_args[2])
 
     
     def free_last_bot(self, current_room):
@@ -224,7 +224,7 @@ class Hivemind:
                 self.inline_bots[i].target_coord.x = self.x_lookup_table[i+1]+randint(-30,30)
                 self.inline_bots[i], self.inline_bots[i+1] = self.inline_bots[i+1], self.inline_bots[i]
 
-    def draw(self, win : Surface, current_room_num : int, mouse_pos: Coord): 
+    def draw(self, win : Surface, current_room_num : int, mouse_pos: Coord, transparency_win): 
         #list of background bots
         list_of_bots = [bot for bot in self.inline_bots if type(bot) is Bot] + self.liberated_bots
         sorted_bots = self.sorted_bot_by_y(list_of_bots)
@@ -236,7 +236,8 @@ class Hivemind:
         #draw bots in background first
         for bot in sorted_bots:
             if bot.coord.room_num == current_room_num:
-                bot.draw(win, mouse_pos)
+                bot.particle_logic()
+                bot.draw(win, mouse_pos, transparency_win)
     
     def sorted_bot_by_y(self, bots : list):
         """sorts bots depending on y axis, to be blited in the right order (respecting perspective)"""
@@ -290,7 +291,7 @@ class Hivemind:
 
 class Bot:
     """Represents an individual bot with unique attributes and behavior."""
-    def __init__(self, coord : Coord, gold_amount : int, anim_spritesheet : Spritesheet, spritesheet_lenghts) -> None:
+    def __init__(self, coord : Coord, gold_amount : int, anim_spritesheet : Spritesheet, spritesheet_lenghts, particle_spawners : dict) -> None:
         """
         Initialize the Bot instance.
 
@@ -319,7 +320,8 @@ class Bot:
         self.surf = self.anim_walk_right.get_frame()
         self.rect = self.surf.get_rect()
 
-        self.dust_spawner = ParticleSpawner(self.coord, Vector2(0,0), (50,50,50), 60, dir_randomness=0, density=1)
+        self.particle_spawners : dict[str, tuple[ParticleSpawner, tuple]] = particle_spawners
+        
 
         self.door_x = 1998
         self.exit_coords = Coord(1, (0,0))
@@ -402,8 +404,6 @@ class Bot:
 
             case _:
                 raise ValueError
-            
-        self.dust_spawner.update_all() #updates particles
 
     def handle_click(self, mouse_pos : Coord, launch_dialogue_func):
         """
@@ -448,7 +448,11 @@ class Bot:
         if self.coord.room_num != self.target_coord.room_num:
             if self.coord.x == self.door_x:
                 self.coord.room_num = self.target_coord.room_num
-                self.dust_spawner.particles = []
+                
+                #wipe particles
+                for spawner_data in self.particle_spawners.values(): 
+                    spawner_data[0].particles = []
+
             else:
                 #if not on door, change target_buffer to door
                 target_buffer.x = self.door_x
@@ -459,15 +463,11 @@ class Bot:
             if self.coord.x < target_buffer.x:
                 self.move_dir = "RIGHT"
                 self.coord.x += 6
-                self.dust_spawner.coord = Coord(self.coord.room_num, (self.coord.x, self.coord.y+self.rect.h))
-                self.dust_spawner.spawn()
 
             elif self.coord.x > target_buffer.x:
                 self.move_dir = "LEFT"
                 self.coord.x -= 6
-                self.dust_spawner.coord = Coord(self.coord.room_num, (self.coord.x+self.rect.w, self.coord.y+self.rect.h))
-                self.dust_spawner.spawn()
-
+                
             else:
                 #do nothing if already on target
                 return
@@ -477,7 +477,18 @@ class Bot:
         else:
             self.__move_cntr += 1
 
-    def draw(self, win : Surface, mouse_pos : Coord):
+    def particle_logic(self):
+        for particle_data in self.particle_spawners.values():
+            particle_data[0].coord = Coord(self.coord.room_num, (self.coord.x+particle_data[1][0],
+                                                                self.coord.y+particle_data[1][1]))
+            particle_data[0].update_all()
+            
+        if self.move_dir == "LEFT" and self.state == BotStates.WALK:
+            self.particle_spawners['left_dust'][0].spawn()
+        elif self.move_dir == "RIGHT" and self.state == BotStates.WALK:
+            self.particle_spawners['right_dust'][0].spawn()
+
+    def draw(self, win : Surface, mouse_pos : Coord, transparency_win : Surface):
         '''needs to be called after hivemind.update_bot_ai'''
         if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):  
             temp_surf = sprite.get_outline(self.surf, (170,170,230))
@@ -490,7 +501,8 @@ class Bot:
             coord_over_head_of_bot = (self.coord.x+(self.surf.get_width()//2)-6, self.coord.y - 10*6)
             win.blit(self.exclamation_anim.get_frame(), coord_over_head_of_bot)
         
-        self.dust_spawner.draw_all(win)
+        for particle_data in self.particle_spawners.values():
+            particle_data[0].draw_all(transparency_win)
     
     def __repr__(self):
         return str(self.__dict__)

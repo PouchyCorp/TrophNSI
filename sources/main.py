@@ -12,8 +12,12 @@ def start_game(game_save_dict):
     # Set up the display window with specified resolution using the config file
     if config['screen']['fullscreen']:
         WIN = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+        TRANSPARENCY_WIN = WIN.convert_alpha()
+        TRANSPARENCY_WIN.fill((0,0,0,0))
     else:
         WIN = pg.display.set_mode(config['screen']['size'])
+        TRANSPARENCY_WIN = WIN.convert_alpha()
+        TRANSPARENCY_WIN.fill((0,0,0,0))
 
     pg.display.set_icon(pg.image.load('data/big_icon.png'))
 
@@ -34,7 +38,7 @@ def start_game(game_save_dict):
 
     # game initialized with some objects as parameters instead of in the __init__ of Game, because of the eventuality that they would be loaded by a db save
     game = Game(WIN, config, inventory, shop,
-                game_save_dict['gold'], game_save_dict['unlocks'])
+                game_save_dict['gold'], game_save_dict['unlocks'], TRANSPARENCY_WIN)
 
 
     # ------------------------#

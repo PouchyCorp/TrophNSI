@@ -61,7 +61,7 @@ from core.database import PgDataBase
 from objects.particlesspawner import ParticleSpawner, ConfettiSpawner
 
 class Game:
-    def __init__(self, win : pg.Surface, config : dict, inventory, shop, gold, unlock_manager):
+    def __init__(self, win : pg.Surface, config : dict, inventory, shop, gold, unlock_manager, transparency_win):
         self.config = config
         self.win : pg.Surface = win
         self.timer : TimerManager = TimerManager()
@@ -69,6 +69,7 @@ class Game:
         #loading backgound while the sounds and sprites load
         self.win.blit(pg.image.load('data/loading_bg.png'),(0,0))
         pg.display.flip()
+        self.transparency_win = transparency_win
 
         self.sound_manager = SoundManager(self.timer)
         self.clock : pg.time.Clock = pg.time.Clock()
@@ -397,10 +398,11 @@ class Game:
 
     def draw(self, mouse_pos : Coord):
         self.win.blit(self.current_room.bg_surf, (0, 0))  # Draw the background of the current room
+        self.transparency_win.fill((0,0,0,0))
         # Draw all placed objects in the current room
         self.current_room.draw_placed(self.win)
 
-        self.hivemind.draw(self.win, self.current_room.num, mouse_pos)  # Draw bots in the current room
+        self.hivemind.draw(self.win, self.current_room.num, mouse_pos, self.transparency_win)  # Draw bots in the current room
 
         if self.current_room.num == 0:
             for pattern in self.pattern_inv:
@@ -412,7 +414,7 @@ class Game:
         spawners : list[ParticleSpawner]= self.particle_spawners.get(self.current_room.num, None)
         if spawners is not None:
             for spawner in spawners:
-                spawner.draw_all(self.win)
+                spawner.draw_all(self.transparency_win)
 
         match self.gui_state:
             case State.INTERACTION:
@@ -454,6 +456,8 @@ class Game:
             case State.PAINTING:
                 self.canva.paint(mouse_pos,self.selected_pattern,(0,0,0))
                 self.gui_state = State.INTERACTION
+
+        self.win.blit(self.transparency_win, (0,0))
 
         # Debug stats
         self.win.blit(InfoPopup(

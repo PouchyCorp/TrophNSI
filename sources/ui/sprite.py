@@ -1,6 +1,8 @@
-from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD, BLEND_RGBA_MULT
+from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD, BLEND_RGBA_MULT, Vector2
 from math import sin, pi
 import utils.anim as anim
+from objects.particlesspawner import ParticleSpawner
+from utils.coord import Coord
 
 if not display.get_init():
     display.set_mode((0,0))
@@ -145,16 +147,32 @@ SPRITESHEET_ROOFTOP = anim.Spritesheet(load_image('data/rooftop.png'), (320*6,18
 #line 3 - Idle Right
 #line 4 - Watch Wall
 #---------------------------------------------
+#
+#dict is the particle + the relative offset from the origin of the bot
+#
+#---------------------------------------------
 
-SPRITESHEET_ROBOT_1_PACK = (anim.Spritesheet(load_image('data/robots/robot_1.png'),(24*6,46*6)), [8, 8, 8, 8])
+dust = ParticleSpawner(Coord(0,(0,0)), Vector2(0,0), (50,50,50,100), 60, dir_randomness=2, density=1, speed=0.1)
 
-SPRITESHEET_ROBOT_2_PACK = (anim.Spritesheet(load_image('data/robots/robot_2.png'),(31*6,43*6)), [8, 8, 8, 8])
+SPRITESHEET_ROBOT_1_PACK = (anim.Spritesheet(load_image('data/robots/robot_1.png'),(24*6,46*6)), [8, 8, 8, 8],
+                             {"right_dust" :(dust.copy(), (4*6,46*6)),
+                              "left_dust" :(dust.copy(), (20*6,46*6))})
 
-SPRITESHEET_ROBOT_3_PACK = (anim.Spritesheet(load_image('data/robots/robot_3.png'),(27*6,39*6)), [14, 14, 11, 17])
+SPRITESHEET_ROBOT_2_PACK = (anim.Spritesheet(load_image('data/robots/robot_2.png'),(31*6,43*6)), [8, 8, 8, 8],
+                            {"right_dust" :(dust.copy(), (6*6,43*6)),
+                              "left_dust" :(dust.copy(), (23*6,43*6))})
 
-SPRITESHEET_ROBOT_4_PACK = (anim.Spritesheet(load_image('data/robots/robot_4.png'),(26*6,38*6)), [8, 8, 8, 8])
+SPRITESHEET_ROBOT_3_PACK = (anim.Spritesheet(load_image('data/robots/robot_3.png'),(27*6,39*6)), [14, 14, 11, 17],
+                            {"right_dust" :(dust.copy(), (4*6,39*6)),
+                              "left_dust" :(dust.copy(), (21*6,39*6))})
 
-SPRITESHEET_ROBOT_5_PACK = (anim.Spritesheet(load_image('data/robots/robot_5.png'),(31*6,48*6)), [8, 8, 8, 8])
+SPRITESHEET_ROBOT_4_PACK = (anim.Spritesheet(load_image('data/robots/robot_4.png'),(26*6,38*6)), [8, 8, 8, 8],
+                            {"right_dust" :(dust.copy(), (5*6,38*6)),
+                              "left_dust" :(dust.copy(), (17*6,38*6))})
+
+SPRITESHEET_ROBOT_5_PACK = (anim.Spritesheet(load_image('data/robots/robot_5.png'),(31*6,48*6)), [8, 8, 8, 8],
+                            {"right_dust" :(dust.copy(), (11*6,48*6)),
+                              "left_dust" :(dust.copy(), (26*6,48*6))})
 
 SPRITESHEET_ROBOT_MUSIQUE_PACK = (anim.Spritesheet(load_image('data/robots/robot_musique.png'),(48*6,32*6)), [8])
 
