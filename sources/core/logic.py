@@ -92,7 +92,7 @@ class Game:
         self.canva : Canva = Canva()
         self.paused = False
 
-        self.particle_spawners : dict[int : list] = {1 : [ParticleSpawner(Coord(1, (500,500)), pg.Vector2(0,-1),'blue', 500, dir_randomness=0.2)]}
+        self.particle_spawners : dict[int : list] = {1 : [ParticleSpawner(Coord(1, (500,500)), pg.Vector2(0,-1),(0,0,255), 500, dir_randomness=0.2)]}
 
         #init unlocks effects
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"): 

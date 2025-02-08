@@ -1,7 +1,8 @@
 from pygame import Vector2, draw
 from utils.coord import Coord
 from typing_extensions import Optional
-from random import randint, uniform
+from random import randint, uniform, choice
+from colorsys import rgb_to_hls, hls_to_rgb
 
 class Particle:
     def __init__(self, coord : Coord, radius : float, direction : Vector2, color : Optional[tuple], gravity = 0, lifetime = 60):
@@ -25,15 +26,15 @@ class Particle:
         self.coord.y += self.direction.y
 
     def draw_particle(self, win):
+        #print(self.color)
         draw.circle(win, self.color, self.coord.xy, self.radius)
 
 
 class ParticleSpawner:
     def __init__(self, coord : Coord, direction : Vector2, color : tuple, particle_lifetime : int,
-                  gravity : bool = False, total_amount : int = None, speed : float = 5, dir_randomness = 0.5, density = 10):
+                  gravity : bool = False, total_amount : int = None, speed : float = 5, dir_randomness = 0.5, density = 5):
         self.coord = coord
         self.direction = direction.normalize()
-        self.color = color
         self.particle_lifetime = particle_lifetime
         self.gravity = gravity 
         self.particles : list[Particle] = []
@@ -42,6 +43,18 @@ class ParticleSpawner:
         self.density = density
         self.speed = speed
         self.dir_randomness = dir_randomness*2
+
+        #color lookup table
+        self.color_lookup_table = []
+        for i in range(10):
+            hls_col = rgb_to_hls(*color[:3])
+            rng_hls_col = (hls_col[0],hls_col[1]+(-40+i*8),hls_col[2])
+
+            rng_rgb_col = hls_to_rgb(*rng_hls_col)+color[3:]
+            rounded_rng_rgb_col = tuple([min(255,max(0,int(i))) for i in rng_rgb_col])
+            self.color_lookup_table.append(rounded_rng_rgb_col)
+        
+
 
     def spawn(self):
         if self.amount:
@@ -58,8 +71,10 @@ class ParticleSpawner:
         rng_dir = Vector2(self.direction.x + uniform(-self.dir_randomness, self.dir_randomness), 
                           self.direction.y + uniform(-self.dir_randomness, self.dir_randomness))
         rng_dir = rng_dir.normalize()*self.speed
+        
+        rng_col = choice(self.color_lookup_table)
 
-        return Particle(self.coord.copy(), rng_rad, rng_dir, self.color, self.gravity, self.particle_lifetime)
+        return Particle(self.coord.copy(), rng_rad, rng_dir, rng_col , self.gravity, self.particle_lifetime)
 
     def spawn_on_line(self):
         pass
