@@ -287,86 +287,110 @@ class Game:
 
     def event_handler(self, event: pg.event.Event, mouse_pos: Coord):
         """
-        Manages all events, evenutally dispaching to sub functions like placeable_interaction_handler
+        Manages all events, eventually dispatching to sub functions like placeable_interaction_handler
         or keydown_handler
 
         Args:
             event (pg.event.Event): The event to handle.
             mouse_pos (Coord): The current position of the mouse.
         """
-
-        if event.type == pg.KEYDOWN:  # Check for key down events
+        if event.type == pg.KEYDOWN:
             self.keydown_handler(event)
-        
+
         if self.spectating_placeable.open and self.current_room.num == 5:
             self.spectating_placeable.user_list.handle_event(event)
 
-        if event.type == pg.MOUSEBUTTONUP:  # Handle mouse button release
-            # Handle interactions based on the current GUI state
-            match self.gui_state:
-                case State.BUILD:
-                    if self.build_mode.can_place(self.current_room):
-                        self.current_room.placed.append(
-                        self.build_mode.place(self.current_room.num))  # Place the object in the current room
-                        self.sound_manager.items.play()
+        if event.type == pg.MOUSEBUTTONUP:
+            self.handle_mouse_button_up(event, mouse_pos)
 
-                        self.beauty = self.process_total_beauty()
-                        self.gui_state = State.INVENTORY  # Return to interaction mode
-                        self.inventory.init() # Resets inventory gui
+    def handle_mouse_button_up(self, event: pg.event.Event, mouse_pos: Coord):
+        """
+        Handles mouse button release events based on the current GUI state.
 
-                case State.INVENTORY:
-                    self.inventory.handle_floor_navigation_buttons(event)
-                    self.inventory.handle_navigation(event)
-                    clicked_placeable : Placeable | None = self.inventory.handle_click(mouse_pos)
-                    if clicked_placeable and self.current_room.num != 0:
-                        # Prepare to enter build mode with the selected placeable unless player is in painting room
-                        self.build_mode.selected_placeable = clicked_placeable
-                        self.gui_state = State.BUILD
-                
-                case State.SHOP:
-                    self.shop.handle_click(mouse_pos, self)
-                    
+        Args:
+            event (pg.event.Event): The mouse button release event.
+            mouse_pos (Coord): The current position of the mouse.
+        """
+        match self.gui_state:
+            case State.BUILD:
+                self.handle_build_mode(mouse_pos)
 
-                case State.DESTRUCTION:
-                    for placeable in self.current_room.placed:
-                        if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
-                            self.destruction_mode.remove_from_room(
-                                placeable, self.current_room)  # Remove the selected placeable from the room
-                            self.beauty = self.process_total_beauty()
+            case State.INVENTORY:
+                self.handle_inventory_mode(event, mouse_pos)
 
-                case State.INTERACTION:
-                    for placeable in self.current_room.placed:
-                        if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):  # Check if mouse is over a placeable
-                            self.placeable_interaction_handler(placeable)
-                            
-                    for pattern in self.pattern_inv:
-                        if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y) and self.current_room.num == 0:  # Check if mouse is over a chip button
-                            self.chip_placement(pattern)
-                    self.hivemind.handle_bot_click(mouse_pos, self.launch_dialogue)
+            case State.SHOP:
+                self.shop.handle_click(mouse_pos, self)
 
-                case State.DIALOG:
-                    if self.dialogue_manager.click_interaction():
-                        self.gui_state = State.INTERACTION
-                        self.paused = False
-                
-                case State.CONFIRMATION:
-                    
-                    flag = self.confirmation_popups[-1].handle_click(mouse_pos)
-                    if flag is not None:
-                        self.confirmation_popups.pop()
+            case State.DESTRUCTION:
+                self.handle_destruction_mode(mouse_pos)
 
-                    if not len(self.confirmation_popups):
-                        self.gui_state = State.INTERACTION
+            case State.INTERACTION:
+                self.handle_interaction_mode(mouse_pos)
 
-                case State.PLACING_PATTERN:
-                    if self.canva.rect.collidepoint(mouse_pos.x, mouse_pos.y):    # Check if mouse is over the canva
-                        self.canva.pattern_num += 1
-                        self.gui_state = State.PAINTING
-                    else:
-                        self.popups.append(InfoPopup("you can't place a chip here"))  # Show popup if trying to go below limits
-                
-                case State.PAUSED:
-                    self.quit_button.handle_event(event)
+            case State.DIALOG:
+                self.handle_dialog_mode()
+
+            case State.CONFIRMATION:
+                self.handle_confirmation_mode(mouse_pos)
+
+            case State.PLACING_PATTERN:
+                self.handle_placing_pattern_mode(mouse_pos)
+
+            case State.PAUSED:
+                self.quit_button.handle_event(event)
+
+    def handle_build_mode(self, mouse_pos: Coord):
+        if self.build_mode.can_place(self.current_room):
+            self.current_room.placed.append(self.build_mode.place(self.current_room.num))
+            self.sound_manager.items.play()
+            self.beauty = self.process_total_beauty()
+            self.gui_state = State.INVENTORY
+            self.inventory.init()
+
+    def handle_inventory_mode(self, event: pg.event.Event, mouse_pos: Coord):
+        self.inventory.handle_floor_navigation_buttons(event)
+        self.inventory.handle_navigation(event)
+        clicked_placeable = self.inventory.handle_click(mouse_pos)
+        if clicked_placeable and self.current_room.num != 0:
+            self.build_mode.selected_placeable = clicked_placeable
+            self.gui_state = State.BUILD
+
+    def handle_destruction_mode(self, mouse_pos: Coord):
+        for placeable in self.current_room.placed:
+            if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
+                self.destruction_mode.remove_from_room(placeable, self.current_room)
+                self.beauty = self.process_total_beauty()
+
+    def handle_interaction_mode(self, mouse_pos: Coord):
+        for placeable in self.current_room.placed:
+            if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
+                self.placeable_interaction_handler(placeable)
+
+        for pattern in self.pattern_inv:
+            if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y) and self.current_room.num == 0:
+                self.chip_placement(pattern)
+
+        self.hivemind.handle_bot_click(mouse_pos, self.launch_dialogue)
+
+    def handle_dialog_mode(self):
+        if self.dialogue_manager.click_interaction():
+            self.gui_state = State.INTERACTION
+            self.paused = False
+
+    def handle_confirmation_mode(self, mouse_pos: Coord):
+        flag = self.confirmation_popups[-1].handle_click(mouse_pos)
+        if flag is not None:
+            self.confirmation_popups.pop()
+
+        if not self.confirmation_popups:
+            self.gui_state = State.INTERACTION
+
+    def handle_placing_pattern_mode(self, mouse_pos: Coord):
+        if self.canva.rect.collidepoint(mouse_pos.x, mouse_pos.y):
+            self.canva.pattern_num += 1
+            self.gui_state = State.PAINTING
+        else:
+            self.popups.append(InfoPopup("you can't place a chip here"))
 
     def update(self, mouse_pos):
         
