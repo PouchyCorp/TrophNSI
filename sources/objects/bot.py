@@ -192,13 +192,6 @@ class Hivemind:
     def update(self, rooms, TIMER):
         """
         Update the AI logic for the bots in the game.
-        @param self - the object itself
-        @param rooms - the rooms in the game
-        @param TIMER - the game timer
-        @param clicked - the clicked status
-        @param mouse_pos - the position of the mouse
-        @param launch_dialogue_func - the function to launch a dialogue
-        @return None
         """
         for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
             bot.logic(rooms, TIMER)
@@ -293,57 +286,56 @@ class Hivemind:
 
 class Bot:
     """Represents an individual bot with unique attributes and behavior."""
-    def __init__(self, coord : Coord, gold_amount : int, anim_spritesheet : Spritesheet, spritesheet_lenghts, particle_spawners : dict) -> None:
+
+    def __init__(self, coord: Coord, gold_amount: int, anim_spritesheet: Spritesheet, spritesheet_lengths, particle_spawners: dict) -> None:
         """
         Initialize the Bot instance.
 
         Args:
             coord (Coord): Initial coordinates of the bot.
-            gold (int): Gold value associated with the bot.
-            spritesheet (Spritesheet): Spritesheet for the bot's animations.
-            animations (list): List of animations for the bot.
+            gold_amount (int): Gold value associated with the bot.
+            anim_spritesheet (Spritesheet): Spritesheet for the bot's animations.
+            spritesheet_lengths (list): List of animation lengths for the bot.
+            particle_spawners (dict): Dictionary of particle spawners for the bot.
         """
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
         self.__target_coord = self.coord.copy()
-        self.visited_placeable_id : list[int] = []
+        self.visited_placeable_id: list[int] = []
         self.is_inline = True
         self.is_leaving = False
         self.state = BotStates.IDLE
         self.__move_cntr = 0
         self.move_dir = "RIGHT"
 
-        self.anim_walk_right = Animation(anim_spritesheet, 0, spritesheet_lenghts[0], 2)
-        self.anim_walk_left = Animation(anim_spritesheet, 1, spritesheet_lenghts[1], 2)
-        self.anim_idle_right = Animation(anim_spritesheet, 2, spritesheet_lenghts[2], 2)
-        self.anim_watch = Animation(anim_spritesheet, 3, spritesheet_lenghts[3], 6, False)
+        self.anim_walk_right = Animation(anim_spritesheet, 0, spritesheet_lengths[0], 2)
+        self.anim_walk_left = Animation(anim_spritesheet, 1, spritesheet_lengths[1], 2)
+        self.anim_idle_right = Animation(anim_spritesheet, 2, spritesheet_lengths[2], 2)
+        self.anim_watch = Animation(anim_spritesheet, 3, spritesheet_lengths[3], 6, False)
         self.exclamation_anim = Animation(sprite.EXCLAMATION_SPRITESHEET, 0, 9, 3)
 
         self.surf = self.anim_walk_right.get_frame()
         self.rect = self.surf.get_rect()
 
-        self.particle_spawners : dict[str, tuple[ParticleSpawner, tuple]] = particle_spawners
-        
+        self.particle_spawners: dict[str, tuple[ParticleSpawner, tuple]] = particle_spawners
 
         self.door_x = 1998
-        self.exit_coords = Coord(1, (0,0))
+        self.exit_coords = Coord(1, (0, 0))
 
         self.is_reacting = False
         self.gold_amount = gold_amount
 
     @property
     def target_coord(self):
-        #makes sure that target coord is reachable
-        self.__target_coord.x -= self.__target_coord.x%6
+        self.__target_coord.x -= self.__target_coord.x % 6
         return self.__target_coord
-    
-    @target_coord.setter
-    def target_coord(self, value : Coord):
-        self.__target_coord = value.copy()
-        #makes sure that target coord is reachable
-        self.__target_coord.x -= self.__target_coord.x%6
 
-    def logic(self, rooms : list[Room], TIMER : TimerManager):
+    @target_coord.setter
+    def target_coord(self, value: Coord):
+        self.__target_coord = value.copy()
+        self.__target_coord.x -= self.__target_coord.x % 6
+
+    def logic(self, rooms: list[Room], TIMER: TimerManager):
         """
         Implements the finite state machine (FSM) for bot AI.
 
@@ -353,61 +345,65 @@ class Bot:
         """
         match self.state:
             case BotStates.IDLE:
-                draw.rect(self.surf, "red", (0,0,10,10))
-
-                #search for objects to walk to if not inline
-                if not self.is_inline:
-                    #if not inline, search for valid destination
-                    #criteria : placeable have the tag "decoration"
-                    #           placeable wasn't already visited
-                    potential_dests = self.get_potential_destinations(rooms)
-                    if potential_dests:
-                        destination = choice(potential_dests)
-                        self.target_coord = destination[0]
-                        self.visited_placeable_id.append(destination[1])
-                    
-                    else:
-                        #no valid destination -> leave
-                        self.is_leaving = True
-                        self.target_coord = self.exit_coords
-
-                match self.move_dir:
-                    case "RIGHT":
-                        self.surf = self.anim_idle_right.get_frame()
-                        
-                    case "LEFT":
-                        self.surf = transform.flip(self.anim_idle_right.get_frame(), False, True) 
-
-                if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
-                    self.state = BotStates.WALK
-                    
-                    
-
+                self.handle_idle_state(rooms)
             case BotStates.WALK:
-                draw.rect(self.surf, "blue", (0,0,10,10))
-                
-                if self.coord.bot_movement_compare(self.target_coord):
-                    if self.is_inline:
-                        self.state = BotStates.IDLE
-                    else:
-                        self.state = BotStates.WATCH
-                        TIMER.create_timer(2.75, self.set_attribute, False, arguments=('state', BotStates.IDLE))
-                        TIMER.create_timer(2.75, self.anim_watch.reset_frame, False)
-
-                self.move_to_target_coord()
-                match self.move_dir:
-                    case "RIGHT":
-                        self.surf = self.anim_walk_right.get_frame()
-                    case "LEFT":
-                        self.surf = self.anim_walk_left.get_frame()
-
+                self.handle_walk_state(TIMER)
             case BotStates.WATCH:
-                self.surf = self.anim_watch.get_frame()
-
+                self.handle_watch_state()
             case _:
                 raise ValueError
 
-    def handle_click(self, mouse_pos : Coord, launch_dialogue_func):
+    def handle_idle_state(self, rooms: list[Room]):
+
+        if not self.is_inline:
+            self.search_for_destination(rooms)
+
+        self.update_idle_animation()
+
+        if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
+            self.state = BotStates.WALK
+
+    def handle_walk_state(self, TIMER: TimerManager):
+
+        if self.coord.bot_movement_compare(self.target_coord):
+            if self.is_inline:
+                self.state = BotStates.IDLE
+            else:
+                self.state = BotStates.WATCH
+                TIMER.create_timer(2.75, self.set_attribute, False, arguments=('state', BotStates.IDLE))
+                TIMER.create_timer(2.75, self.anim_watch.reset_frame, False)
+
+        self.move_to_target_coord()
+        self.update_walk_animation()
+
+    def handle_watch_state(self):
+        self.surf = self.anim_watch.get_frame()
+
+    def search_for_destination(self, rooms: list[Room]):
+        potential_dests = self.get_potential_destinations(rooms)
+        if potential_dests:
+            destination = choice(potential_dests)
+            self.target_coord = destination[0]
+            self.visited_placeable_id.append(destination[1])
+        else:
+            self.is_leaving = True
+            self.target_coord = self.exit_coords
+
+    def update_idle_animation(self):
+        match self.move_dir:
+            case "RIGHT":
+                self.surf = self.anim_idle_right.get_frame()
+            case "LEFT":
+                self.surf = transform.flip(self.anim_idle_right.get_frame(), False, True)
+
+    def update_walk_animation(self):
+        match self.move_dir:
+            case "RIGHT":
+                self.surf = self.anim_walk_right.get_frame()
+            case "LEFT":
+                self.surf = self.anim_walk_left.get_frame()
+
+    def handle_click(self, mouse_pos: Coord, launch_dialogue_func):
         """
         Handles user interaction when the bot is clicked.
 
@@ -416,101 +412,88 @@ class Bot:
             launch_dialogue_func (callable): Function to launch a dialogue with the bot.
         """
         if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):
-            #checks click
             self.is_reacting = False
-            #launches the dialogue
             launch_dialogue_func(self.anim_idle_right)
-                
-    def get_potential_destinations(self, rooms : list[Room]) -> list[tuple[Coord, str]]:
-        """returns a list of potential destinations for the robot according to some criteria"""
+
+    def get_potential_destinations(self, rooms: list[Room]) -> list[tuple[Coord, str]]:
+        """Returns a list of potential destinations for the robot according to some criteria."""
         potential_destinations = []
         for room in rooms:
             for placeable in room.placed:
                 if placeable.tag == "decoration" and placeable.id not in self.visited_placeable_id:
-
                     placeable_center_coord = placeable.coord.copy()
-                    placeable_center_coord.x += placeable.rect.width // 3 
+                    placeable_center_coord.x += placeable.rect.width // 3
                     placeable_center_coord.x += randint(-placeable.rect.width // 3, placeable.rect.width // 3)
-
                     potential_destinations.append((placeable_center_coord, placeable.id))
         return potential_destinations
-    
+
     def set_attribute(self, attribute_name, value):
-        if hasattr(self, attribute_name):  # check if the attribute exists
-            setattr(self, attribute_name, value)  # dynamically set the attribute
+        if hasattr(self, attribute_name):
+            setattr(self, attribute_name, value)
         else:
             raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attribute_name}'")
 
     def move_to_target_coord(self):
-
-        #to keep final target coord during pathfinding modifications
         target_buffer = self.target_coord.copy()
 
-        #change floor
         if self.coord.room_num != self.target_coord.room_num:
             if self.coord.x == self.door_x:
                 self.coord.room_num = self.target_coord.room_num
-                
-                #wipe particles
-                for spawner_data in self.particle_spawners.values(): 
+                for spawner_data in self.particle_spawners.values():
                     spawner_data[0].particles = []
-
             else:
-                #if not on door, change target_buffer to door
                 target_buffer.x = self.door_x
 
-
-        #movement
         if self.__move_cntr >= 1:
             if self.coord.x < target_buffer.x:
                 self.move_dir = "RIGHT"
                 self.coord.x += 6
-
             elif self.coord.x > target_buffer.x:
                 self.move_dir = "LEFT"
                 self.coord.x -= 6
-                
-            else:
-                #do nothing if already on target
-                return
-
             self.__move_cntr = 0
-
         else:
             self.__move_cntr += 1
 
     def particle_logic(self):
         for particle_data in self.particle_spawners.values():
-            particle_data[0].coord = Coord(self.coord.room_num, (self.coord.x+particle_data[1][0],
-                                                                self.coord.y+particle_data[1][1]))
+            particle_data[0].coord = Coord(self.coord.room_num, (self.coord.x + particle_data[1][0], self.coord.y + particle_data[1][1]))
             particle_data[0].update_all()
-            
+
         if self.move_dir == "LEFT" and self.state == BotStates.WALK:
             self.particle_spawners['left_dust'][0].spawn()
         elif self.move_dir == "RIGHT" and self.state == BotStates.WALK:
             self.particle_spawners['right_dust'][0].spawn()
-        
+
         for key, particle_data in self.particle_spawners.items():
             if key not in ['left_dust', 'right_dust']:
                 particle_data[0].spawn()
-            
 
-    def draw(self, win : Surface, mouse_pos : Coord, transparency_win : Surface):
-        '''needs to be called after hivemind.update_bot_ai'''
-        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):  
-            temp_surf = sprite.get_outline(self.surf, (170,170,230))
-            temp_surf.blit(self.surf, (3,3))
-            win.blit(temp_surf, (self.coord.x-3, self.coord.y-3))
-        else:
-            win.blit(self.surf, self.coord.xy)
-        
+    def draw(self, win: Surface, mouse_pos: Coord, transparency_win: Surface):
+        """Needs to be called after hivemind.update_bot_ai."""
+        self.draw_outline_if_reacting(win, mouse_pos)
+        self.draw_bot(win)
+        self.draw_exclamation_if_reacting(win)
+        self.draw_particles(transparency_win)
+
+    def draw_outline_if_reacting(self, win: Surface, mouse_pos: Coord):
+        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):
+            temp_surf = sprite.get_outline(self.surf, (170, 170, 230))
+            temp_surf.blit(self.surf, (3, 3))
+            win.blit(temp_surf, (self.coord.x - 3, self.coord.y - 3))
+
+    def draw_bot(self, win: Surface):
+        win.blit(self.surf, self.coord.xy)
+
+    def draw_exclamation_if_reacting(self, win: Surface):
         if self.is_reacting:
-            coord_over_head_of_bot = (self.coord.x+(self.surf.get_width()//2)-6, self.coord.y - 10*6)
+            coord_over_head_of_bot = (self.coord.x + (self.surf.get_width() // 2) - 6, self.coord.y - 10 * 6)
             win.blit(self.exclamation_anim.get_frame(), coord_over_head_of_bot)
-        
+
+    def draw_particles(self, transparency_win: Surface):
         for particle_data in self.particle_spawners.values():
             particle_data[0].draw_all(transparency_win)
-    
+
     def __repr__(self):
         return str(self.__dict__)
 
