@@ -5,7 +5,7 @@ from ui.sprite import WINDOW, nine_slice_scaling, ARROW_LEFT, ARROW_RIGHT, white
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
 from ui.button import Button
-from utils.sound import SoundManager
+from objects.particlesspawner import ConfettiSpawner
 
 BORDER_AROUND_WINDOW = 24
 OBJECT_SIZE = 180
@@ -171,6 +171,7 @@ class Shop(Inventory):
             self.init()
             game.popups.append(InfoPopup(f"{obj.name} a été ajouté à ton inventaire !"))
             self.sound_manager.items.play()
+            game.particle_spawners[2].append(ConfettiSpawner(Coord(1,(0,0)),500))
         else:
             game.popups.append(InfoPopup("Tu n'as as assez d'argent pour acheter l'objet :("))
             self.sound_manager.incorrect.play()

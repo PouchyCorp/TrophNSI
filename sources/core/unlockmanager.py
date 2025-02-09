@@ -19,7 +19,8 @@ Key Features:
 
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
-from utils.sound import SoundManager
+from objects.particlesspawner import ConfettiSpawner
+from utils.coord import Coord
 
 
 class UnlockManager:
@@ -54,6 +55,7 @@ class UnlockManager:
             self.unlocked_floors.append(str(num))
             game.popups.append(InfoPopup(f"Vous avez débloqué l'étage {num} !"))
             game.sound_manager.achieve.play()
+            game.particle_spawners[game.current_room.num].append(ConfettiSpawner(Coord(1,(0,0)),500))
         else:
             game.popups.append(
                 InfoPopup("Pas assez d'argent pour débloquer l'étage :("))
@@ -72,6 +74,7 @@ class UnlockManager:
 
             game.popups.append(InfoPopup(f"Vous avez débloqué {feature_name} !"))
             game.sound_manager.achieve.play()
+            game.particle_spawners[game.current_floor.num].append(ConfettiSpawner(Coord(1,(0,0)),500))
 
         else:
             game.popups.append(

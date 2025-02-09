@@ -95,7 +95,12 @@ class Game:
         self.canva : Canva = Canva()
         self.paused = False
 
-        self.particle_spawners : dict[int:list] = {1 : [ConfettiSpawner(Coord(1,(0,0)),500)]}
+        self.particle_spawners : dict[int:list] = { 0 : [],
+                                                    1 : [ConfettiSpawner(Coord(1,(0,0)),500)],
+                                                    2 : [],
+                                                    3 : [],
+                                                    4 : [],
+                                                    5 : []}
 
         #init unlocks effects
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
