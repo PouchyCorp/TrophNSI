@@ -240,14 +240,16 @@ class Hivemind:
                 bot.draw(win, mouse_pos, transparency_win)
     
     def sorted_bot_by_y(self, bots : list):
-        """sorts bots depending on y axis, to be blited in the right order (respecting perspective)"""
+        """sorts bots depending on y axis, to be blited in the right order (to respect perspective when rendering)
+        selection sort algorithm"""
         sorted_bots : list[Bot] = bots
         for k in range(len(sorted_bots)):
-            val = sorted_bots[k].coord.y
+            val = sorted_bots[k].coord.y+sorted_bots[k].rect.h
 
             for i in range(k,len(sorted_bots)):
-                if sorted_bots[i].coord.y < val:
-                    val = sorted_bots[i].coord.y
+                comp_bot = sorted_bots[i].coord.y+sorted_bots[i].rect.h
+                if comp_bot < val:
+                    val = comp_bot
                     sorted_bots[k], sorted_bots[i] = sorted_bots[i], sorted_bots[k]
  
         return sorted_bots
@@ -487,6 +489,11 @@ class Bot:
             self.particle_spawners['left_dust'][0].spawn()
         elif self.move_dir == "RIGHT" and self.state == BotStates.WALK:
             self.particle_spawners['right_dust'][0].spawn()
+        
+        for key, particle_data in self.particle_spawners.items():
+            if key not in ['left_dust', 'right_dust']:
+                particle_data[0].spawn()
+            
 
     def draw(self, win : Surface, mouse_pos : Coord, transparency_win : Surface):
         '''needs to be called after hivemind.update_bot_ai'''

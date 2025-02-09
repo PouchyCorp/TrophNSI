@@ -32,7 +32,9 @@ class Particle:
 
 class ParticleSpawner:
     def __init__(self, coord : Coord, direction : Vector2, color : tuple, particle_lifetime : int,
-                  gravity : bool = False, total_amount : int = None, speed : float = 5, dir_randomness = 0.5, density = 5):
+                  gravity : bool = False, total_amount : int = None, speed : float = 5,
+                    dir_randomness = 0.5, density = 5, radius : tuple = (2,10)):
+        """radius is an interval"""
         self.coord = coord
         if direction.magnitude(): #if null vector don't normalize
             self.direction = direction.normalize()
@@ -47,6 +49,7 @@ class ParticleSpawner:
         self.active = True
         self.density = density
         self.speed = speed
+        self.radius = radius
         self.dir_randomness = dir_randomness*2
 
         #color lookup table
@@ -73,7 +76,7 @@ class ParticleSpawner:
             
 
     def get_particle(self):
-        rng_rad = randint(2,10)
+        rng_rad = randint(*self.radius)
         rng_dir = Vector2(self.direction.x + uniform(-self.dir_randomness, self.dir_randomness), 
                           self.direction.y + uniform(-self.dir_randomness, self.dir_randomness))
         
