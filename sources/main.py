@@ -27,17 +27,13 @@ def start_game(game_save_dict):
     from core.logic import Game
     from utils.room_config import ROOMS
 
-    # Initialize inventory and shop fromm save
-    inventory = Inventory("Inventory", game_save_dict['inventory'])
-    shop: Shop = Shop("Shop", game_save_dict['shop'])
-
     # Places placeables in room from inventory
-    for placeable in inventory.inv:
+    for placeable in game_save_dict['inventory']:
         if placeable.placed:
             ROOMS[placeable.coord.room_num].placed.append(placeable)
 
     # game initialized with some objects as parameters instead of in the __init__ of Game, because of the eventuality that they would be loaded by a db save
-    game = Game(WIN, config, inventory, shop,
+    game = Game(WIN, config, game_save_dict['inventory'], game_save_dict['shop'],
                 game_save_dict['gold'], game_save_dict['unlocks'], TRANSPARENCY_WIN)
 
 

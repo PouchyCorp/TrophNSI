@@ -51,6 +51,7 @@ from utils.timermanager import TimerManager
 import ui.sprite as sprite
 from objects.dialogue import DialogueManagement
 from math import pi
+from core.unlockmanager import UnlockManager
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
 from utils.sound import SoundManager
@@ -77,8 +78,8 @@ class Game:
         self.confirmation_popups : list[ConfirmationPopup] = []
         self.gui_state = State.INTERACTION
         self.hivemind : Hivemind = Hivemind(60, 600, self.timer, self.sound_manager)
-        self.inventory : Inventory = inventory
-        self.shop : Shop = shop
+        self.inventory : Inventory = Inventory(self.change_floor, self.reset_guistate, title= "Inventaire", content = inventory)
+        self.shop : Shop = Shop(None, None, title= "Shop", content = shop)
         self.inventory.sound_manager = self.sound_manager
         self.shop.sound_manager = self.sound_manager
         self.build_mode : BuildMode= BuildMode()
@@ -89,7 +90,7 @@ class Game:
         self.incr_fondu = 0
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
-        self.unlock_manager = unlock_manager
+        self.unlock_manager : UnlockManager = unlock_manager
         self.pattern_inv : list[Pattern] = self.pattern_inv_init()
         self.canva : Canva = Canva()
         self.paused = False
@@ -97,7 +98,7 @@ class Game:
         self.particle_spawners : dict[int:list] = {1 : [ConfettiSpawner(Coord(1,(0,0)),500)]}
 
         #init unlocks effects
-        if self.unlock_manager.is_feature_unlocked("Auto Cachier"): 
+        if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
             self.timer.create_timer(3, self.accept_bot, True)
 
         self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), PgDataBase())
@@ -107,7 +108,7 @@ class Game:
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
-        if 0 <= self.current_room.num + direction <= 5:
+        if 0 <= self.current_room.num + direction <= 5 and self.unlock_manager.is_floor_unlocked(self.current_room.num + direction):
             self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
@@ -139,6 +140,9 @@ class Game:
         
     def quit(self):
         pg.event.post(pg.event.Event(pg.QUIT))
+    
+    def reset_guistate(self):
+        self.gui_state = State.INTERACTION
 
     def process_total_beauty(self):
         """sums the overall beauty score to be used by the Bot_Manager"""
@@ -306,6 +310,7 @@ class Game:
                         self.inventory.init() # Resets inventory gui
 
                 case State.INVENTORY:
+                    self.inventory.handle_floor_navigation_buttons(event)
                     self.inventory.handle_navigation(event)
                     clicked_placeable : Placeable | None = self.inventory.handle_click(mouse_pos)
                     if clicked_placeable and self.current_room.num != 0:
@@ -424,7 +429,6 @@ class Game:
             case State.BUILD:
                 mouse_pos_coord = Coord(self.current_room.num, (mouse_pos.x - self.build_mode.get_width() // 2, mouse_pos.y - self.build_mode.get_height() // 2))  # Center the mouse on the hologram
                 self.build_mode.show_hologram(self.win, mouse_pos_coord)  # Show the hologram for placing
-
                 self.build_mode.show_room_holograms(self.win, self.current_room)  # Show room holograms
             
             case State.DIALOG:
@@ -449,6 +453,7 @@ class Game:
             
             case State.INVENTORY:
                 self.inventory.draw(self.win, mouse_pos)
+                self.inventory.draw_floor_navigation_buttons(self.win, mouse_pos)
 
             case State.SHOP:
                 self.shop.draw(self.win, mouse_pos)

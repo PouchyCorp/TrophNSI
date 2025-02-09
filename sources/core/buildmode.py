@@ -3,12 +3,14 @@ from core.room import Room
 from utils.coord import Coord
 from pygame import Surface, BLEND_RGBA_ADD
 from typing import Optional
+from ui.button import Button
+from pygame import transform
+from ui.sprite import whiten, ARROW_LEFT, ARROW_RIGHT, QUIT_BUTTON
 
 class BuildMode():
     def __init__(self) -> None:
         self.selected_placeable : Optional[Placeable] = None
         self.ghost_rect = None
-        #self.in_build_mode : bool = False
     
     def show_room_holograms(self, win : Surface, room : Room):
         room_rects = [placeable.rect for placeable in room.placed]
@@ -67,7 +69,6 @@ class BuildMode():
     def place(self, room_num) -> Placeable:
         self.selected_placeable.move(Coord(room_num, self.ghost_rect.topleft))
         self.selected_placeable.placed = True
-        #print(self.selected_placeable)
         return self.selected_placeable
     
 class DestructionMode():

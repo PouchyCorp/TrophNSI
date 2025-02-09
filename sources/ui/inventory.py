@@ -1,7 +1,7 @@
 from objects.placeable import Placeable
 from utils.coord import Coord
 from pygame import Surface, transform, BLEND_RGB_MIN, font, draw, BLEND_RGB_ADD
-from ui.sprite import WINDOW, nine_slice_scaling, ARROW_LEFT, ARROW_RIGHT, whiten
+from ui.sprite import WINDOW, nine_slice_scaling, ARROW_LEFT, ARROW_RIGHT, whiten, QUIT_BUTTON
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
 from ui.button import Button
@@ -13,7 +13,7 @@ ITEMS_PER_PAGE = 8
 
 
 class Inventory:
-    def __init__(self, title: str = "Inventory",content : list[Placeable] = []) -> None:
+    def __init__(self, change_floor_func, quit_func, title: str = "Inventory", content : list[Placeable] = []) -> None:
         """Initializes the inventory with an optional title."""
         self.inv: list[Placeable] = content  # List of owned items
         self.displayed_objects: list[tuple[Placeable, Surface]] = []  # Rendered items on the current page
@@ -27,6 +27,17 @@ class Inventory:
 
         self.button_prev = Button((60,984), self.handle_navigation_left, whiten(ARROW_LEFT), ARROW_LEFT)
         self.button_next = Button((292,984), self.handle_navigation_right, whiten(ARROW_RIGHT), ARROW_RIGHT)
+
+        self.up_button = Button((10,10), change_floor_func, 
+                        whiten(transform.rotate(ARROW_RIGHT, 90)), 
+                        transform.rotate(ARROW_RIGHT, 90), [1])
+        self.down_button = Button((10,100), change_floor_func, 
+                            whiten(transform.rotate(ARROW_LEFT, 90)), 
+                            transform.rotate(ARROW_LEFT, 90), [-1])
+        
+        self.quit_button = Button((0,800), quit_func, 
+                            whiten(QUIT_BUTTON), 
+                            QUIT_BUTTON)
         
     def init(self):
         """Initializes the objects for rendering on the current page."""
@@ -135,6 +146,16 @@ class Inventory:
             if obj.id == item_id:
                 return obj
         return None
+
+    def draw_floor_navigation_buttons(self, win : Surface, mouse_pos : Coord):
+        self.up_button.draw(win, self.up_button.rect.collidepoint(mouse_pos.xy))
+        self.down_button.draw(win, self.down_button.rect.collidepoint(mouse_pos.xy))
+        self.quit_button.draw(win, self.quit_button.rect.collidepoint(mouse_pos.xy))
+
+    def handle_floor_navigation_buttons(self, event):
+        self.up_button.handle_event(event)
+        self.down_button.handle_event(event)
+        self.quit_button.handle_event(event)
 
     def __repr__(self):
         """Returns a string representation of the inventory."""
