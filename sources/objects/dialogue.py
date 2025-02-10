@@ -76,16 +76,16 @@ class Dialogue:
         self.bliting_list = []
         self.part_ind = 0
 
-class DialogueManagement():
-    def __init__(self, fichier):    #nécessite de donner le chemin exacte du fichier
-        self.fichier=fichier
+class DialogueManager():
+    def __init__(self):    #nécessite de donner le chemin exacte du fichier
         self.dialogues : list[Dialogue] = self.init()
+        self.special_dialogues = self.special_init()
         self.selected_dialogue : Dialogue = None
         self.bot_anim : Animation = None #idle anim of the robot clicked
         self.background = sprite.DIALBOX#sprite.nine_slice_scaling(sprite.WINDOW, (1300, 252), 12)
 
-    def init(self) -> list[list[str]]:
-        with open(self.fichier, encoding='utf8') as file:
+    def init(self) -> list[Dialogue]:
+        with open("data/dialogue.json", encoding='utf8') as file:
             json_string = file.read()
             dialogues = []
             loaded_dicts = json.loads(json_string)
@@ -94,11 +94,26 @@ class DialogueManagement():
                     dialogues.append(Dialogue(dialogue))
             return dialogues
     
+    def special_init(self) -> dict[str, Dialogue]:
+        with open("data/special_dialogue.json", encoding='utf8') as file:
+            json_string = file.read()
+            special_dialogues = {}
+            loaded_dict = json.loads(json_string)
+            for key in loaded_dict:
+                special_dialogues[key] = Dialogue(loaded_dict[key])
+            return special_dialogues
+    
     def random_dialogue(self):
         if self.selected_dialogue:
             self.selected_dialogue.reset()
 
         self.selected_dialogue = rand.choice(self.dialogues)
+
+    def special_dialogue(self, dialogue_name):
+        if self.selected_dialogue:
+            self.selected_dialogue.reset()
+        
+        self.selected_dialogue = self.special_dialogues[dialogue_name]
 
     def click_interaction(self):
         if self.selected_dialogue.is_on_last_part():
@@ -113,13 +128,15 @@ class DialogueManagement():
 
     def draw(self, screen : pg.Surface):
         
-        screen.blit(self.background, (300, 750)) 
+        screen.blit(self.background, (300+46*6, 750)) 
         for i, surf in enumerate(self.selected_dialogue.bliting_list):
             line_height = 812 + 27 * i
             screen.blit(surf,(650, line_height))
-        scaled_bot_surface = pg.transform.scale2x(self.bot_anim.get_frame())
-        scaled_bot_rect = scaled_bot_surface.get_rect(bottomright=(504, 1050))
-        screen.blit(scaled_bot_surface, scaled_bot_rect)
+        
+        if self.bot_anim:
+            scaled_bot_surface = pg.transform.scale2x(self.bot_anim.get_frame())
+            scaled_bot_rect = scaled_bot_surface.get_rect(bottomright=(504, 1050))
+            screen.blit(scaled_bot_surface, scaled_bot_rect)
 
 
 

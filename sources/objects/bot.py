@@ -169,7 +169,8 @@ class Hivemind:
             spritesheet_args = self.get_random_bot_spritesheet()
             bot_sprite_height = spritesheet_args[0].img_size[0]
             self.inline_bots[0] = Bot(Coord(1, (self.line_start_x, 958 - bot_sprite_height + randint(-50, 50))),
-                                      gold_amount, spritesheet_args[0], spritesheet_args[1], spritesheet_args[2])
+                                      gold_amount, spritesheet_args[0], spritesheet_args[1], spritesheet_args[2],
+                                      randint(1, 3))
 
     
     def free_last_bot(self, current_room):
@@ -209,7 +210,6 @@ class Hivemind:
         for bot in self.liberated_bots:
             bot.handle_click(mouse_pos, launch_dialogue_func)
             
-
     def order_inline_bots(self):
         #print(self.bots)
         for i in range(len(self.inline_bots)-1):
@@ -287,7 +287,7 @@ class Hivemind:
 class Bot:
     """Represents an individual bot with unique attributes and behavior."""
 
-    def __init__(self, coord: Coord, gold_amount: int, anim_spritesheet: Spritesheet, spritesheet_lengths, particle_spawners: dict) -> None:
+    def __init__(self, coord: Coord, gold_amount: int, anim_spritesheet: Spritesheet, spritesheet_lengths, particle_spawners: dict, speed) -> None:
         """
         Initialize the Bot instance.
 
@@ -300,13 +300,14 @@ class Bot:
         """
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
-        self.__target_coord = self.coord.copy()
+        self._target_coord = self.coord.copy()
         self.visited_placeable_id: list[int] = []
         self.is_inline = True
         self.is_leaving = False
         self.state = BotStates.IDLE
-        self.__move_cntr = 0
+        self._move_cntr = 0
         self.move_dir = "RIGHT"
+        self.speed = speed
 
         self.anim_walk_right = Animation(anim_spritesheet, 0, spritesheet_lengths[0], 2)
         self.anim_walk_left = Animation(anim_spritesheet, 1, spritesheet_lengths[1], 2)
@@ -327,13 +328,13 @@ class Bot:
 
     @property
     def target_coord(self):
-        self.__target_coord.x -= self.__target_coord.x % 6
-        return self.__target_coord
+        self._target_coord.x -= self._target_coord.x % 6
+        return self._target_coord
 
     @target_coord.setter
     def target_coord(self, value: Coord):
-        self.__target_coord = value.copy()
-        self.__target_coord.x -= self.__target_coord.x % 6
+        self._target_coord = value.copy()
+        self._target_coord.x -= self._target_coord.x % 6
 
     def logic(self, rooms: list[Room], TIMER: TimerManager):
         """
@@ -444,16 +445,16 @@ class Bot:
             else:
                 target_buffer.x = self.door_x
 
-        if self.__move_cntr >= 1:
+        if self._move_cntr >= self.speed:
             if self.coord.x < target_buffer.x:
                 self.move_dir = "RIGHT"
                 self.coord.x += 6
             elif self.coord.x > target_buffer.x:
                 self.move_dir = "LEFT"
                 self.coord.x -= 6
-            self.__move_cntr = 0
+            self._move_cntr = 0
         else:
-            self.__move_cntr += 1
+            self._move_cntr += 1
 
     def particle_logic(self):
         for particle_data in self.particle_spawners.values():

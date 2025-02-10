@@ -49,7 +49,7 @@ from ui.infopopup import InfoPopup
 from  utils.room_config import R1, ROOMS, Room, PARTICLE_SPAWNERS
 from utils.timermanager import TimerManager
 import ui.sprite as sprite
-from objects.dialogue import DialogueManagement
+from objects.dialogue import DialogueManager
 from math import pi
 from core.unlockmanager import UnlockManager
 from objects.placeable import Placeable
@@ -59,7 +59,7 @@ from objects.pattern_inv import Pattern
 from objects.canva import Canva
 from ui.button import Button
 from core.database import PgDataBase
-from objects.particlesspawner import ParticleSpawner, ConfettiSpawner
+from objects.particlesspawner import ParticleSpawner
 
 class Game:
     def __init__(self, win : pg.Surface, config : dict, inventory, shop, gold, unlock_manager, transparency_win):
@@ -67,7 +67,7 @@ class Game:
         self.win : pg.Surface = win
         self.timer : TimerManager = TimerManager()
 
-        #loading backgound while the sounds and sprites load
+        # Loading backgound while the sounds and sprites load.
         self.win.blit(pg.image.load('data/loading_bg.png'),(0,0))
         pg.display.flip()
         self.transparency_win = transparency_win
@@ -85,8 +85,8 @@ class Game:
         self.build_mode : BuildMode= BuildMode()
         self.destruction_mode : DestructionMode= DestructionMode()
         self.bot_distributor : BotDistributor = BotDistributor(self.timer, self.hivemind, self)
-        self.dialogue_manager : DialogueManagement = DialogueManagement('data/dialogue.json')
-        self.current_room : Room = R1 #starter room always in floor 1
+        self.dialogue_manager : DialogueManager = DialogueManager()
+        self.current_room : Room = R1 # Starter room always in floor 1.
         self.incr_fondu = 0
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
@@ -97,7 +97,7 @@ class Game:
 
         self.particle_spawners : dict[int,list] = PARTICLE_SPAWNERS
 
-        #init unlocks effects
+        # Initialize unlocks effects.
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
             self.timer.create_timer(3, self.accept_bot, True)
 
@@ -125,13 +125,19 @@ class Game:
                 x = 100
         return inv
 
-    def launch_dialogue(self, bot_anim):
+    def launch_random_dialogue(self, bot_anim):
         """ Function to initiate dialogue easily passed to other functions"""
         self.gui_state = State.DIALOG
         self.temp_bg = pg.transform.grayscale(self.win)
         self.dialogue_manager.random_dialogue()  # Trigger a random dialogue
         self.dialogue_manager.bot_anim = bot_anim.copy()  # Copy the bot's surface for display
     
+    def launch_special_dialogue(self, dialogue_name):
+        self.gui_state = State.DIALOG
+        self.temp_bg = pg.transform.grayscale(self.win)
+        self.dialogue_manager.special_dialogue(dialogue_name)  # Trigger a random dialogue.
+        self.dialogue_manager.bot_anim = None
+
     def pause(self):
         self.gui_state = State.PAUSED
         self.temp_bg = pg.transform.grayscale(self.win)
@@ -291,6 +297,11 @@ class Game:
             self.shop.init()
 
     def handle_inventory_interaction(self):
+        if not self.unlock_manager.is_feature_discovered("inventory"):
+            self.unlock_manager.discovered_features.append("inventory")
+            self.launch_special_dialogue("inventory")
+            return
+
         if self.gui_state is not State.INVENTORY:
             self.gui_state = State.INVENTORY
             self.inventory.init()
@@ -392,7 +403,7 @@ class Game:
             if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y) and self.current_room.num == 0:
                 self.chip_placement(pattern)
 
-        self.hivemind.handle_bot_click(mouse_pos, self.launch_dialogue)
+        self.hivemind.handle_bot_click(mouse_pos, self.launch_random_dialogue)
 
     def handle_dialog_mode(self):
         if self.dialogue_manager.click_interaction():
