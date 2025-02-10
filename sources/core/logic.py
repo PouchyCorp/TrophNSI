@@ -169,7 +169,15 @@ class Game:
             else:
                 popup.draw(self.win)  # Render the popup on the window
                 popup.lifetime -= 1  # Decrement popup's lifetime
-    
+
+
+#     _______    _________   _____________
+#    / ____/ |  / / ____/ | / /_  __/ ___/
+#   / __/  | | / / __/ /  |/ / / /  \__ \ 
+#  / /___  | |/ / /___/ /|  / / /  ___/ / 
+# /_____/  |___/_____/_/ |_/ /_/  /____/                
+
+
     def keydown_handler(self, event : pg.event.Event):
         if self.config['gameplay']['cheats']:
             self.handle_cheat_keys(event.key)
@@ -405,7 +413,16 @@ class Game:
             self.gui_state = State.PAINTING
         else:
             self.popups.append(InfoPopup("you can't place a chip here"))
-            
+
+
+#                    __      __     
+#   __  ______  ____/ /___ _/ /____ 
+#  / / / / __ \/ __  / __ `/ __/ _ \
+# / /_/ / /_/ / /_/ / /_/ / /_/  __/
+# \__,_/ .___/\__,_/\__,_/\__/\___/ 
+#     /_/                         
+
+
     def update(self, mouse_pos):
         self.update_timers()
         self.update_particles()
@@ -445,6 +462,13 @@ class Game:
         if self.confirmation_popups:
             self.gui_state = State.CONFIRMATION
 
+
+#     ____                     
+#    / __ \_________ __      __
+#   / / / / ___/ __ `/ | /| / /
+#  / /_/ / /  / /_/ /| |/ |/ / 
+# /_____/_/   \__,_/ |__/|__/  
+
     def draw(self, mouse_pos: Coord):
         self.draw_background()
         self.draw_current_room()
@@ -482,62 +506,54 @@ class Game:
             case State.INTERACTION:
                 if self.spectating_placeable.open and self.current_room.num == 5:
                     self.spectating_placeable.user_list.draw(self.win)
+
             case State.BUILD:
-                self.draw_build_mode(mouse_pos)
+                mouse_pos_coord = Coord(self.current_room.num, (mouse_pos.x - self.build_mode.get_width() // 2, mouse_pos.y - self.build_mode.get_height() // 2))
+                self.build_mode.show_hologram(self.win, mouse_pos_coord)
+                self.build_mode.show_room_holograms(self.win, self.current_room)
+
             case State.DIALOG:
-                self.draw_dialog_mode()
+                self.win.blit(self.temp_bg, (0, 0))
+                self.paused = True
+                self.dialogue_manager.update()
+                self.dialogue_manager.draw(self.win)
+
             case State.PAUSED:
-                self.draw_paused_mode(mouse_pos)
+                self.win.blit(self.temp_bg, (0, 0))
+                self.quit_button.draw(self.win, self.quit_button.rect.collidepoint(mouse_pos.xy))
+
             case State.TRANSITION:
-                self.draw_transition_mode()
+                if self.incr_fondu <= pi:
+                    self.incr_fondu = sprite.fondu(self.win, self.incr_fondu, 0.0125)
+                else:
+                    self.gui_state = State.INTERACTION
+
             case State.CONFIRMATION:
-                self.draw_confirmation_mode(mouse_pos)
+                if self.confirmation_popups:
+                    self.confirmation_popups[-1].draw(mouse_pos)
+
             case State.INVENTORY:
-                self.draw_inventory_mode(mouse_pos)
+                self.inventory.draw(self.win, mouse_pos)
+                self.inventory.draw_floor_navigation_buttons(self.win, mouse_pos)
+
             case State.SHOP:
-                self.draw_shop_mode(mouse_pos)
+                self.shop.draw(self.win, mouse_pos)
+
             case State.PAINTING:
-                self.draw_painting_mode(mouse_pos)
-
-    def draw_build_mode(self, mouse_pos):
-        mouse_pos_coord = Coord(self.current_room.num, (mouse_pos.x - self.build_mode.get_width() // 2, mouse_pos.y - self.build_mode.get_height() // 2))
-        self.build_mode.show_hologram(self.win, mouse_pos_coord)
-        self.build_mode.show_room_holograms(self.win, self.current_room)
-
-    def draw_dialog_mode(self):
-        self.win.blit(self.temp_bg, (0, 0))
-        self.paused = True
-        self.dialogue_manager.update()
-        self.dialogue_manager.draw(self.win)
-
-    def draw_paused_mode(self, mouse_pos):
-        self.win.blit(self.temp_bg, (0, 0))
-        self.quit_button.draw(self.win, self.quit_button.rect.collidepoint(mouse_pos.xy))
-
-    def draw_transition_mode(self):
-        if self.incr_fondu <= pi:
-            self.incr_fondu = sprite.fondu(self.win, self.incr_fondu, 0.0125)
-        else:
-            self.gui_state = State.INTERACTION
-
-    def draw_confirmation_mode(self, mouse_pos):
-        if self.confirmation_popups:
-            self.confirmation_popups[-1].draw(mouse_pos)
-
-    def draw_inventory_mode(self, mouse_pos):
-        self.inventory.draw(self.win, mouse_pos)
-        self.inventory.draw_floor_navigation_buttons(self.win, mouse_pos)
-
-    def draw_shop_mode(self, mouse_pos):
-        self.shop.draw(self.win, mouse_pos)
-
-    def draw_painting_mode(self, mouse_pos):
-        self.canva.paint(mouse_pos, self.selected_pattern, (0, 0, 0))
-        self.gui_state = State.INTERACTION
+                self.canva.paint(mouse_pos, self.selected_pattern, (0, 0, 0))
+                self.gui_state = State.INTERACTION
 
     def draw_debug_info(self, mouse_pos):
         self.win.blit(InfoPopup(
             f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.money} / th_gold : {self.bot_distributor.theorical_gold} / beauty : {self.beauty}').text_surf, (0, 0))
+
+
+#     __  ______    _____   __   __    ____  ____  ____ 
+#    /  |/  /   |  /  _/ | / /  / /   / __ \/ __ \/ __ \
+#   / /|_/ / /| |  / //  |/ /  / /   / / / / / / / /_/ /
+#  / /  / / ___ |_/ // /|  /  / /___/ /_/ / /_/ / ____/ 
+# /_/  /_/_/  |_/___/_/ |_/  /_____/\____/\____/_/      
+
 
     def get_save_dict(self):
         return {'gold': self.money, 'inventory': self.inventory.inv, "shop": self.shop.inv, "unlocks": self.unlock_manager, "beauty" : self.beauty}
