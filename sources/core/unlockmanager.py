@@ -31,7 +31,7 @@ class UnlockManager:
         self.discovered_features = []
         self.discovered_floors = []
         self.floor_price = {"2": 10, "3": 100, "4": 1000, "5": 10000}
-        self.feature_price = {"other_feature": 500, "Auto Cachier": 5000}
+        self.feature_price = {"Auto Cachier": 5000}
 
     def is_floor_unlocked(self, num: int):
         if str(num) in self.unlocked_floors:
@@ -86,7 +86,10 @@ class UnlockManager:
 
             game.popups.append(InfoPopup(f"Vous avez débloqué {feature_name} !"))
             game.sound_manager.achieve.play()
-            game.particle_spawners[game.current_floor.num].append(ConfettiSpawner(Coord(1,(0,0)),500))
+            game.particle_spawners[game.current_room.num].append(ConfettiSpawner(Coord(1,(0,0)),500))
+
+            self.discovered_features.append(feature_name)
+            game.timer.create_timer(1, game.launch_special_dialogue, arguments = [feature_name])
 
         else:
             game.popups.append(

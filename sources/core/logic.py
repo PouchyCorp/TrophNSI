@@ -292,6 +292,11 @@ class Game:
             self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self)
 
     def handle_shop_interaction(self):
+        if not self.unlock_manager.is_feature_discovered("shop"):
+            self.unlock_manager.discovered_features.append("shop")
+            self.launch_special_dialogue("shop")
+            return
+        
         if self.gui_state is not State.SHOP:
             self.gui_state = State.SHOP
             self.shop.init()
@@ -313,6 +318,11 @@ class Game:
             self.popups.append(InfoPopup("Vous avez déjà débloqué l'Auto Cachier"))
 
     def handle_spectator_interaction(self, placeable):
+        if not self.unlock_manager.is_feature_discovered("spectator"):
+            self.unlock_manager.discovered_features.append("spectator")
+            self.launch_special_dialogue("spectator")
+            return
+        
         placeable.interaction()
         if placeable.open:
             self.popups.append(InfoPopup("Cliquez sur les fenetres pour visiter le musée d'un autre joueur !"))

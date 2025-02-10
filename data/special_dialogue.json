@@ -1,9 +1,9 @@
 {
-    "destruction" : ["destruction"],
-    "inventory" : ["inventory"],
-    "shop" : ["shop"],
-    "painting" : ["painting"],
-    "color" : ["color"],
-    "cachier" : ["cachier"],
-    "spectator" : ["spectator"]
+    "destruction" : ["tuto destruction"],
+    "inventory" : ["tuto inventory"],
+    "shop" : ["tuto shop"],
+    "painting" : ["tuto painting"],
+    "color" : ["tuto color"],
+    "Auto Cachier" : ["tuto cachier"],
+    "spectator" : ["tuto spectator"]
 }
