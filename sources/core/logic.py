@@ -405,14 +405,19 @@ class Game:
             self.gui_state = State.PAINTING
         else:
             self.popups.append(InfoPopup("you can't place a chip here"))
-
+            
     def update(self, mouse_pos):
-        
-        # Update timers
+        self.update_timers()
+        self.update_particles()
+        self.update_current_room(mouse_pos)
+        self.update_bots()
+        self.update_gui_state()
+
+    def update_timers(self):
         self.timer.update()
 
-        #particles
-        spawners : list[ParticleSpawner]= self.particle_spawners.get(self.current_room.num, None)
+    def update_particles(self):
+        spawners: list[ParticleSpawner] = self.particle_spawners.get(self.current_room.num, None)
         if spawners is not None:
             for spawner in spawners:
                 spawner.spawn()
@@ -420,99 +425,119 @@ class Game:
                 if spawner.finished:
                     spawners.remove(spawner)
 
+    def update_current_room(self, mouse_pos):
         self.current_room.update_sprite()
-        # Iterate through the placed objects in the current room
         for placeable in self.current_room.placed:
-            # If the mouse is hovering over it
             if placeable.rect.collidepoint(mouse_pos.xy) and self.gui_state in [State.DESTRUCTION, State.INTERACTION]:
-                color = (170,170,230) if self.gui_state != State.DESTRUCTION else (255, 0, 0)  # Change color based on state
-                placeable.update_sprite(True, color)  # Update sprite to indicate hover
-            # If not hovered
+                color = (170, 170, 230) if self.gui_state != State.DESTRUCTION else (255, 0, 0)
+                placeable.update_sprite(True, color)
             else:
-                placeable.update_sprite(False)  # Reset sprite\
+                placeable.update_sprite(False)
 
+    def update_bots(self):
+        self.hivemind.order_inline_bots()
+        self.hivemind.update(ROOMS, self.timer)
 
-        # Manage bot behavior
-        self.hivemind.order_inline_bots()  # Arrange bots in a line
-        self.hivemind.update(ROOMS, self.timer)  # Update bot AI
-
-        match self.gui_state:      
+    def update_gui_state(self):
+        match self.gui_state:
             case State.INTERACTION:
-                self.hivemind.create_last_bot_clickable()  # Make the last bot clickable
-        
+                self.hivemind.create_last_bot_clickable()
         if self.confirmation_popups:
             self.gui_state = State.CONFIRMATION
 
+    def draw(self, mouse_pos: Coord):
+        self.draw_background()
+        self.draw_current_room()
+        self.draw_bots(mouse_pos)
+        self.draw_patterns()
+        self.draw_particles()
+        self.draw_gui(mouse_pos)
+        self.draw_debug_info(mouse_pos)
+        self.render_popups()
 
-    def draw(self, mouse_pos : Coord):
-        self.win.blit(self.current_room.bg_surf, (0, 0))  # Draw the background of the current room
-        self.transparency_win.fill((0,0,0,0))
-        # Draw all placed objects in the current room
+    def draw_background(self):
+        self.win.blit(self.current_room.bg_surf, (0, 0))
+        self.transparency_win.fill((0, 0, 0, 0))
+
+    def draw_current_room(self):
         self.current_room.draw_placed(self.win)
 
-        self.hivemind.draw(self.win, self.current_room.num, mouse_pos, self.transparency_win)  # Draw bots in the current room
+    def draw_bots(self, mouse_pos):
+        self.hivemind.draw(self.win, self.current_room.num, mouse_pos, self.transparency_win)
 
+    def draw_patterns(self):
         if self.current_room.num == 0:
             for pattern in self.pattern_inv:
-                self.win.blit(pattern.button,(pattern.rect.x,pattern.rect.y))
+                self.win.blit(pattern.button, (pattern.rect.x, pattern.rect.y))
                 self.win.blit(self.canva.surf, self.canva.coord.xy)
-          # Draw canva and buttons
-        
-        #particles
-        spawners : list[ParticleSpawner]= self.particle_spawners.get(self.current_room.num, None)
+
+    def draw_particles(self):
+        spawners: list[ParticleSpawner] = self.particle_spawners.get(self.current_room.num, None)
         if spawners is not None:
             for spawner in spawners:
                 spawner.draw_all(self.transparency_win)
 
+    def draw_gui(self, mouse_pos):
         match self.gui_state:
             case State.INTERACTION:
                 if self.spectating_placeable.open and self.current_room.num == 5:
                     self.spectating_placeable.user_list.draw(self.win)
-
             case State.BUILD:
-                mouse_pos_coord = Coord(self.current_room.num, (mouse_pos.x - self.build_mode.get_width() // 2, mouse_pos.y - self.build_mode.get_height() // 2))  # Center the mouse on the hologram
-                self.build_mode.show_hologram(self.win, mouse_pos_coord)  # Show the hologram for placing
-                self.build_mode.show_room_holograms(self.win, self.current_room)  # Show room holograms
-            
+                self.draw_build_mode(mouse_pos)
             case State.DIALOG:
-                self.win.blit(self.temp_bg, (0,0))
-                self.paused = True
-                self.dialogue_manager.update() #update the dialogue manager and it's subclasses
-                self.dialogue_manager.draw(self.win)  
-
+                self.draw_dialog_mode()
             case State.PAUSED:
-                self.win.blit(self.temp_bg, (0,0))
-                self.quit_button.draw(self.win, self.quit_button.rect.collidepoint(mouse_pos.xy))
-
+                self.draw_paused_mode(mouse_pos)
             case State.TRANSITION:
-                if self.incr_fondu <= pi:
-                    self.incr_fondu = sprite.fondu(self.win, self.incr_fondu, 0.0125)  # Manage transition effect
-                else:
-                    self.gui_state = State.INTERACTION  # Return to interaction state after transition
-            
+                self.draw_transition_mode()
             case State.CONFIRMATION:
-                if self.confirmation_popups:
-                    self.confirmation_popups[-1].draw(mouse_pos)
-            
+                self.draw_confirmation_mode(mouse_pos)
             case State.INVENTORY:
-                self.inventory.draw(self.win, mouse_pos)
-                self.inventory.draw_floor_navigation_buttons(self.win, mouse_pos)
-
+                self.draw_inventory_mode(mouse_pos)
             case State.SHOP:
-                self.shop.draw(self.win, mouse_pos)
-
+                self.draw_shop_mode(mouse_pos)
             case State.PAINTING:
-                self.canva.paint(mouse_pos,self.selected_pattern,(0,0,0))
-                self.gui_state = State.INTERACTION
+                self.draw_painting_mode(mouse_pos)
 
-        self.win.blit(self.transparency_win, (0,0))
+    def draw_build_mode(self, mouse_pos):
+        mouse_pos_coord = Coord(self.current_room.num, (mouse_pos.x - self.build_mode.get_width() // 2, mouse_pos.y - self.build_mode.get_height() // 2))
+        self.build_mode.show_hologram(self.win, mouse_pos_coord)
+        self.build_mode.show_room_holograms(self.win, self.current_room)
 
-        # Debug stats
+    def draw_dialog_mode(self):
+        self.win.blit(self.temp_bg, (0, 0))
+        self.paused = True
+        self.dialogue_manager.update()
+        self.dialogue_manager.draw(self.win)
+
+    def draw_paused_mode(self, mouse_pos):
+        self.win.blit(self.temp_bg, (0, 0))
+        self.quit_button.draw(self.win, self.quit_button.rect.collidepoint(mouse_pos.xy))
+
+    def draw_transition_mode(self):
+        if self.incr_fondu <= pi:
+            self.incr_fondu = sprite.fondu(self.win, self.incr_fondu, 0.0125)
+        else:
+            self.gui_state = State.INTERACTION
+
+    def draw_confirmation_mode(self, mouse_pos):
+        if self.confirmation_popups:
+            self.confirmation_popups[-1].draw(mouse_pos)
+
+    def draw_inventory_mode(self, mouse_pos):
+        self.inventory.draw(self.win, mouse_pos)
+        self.inventory.draw_floor_navigation_buttons(self.win, mouse_pos)
+
+    def draw_shop_mode(self, mouse_pos):
+        self.shop.draw(self.win, mouse_pos)
+
+    def draw_painting_mode(self, mouse_pos):
+        self.canva.paint(mouse_pos, self.selected_pattern, (0, 0, 0))
+        self.gui_state = State.INTERACTION
+
+    def draw_debug_info(self, mouse_pos):
         self.win.blit(InfoPopup(
             f'gui state : {self.gui_state} / fps : {round(self.clock.get_fps())} / mouse : {mouse_pos.xy} / $ : {self.money} / th_gold : {self.bot_distributor.theorical_gold} / beauty : {self.beauty}').text_surf, (0, 0))
-        
-        # Render popups after all other drawings
-        self.render_popups()
 
     def get_save_dict(self):
         return {'gold': self.money, 'inventory': self.inventory.inv, "shop": self.shop.inv, "unlocks": self.unlock_manager, "beauty" : self.beauty}

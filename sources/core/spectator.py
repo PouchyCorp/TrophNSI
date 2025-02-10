@@ -51,9 +51,6 @@ class Spectator:
 
         self.popups : list[InfoPopup] = []
 
-        # Initialize inventory and shop fromm save
-        inventory = Inventory("Inventory", self.game_save_dict['inventory'])
-
         self.up_button = Button((10,10), self.go_floor_up, 
                         whiten(pg.transform.rotate(ARROW_RIGHT, 90)), 
                         pg.transform.rotate(ARROW_RIGHT, 90))
@@ -66,7 +63,7 @@ class Spectator:
                             QUIT_BUTTON)
 
         # Places placeables in room from inventory
-        for placeable in inventory.inv:
+        for placeable in self.game_save_dict['inventory']:
             if placeable.placed:
                 self.rooms[placeable.coord.room_num].placed.append(placeable)
     
