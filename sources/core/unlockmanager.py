@@ -28,6 +28,8 @@ class UnlockManager:
         """class to manage all game unlocks, it needs to be fully picklable"""
         self.unlocked_floors = ["0", "1"]
         self.unlocked_features = []
+        self.discovered_features = []
+        self.discovered_floors = []
         self.floor_price = {"2": 10, "3": 100, "4": 1000, "5": 10000}
         self.feature_price = {"other_feature": 500, "Auto Cachier": 5000}
 
@@ -38,6 +40,16 @@ class UnlockManager:
 
     def is_feature_unlocked(self, feature_name):
         if feature_name in self.unlocked_features:
+            return True
+        return False
+    
+    def is_floor_discovered(self, num: int):
+        if str(num) in self.discovered_floors:
+            return True
+        return False
+
+    def is_feature_discovered(self, feature_name):
+        if feature_name in self.discovered_features:
             return True
         return False
 

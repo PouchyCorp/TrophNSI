@@ -46,7 +46,7 @@ from core.buildmode import BuildMode, DestructionMode
 from utils.coord import Coord
 from ui.inventory import Inventory, Shop
 from ui.infopopup import InfoPopup
-from  utils.room_config import R1, ROOMS, Room
+from  utils.room_config import R1, ROOMS, Room, PARTICLE_SPAWNERS
 from utils.timermanager import TimerManager
 import ui.sprite as sprite
 from objects.dialogue import DialogueManagement
@@ -95,12 +95,7 @@ class Game:
         self.canva : Canva = Canva()
         self.paused = False
 
-        self.particle_spawners : dict[int:list] = { 0 : [],
-                                                    1 : [ConfettiSpawner(Coord(1,(0,0)),500)],
-                                                    2 : [],
-                                                    3 : [],
-                                                    4 : [],
-                                                    5 : []}
+        self.particle_spawners : dict[int,list] = PARTICLE_SPAWNERS
 
         #init unlocks effects
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
@@ -131,7 +126,7 @@ class Game:
         return inv
 
     def launch_dialogue(self, bot_anim):
-        """# Function to initiate dialogue easily passed to other functions"""
+        """ Function to initiate dialogue easily passed to other functions"""
         self.gui_state = State.DIALOG
         self.temp_bg = pg.transform.grayscale(self.win)
         self.dialogue_manager.random_dialogue()  # Trigger a random dialogue
@@ -150,14 +145,14 @@ class Game:
         self.gui_state = State.INTERACTION
 
     def process_total_beauty(self):
-        """sums the overall beauty score to be used by the Bot_Manager"""
+        """ Sums the overall beauty score to be used by the Bot_Manager"""
         total = 0
         for room in ROOMS:
             total += room.get_beauty_in_room()
         return total
     
     def accept_bot(self):
-        """when liberating a bot, add the proper money amount given by hivemind.free_last_bot (which updates the bots logic)"""
+        """ When liberating a bot, add the proper money amount given by hivemind.free_last_bot (which updates the bots logic)"""
         accepted_bot_money_amount = self.hivemind.free_last_bot(R1)
         if accepted_bot_money_amount: # Attempt to free the last bot and checks output
             self.money += accepted_bot_money_amount  # Increment currency
@@ -176,56 +171,68 @@ class Game:
                 popup.lifetime -= 1  # Decrement popup's lifetime
     
     def keydown_handler(self, event : pg.event.Event):
-        match event.key:
-            case pg.K_SPACE:  # Spacebar to toggle between inventory and interaction
-                if self.gui_state is State.INTERACTION:
-                    self.gui_state = State.INVENTORY  # Open inventory
-                    self.inventory.init()
-                elif self.gui_state is State.INVENTORY:
-                    self.gui_state = State.INTERACTION  # Return to interaction
-
-            case pg.K_BACKSPACE:  # Backspace to switch to destruction mode
-                if self.gui_state is State.INTERACTION:
-                    self.gui_state = State.DESTRUCTION
-                else:
-                    self.gui_state = State.INTERACTION  # Return to interaction
-            
-            case pg.K_ESCAPE:
-                if self.gui_state not in [State.TRANSITION, State.CONFIRMATION, State.INTERACTION]:
-                    self.gui_state = State.INTERACTION
-                elif self.gui_state is State.INTERACTION:
-                    self.pause()
-
-            case pg.K_i:
-                if self.current_room.num == 0 and self.gui_state == State.INTERACTION:
-                    if self.canva.pattern_num == 0:
-                        self.popups.append(InfoPopup("you can't save a blank canva"))
-                    else:
-                        self.saved_canva = self.canva.save(self.inventory.inv)
-                        self.canva.pattern_num = 0
-        
-        #cheater macros
         if self.config['gameplay']['cheats']:
-            match event.key:
-                case pg.K_UP:  # Move up a floor
-                    self.change_floor(1)
+            self.handle_cheat_keys(event.key)
+        self.handle_regular_keys(event.key)
 
-                case pg.K_DOWN:  # Move down a floor
-                    self.change_floor(-1)
+    def handle_regular_keys(self, key):
+        match key:
+            case pg.K_SPACE:
+                self.toggle_inventory()
+            case pg.K_BACKSPACE:
+                self.toggle_destruction_mode()
+            case pg.K_ESCAPE:
+                self.handle_escape_key()
+            case pg.K_i:
+                self.save_canva()
 
-                case pg.K_b:  # Add a bot
-                    self.hivemind.add_bot()
+    def handle_cheat_keys(self, key):
+        match key:
+            case pg.K_UP:
+                self.change_floor(1)
+            case pg.K_DOWN:
+                self.change_floor(-1)
+            case pg.K_b:
+                self.hivemind.add_bot()
+            case pg.K_n:
+                self.hivemind.free_last_bot(self.current_room)
+            case pg.K_s:
+                self.toggle_shop()
 
-                case pg.K_n:  # Free the last bot in the current room
-                    self.hivemind.free_last_bot(self.current_room)
+    def toggle_inventory(self):
+        if self.gui_state is State.INTERACTION:
+            self.gui_state = State.INVENTORY
+            self.inventory.init()
+        elif self.gui_state is State.INVENTORY:
+            self.gui_state = State.INTERACTION
 
-                case pg.K_s:
-                    if self.gui_state is State.INTERACTION:
-                        self.gui_state = State.SHOP  # Open shop
-                        self.sound_manager.shop.play()
-                        self.shop.init()
-                    elif self.gui_state is State.SHOP:
-                        self.gui_state = State.INTERACTION  # Return to interaction
+    def toggle_destruction_mode(self):
+        if self.gui_state is State.INTERACTION:
+            self.gui_state = State.DESTRUCTION
+        else:
+            self.gui_state = State.INTERACTION
+
+    def handle_escape_key(self):
+        if self.gui_state not in [State.TRANSITION, State.CONFIRMATION, State.INTERACTION]:
+            self.gui_state = State.INTERACTION
+        elif self.gui_state is State.INTERACTION:
+            self.pause()
+
+    def save_canva(self):
+        if self.current_room.num == 0 and self.gui_state == State.INTERACTION:
+            if self.canva.pattern_num == 0:
+                self.popups.append(InfoPopup("you can't save a blank canva"))
+            else:
+                self.saved_canva = self.canva.save(self.inventory.inv)
+                self.canva.pattern_num = 0
+
+    def toggle_shop(self):
+        if self.gui_state is State.INTERACTION:
+            self.gui_state = State.SHOP
+            self.sound_manager.shop.play()
+            self.shop.init()
+        elif self.gui_state is State.SHOP:
+            self.gui_state = State.INTERACTION
 
     def chip_placement(self,pattern : Pattern):
         self.gui_state = State.PLACING_PATTERN
@@ -233,56 +240,63 @@ class Game:
 
     def placeable_interaction_handler(self, placeable : Placeable):
         match type(placeable):
-            case subplaceable.DoorDown:  # Handle interaction with DoorDown type
-                if self.current_room.num == 0:
-                    self.popups.append(InfoPopup("you can't go further down"))  # Add error popup if matching type fails
-                elif self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
-                    self.timer.create_timer(0.75, self.change_floor, arguments=[-1])  # Create a timer to move down
-                    self.sound_manager.down.play()
-
-                    self.launch_transition()  # Start transition
-                    placeable.interaction(self.timer)  # Trigger interaction
-                else:
-                    self.unlock_manager.try_to_unlock_floor(self.current_room.num-1, self)
-                
-            case subplaceable.DoorUp:  # Handle interaction with DoorUp type
-                if self.unlock_manager.is_floor_unlocked(self.current_room.num+1):
-                    self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Create a timer to move up
-                    self.sound_manager.up.play()
-
-                    self.launch_transition()  # Start transition
-                    placeable.interaction(self.timer)  # Trigger interaction
-                else:
-                    self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self)
-
-            case subplaceable.BotPlaceable:  # Handle interaction with BotPlaceable type
+            case subplaceable.DoorDown:
+                self.handle_door_down_interaction(placeable)
+            case subplaceable.DoorUp:
+                self.handle_door_up_interaction(placeable)
+            case subplaceable.BotPlaceable:
                 self.accept_bot()
-                    
             case subplaceable.ShopPlaceable:
-                if self.gui_state is not State.SHOP:
-                    self.gui_state = State.SHOP
-                    self.shop.init()
-
+                self.handle_shop_interaction()
             case subplaceable.InvPlaceable:
-                if self.gui_state is not State.INVENTORY:
-                    self.gui_state = State.INVENTORY
-                    self.inventory.init()
-            
+                self.handle_inventory_interaction()
             case subplaceable.AutoCachierPlaceable:
-                if not self.unlock_manager.is_feature_unlocked("auto_cachier"):
-                    self.unlock_manager.try_to_unlock_feature("Auto Cachier", self)
-                else:
-                    self.popups.append(
-                    InfoPopup("Vous avez déjà débloqué l'Auto Cachier"))
-
+                self.handle_auto_cachier_interaction()
             case subplaceable.SpectatorPlaceable:
-                placeable.interaction()
-                if placeable.open:
-                    self.popups.append(
-                        InfoPopup("Cliquez sur les fenetres pour visiter le musée d'un autre joueur !"))
+                self.handle_spectator_interaction(placeable)
             case _:
-                self.popups.append(
-                    InfoPopup('bip boup erreur erreur'))  # Add error popup if matching type fails
+                self.popups.append(InfoPopup('bip boup erreur erreur'))
+
+    def handle_door_down_interaction(self, placeable):
+        if self.current_room.num == 0:
+            self.popups.append(InfoPopup("you can't go further down"))
+        elif self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
+            self.timer.create_timer(0.75, self.change_floor, arguments=[-1])
+            self.sound_manager.down.play()
+            self.launch_transition()
+            placeable.interaction(self.timer)
+        else:
+            self.unlock_manager.try_to_unlock_floor(self.current_room.num-1, self)
+
+    def handle_door_up_interaction(self, placeable):
+        if self.unlock_manager.is_floor_unlocked(self.current_room.num+1):
+            self.timer.create_timer(0.75, self.change_floor, arguments=[1])
+            self.sound_manager.up.play()
+            self.launch_transition()
+            placeable.interaction(self.timer)
+        else:
+            self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self)
+
+    def handle_shop_interaction(self):
+        if self.gui_state is not State.SHOP:
+            self.gui_state = State.SHOP
+            self.shop.init()
+
+    def handle_inventory_interaction(self):
+        if self.gui_state is not State.INVENTORY:
+            self.gui_state = State.INVENTORY
+            self.inventory.init()
+
+    def handle_auto_cachier_interaction(self):
+        if not self.unlock_manager.is_feature_unlocked("auto_cachier"):
+            self.unlock_manager.try_to_unlock_feature("Auto Cachier", self)
+        else:
+            self.popups.append(InfoPopup("Vous avez déjà débloqué l'Auto Cachier"))
+
+    def handle_spectator_interaction(self, placeable):
+        placeable.interaction()
+        if placeable.open:
+            self.popups.append(InfoPopup("Cliquez sur les fenetres pour visiter le musée d'un autre joueur !"))
 
 
     def event_handler(self, event: pg.event.Event, mouse_pos: Coord):
@@ -313,7 +327,7 @@ class Game:
         """
         match self.gui_state:
             case State.BUILD:
-                self.handle_build_mode(mouse_pos)
+                self.handle_build_mode()
 
             case State.INVENTORY:
                 self.handle_inventory_mode(event, mouse_pos)
@@ -339,7 +353,7 @@ class Game:
             case State.PAUSED:
                 self.quit_button.handle_event(event)
 
-    def handle_build_mode(self, mouse_pos: Coord):
+    def handle_build_mode(self):
         if self.build_mode.can_place(self.current_room):
             self.current_room.placed.append(self.build_mode.place(self.current_room.num))
             self.sound_manager.items.play()

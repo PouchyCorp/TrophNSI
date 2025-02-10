@@ -1,0 +1,9 @@
+{
+    "destruction" : ["destruction"],
+    "inventory" : ["inventory"],
+    "shop" : ["shop"],
+    "painting" : ["painting"],
+    "color" : ["color"],
+    "cachier" : ["cachier"],
+    "spectator" : ["spectator"]
+}
