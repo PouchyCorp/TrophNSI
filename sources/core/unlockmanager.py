@@ -29,7 +29,7 @@ class UnlockManager:
         self.unlocked_floors = ["0", "1"]
         self.unlocked_features = []
         self.discovered_features = []
-        self.discovered_floors = []
+        self.discovered_floors = ["1"]
         self.floor_price = {"2": 10, "3": 100, "4": 1000, "5": 10000}
         self.feature_price = {"Auto Cachier": 5000}
 

@@ -108,8 +108,14 @@ class Game:
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
+
         if 0 <= self.current_room.num + direction <= 5 and self.unlock_manager.is_floor_unlocked(self.current_room.num + direction):
             self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
+            # Checks if floor already visited and launches dialogue if not
+            if not self.unlock_manager.is_floor_discovered(self.current_room.num):
+                self.unlock_manager.discovered_floors.append(str(self.current_room.num))
+                self.timer.create_timer(0.75, self.launch_special_dialogue, arguments=[str(self.current_room.num)])
+               
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
 
