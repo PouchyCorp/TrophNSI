@@ -1,5 +1,5 @@
 numpy==2.2.2
 pygame==2.6.1
-pygame-ce==2.5.2
+pygame-ce==2.5.3
 typing_extensions==4.12.2
 tomli==2.2.1
