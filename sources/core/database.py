@@ -28,28 +28,42 @@ class PgDataBase:
         self.username_input = InputBox(10,10,600,50)
         self.password_input = InputBox(10,70,600,50)
 
+        self.chunk_size = 4096
         self.info_popups : list[InfoPopup]= []
 
 #-------------------------------------------------
 #               DATABASE PART
 #-------------------------------------------------
 
-    def send_query(self, query : str, read : bool, query_parameters : tuple = ()):
+    def send_query(self, query: str, read: bool, query_parameters: tuple = ()):
         """Send a SQL query to the server and receive the result."""
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.connect((self.server_host, self.server_port)) # Connect to the server
+        server.connect(('127.0.0.1', 5000))  # Connect to the server
+        print('connected, sending query')
 
-        server.send(pickle.dumps((query, read, query_parameters))) # Send the query to the server
-        
-        response = []
-        while True:
-            packet = server.recv(4096)
-            if not packet: break
-            response.append(packet)
-        response = pickle.loads(b"".join(response))
+        # Serialize the query and parameters
+        serialized_query = pickle.dumps((query, read, query_parameters))
+
+        # Send the length of the serialized data first
+        server.sendall(len(serialized_query).to_bytes(4, byteorder='big'))
+
+        # Send the serialized data in chunks
+        for i in range(0, len(serialized_query), self.chunk_size):
+            server.sendall(serialized_query[i:i + self.chunk_size])
+
+        # Receive the length of the response first
+        response_length = int.from_bytes(server.recv(4), byteorder='big')
+
+        # Receive the response in chunks
+        response = bytearray()
+        while len(response) < response_length:
+            chunk = server.recv(self.chunk_size)
+            if not chunk:
+                break
+            response.extend(chunk)
 
         server.close()
-        return response
+        return pickle.loads(response)
     
     def fetch_all_user_data(self):
         result = self.send_query('SELECT username, pickled_data FROM users', read=True)
@@ -102,8 +116,7 @@ class PgDataBase:
             return
         
         result = self.send_query('SELECT password FROM users WHERE username = ?', read=True, query_parameters=(username,))
-        
-        if result and result[0] == self.hash_password(password):
+        if result and result[0][0] == self.hash_password(password):
             self.info_popups.append(InfoPopup("Login successful!"))
             self.ready_to_launch = (True, username)
         else:
