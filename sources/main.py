@@ -36,7 +36,6 @@ def load_game_modules():
     """
     Dynamically imports necessary game modules.
     """
-    from ui.inventory import Inventory, Shop
     from core.logic import Game
     from utils.room_config import ROOMS
     return Game, ROOMS

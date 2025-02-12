@@ -101,15 +101,17 @@ class Game:
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
             self.timer.create_timer(3, self.accept_bot, True)
 
-        self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), PgDataBase())
-        ROOMS[5].placed.append(self.spectating_placeable)
-        ROOMS[5].blacklist.append(self.spectating_placeable)
+        if not self.config['gameplay']['no_login']: # If the player is not in the no_login mode, don't show the spectating placeable
+            self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), PgDataBase())
+            ROOMS[5].placed.append(self.spectating_placeable)
+            ROOMS[5].blacklist.append(self.spectating_placeable)
 
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
+        
+        if 0 <= self.current_room.num + direction <= 5 and (self.unlock_manager.is_floor_unlocked(self.current_room.num + direction) or self.config['gameplay']['cheats']):
 
-        if 0 <= self.current_room.num + direction <= 5 and self.unlock_manager.is_floor_unlocked(self.current_room.num + direction):
             self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
             # Checks if floor already visited and launches dialogue if not
             if not self.unlock_manager.is_floor_discovered(self.current_room.num):
@@ -199,7 +201,7 @@ class Game:
         if event.type == pg.KEYDOWN:
             self.keydown_handler(event)
 
-        if self.spectating_placeable.open and self.current_room.num == 5:
+        if hasattr(self, "spectating_placeable") and self.spectating_placeable.open and self.current_room.num == 5:
             self.spectating_placeable.user_list.handle_event(event)
 
         if event.type == pg.MOUSEBUTTONUP:
@@ -535,7 +537,7 @@ class Game:
     def draw_gui(self, mouse_pos):
         match self.gui_state:
             case State.INTERACTION:
-                if self.spectating_placeable.open and self.current_room.num == 5:
+                if hasattr(self, "spectating_placeable") and self.spectating_placeable.open and self.current_room.num == 5:
                     self.spectating_placeable.user_list.draw(self.win)
 
             case State.BUILD:
