@@ -109,7 +109,7 @@ class Game:
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
-        
+
         if 0 <= self.current_room.num + direction <= 5 and (self.unlock_manager.is_floor_unlocked(self.current_room.num + direction) or self.config['gameplay']['cheats']):
 
             self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
@@ -541,9 +541,13 @@ class Game:
                     self.spectating_placeable.user_list.draw(self.win)
 
             case State.BUILD:
+                self.win.blit(sprite.BUILD_MODE_BORDER, (0, 0))
                 mouse_pos_coord = Coord(self.current_room.num, (mouse_pos.x - self.build_mode.get_width() // 2, mouse_pos.y - self.build_mode.get_height() // 2))
                 self.build_mode.show_hologram(self.win, mouse_pos_coord)
                 self.build_mode.show_room_holograms(self.win, self.current_room)
+            
+            case State.DESTRUCTION:
+                self.win.blit(sprite.DESTRUCTION_MODE_BORDER, (0, 0))
 
             case State.DIALOG:
                 self.win.blit(self.temp_bg, (0, 0))

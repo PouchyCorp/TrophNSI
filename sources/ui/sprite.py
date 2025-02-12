@@ -207,6 +207,10 @@ CONFIRM_BUTTON = load_image("data/confirm.png")
 
 CHIP_BUTTON = load_image("data/chip_button.png")
 
+BUILD_MODE_BORDER = load_image("data/bordure_construction.png")
+
+DESTRUCTION_MODE_BORDER = load_image("data/destruction_bordure.png")
+
 #---------------------------------------------
 #       List of the different patterns
 #---------------------------------------------
