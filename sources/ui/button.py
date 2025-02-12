@@ -19,6 +19,8 @@ class Button:
             if self.rect.collidepoint(event.pos):
                 # Activates the button's effect when pressed 
                 self.effect(*self.param)
+                return True
+        return False
 
     def draw(self, win : pg.Surface, is_hovered : bool):
         # Changes the sprite if the button is hovered

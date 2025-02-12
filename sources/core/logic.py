@@ -75,7 +75,7 @@ class Game:
         self.sound_manager = SoundManager(self.timer)
         self.clock : pg.time.Clock = pg.time.Clock()
         self.popups : list[InfoPopup] = []
-        self.confirmation_popups : list[ConfirmationPopup] = []
+        self.confirmation_popups : list[ConfirmationPopup] = [] # Stack of confirmation popups
         self.gui_state = State.INTERACTION
         self.hivemind : Hivemind = Hivemind(60, 600, self.timer, self.sound_manager)
         self.inventory : Inventory = Inventory(self.change_floor, self.reset_guistate, title= "Inventaire", content = inventory)
@@ -190,6 +190,25 @@ class Game:
 # /_____/  |___/_____/_/ |_/ /_/  /____/                
 
 
+
+    def event_handler(self, event: pg.event.Event, mouse_pos: Coord):
+        """
+        Manages all events, eventually dispatching to sub functions like placeable_interaction_handler
+        or keydown_handler
+        """
+        if event.type == pg.KEYDOWN:
+            self.keydown_handler(event)
+
+        if self.spectating_placeable.open and self.current_room.num == 5:
+            self.spectating_placeable.user_list.handle_event(event)
+
+        if event.type == pg.MOUSEBUTTONUP:
+            self.handle_mouse_button_up(event, mouse_pos)
+
+# -----------------------------
+# Keydown event handler
+# -----------------------------
+
     def keydown_handler(self, event : pg.event.Event):
         if self.config['gameplay']['cheats']:
             self.handle_cheat_keys(event.key)
@@ -258,7 +277,11 @@ class Game:
         self.gui_state = State.PLACING_PATTERN
         self.selected_pattern = pattern
 
+# -----------------------------
+# Placeable interaction handler
+# -----------------------------
     def placeable_interaction_handler(self, placeable : Placeable):
+        """ Dispatches to the proper interaction function based on the placeable type"""
         match type(placeable):
             case subplaceable.DoorDown:
                 self.handle_door_down_interaction(placeable)
@@ -289,18 +312,18 @@ class Game:
             self.unlock_manager.try_to_unlock_floor(self.current_room.num-1, self)
 
     def handle_door_up_interaction(self, placeable):
-        if self.unlock_manager.is_floor_unlocked(self.current_room.num+1):
-            self.timer.create_timer(0.75, self.change_floor, arguments=[1])
-            self.sound_manager.up.play()
-            self.launch_transition()
+        if self.unlock_manager.is_floor_unlocked(self.current_room.num+1): # Check if the next floor is unlocked
+            self.timer.create_timer(0.75, self.change_floor, arguments=[1]) # Change floor
+            self.sound_manager.up.play() # Play sound
+            self.launch_transition() # Launch transition
             placeable.interaction(self.timer)
-        else:
-            self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self)
+        else: 
+            self.unlock_manager.try_to_unlock_floor(self.current_room.num+1, self) # Try to unlock the next floor
 
     def handle_shop_interaction(self):
-        if not self.unlock_manager.is_feature_discovered("shop"):
+        if not self.unlock_manager.is_feature_discovered("shop"): # Check if the shop is discovered
             self.unlock_manager.discovered_features.append("shop")
-            self.launch_special_dialogue("shop")
+            self.launch_special_dialogue("shop") # Launch tutorial dialogue
             return
         
         if self.gui_state is not State.SHOP:
@@ -333,32 +356,13 @@ class Game:
         if placeable.open:
             self.popups.append(InfoPopup("Cliquez sur les fenetres pour visiter le musée d'un autre joueur !"))
 
-
-    def event_handler(self, event: pg.event.Event, mouse_pos: Coord):
-        """
-        Manages all events, eventually dispatching to sub functions like placeable_interaction_handler
-        or keydown_handler
-
-        Args:
-            event (pg.event.Event): The event to handle.
-            mouse_pos (Coord): The current position of the mouse.
-        """
-        if event.type == pg.KEYDOWN:
-            self.keydown_handler(event)
-
-        if self.spectating_placeable.open and self.current_room.num == 5:
-            self.spectating_placeable.user_list.handle_event(event)
-
-        if event.type == pg.MOUSEBUTTONUP:
-            self.handle_mouse_button_up(event, mouse_pos)
+# -----------------------------
+# Mouse button up event handler
+# -----------------------------
 
     def handle_mouse_button_up(self, event: pg.event.Event, mouse_pos: Coord):
         """
         Handles mouse button release events based on the current GUI state.
-
-        Args:
-            event (pg.event.Event): The mouse button release event.
-            mouse_pos (Coord): The current position of the mouse.
         """
         match self.gui_state:
             case State.BUILD:
@@ -390,10 +394,10 @@ class Game:
 
     def handle_build_mode(self):
         if self.build_mode.can_place(self.current_room):
-            self.current_room.placed.append(self.build_mode.place(self.current_room.num))
-            self.sound_manager.items.play()
-            self.beauty = self.process_total_beauty()
-            self.gui_state = State.INVENTORY
+            self.current_room.placed.append(self.build_mode.place(self.current_room.num)) # Place the object in the room
+            self.sound_manager.items.play() 
+            self.beauty = self.process_total_beauty() # Update beauty score
+            self.gui_state = State.INVENTORY # Return to the inventory
             self.inventory.init()
 
     def handle_inventory_mode(self, event: pg.event.Event, mouse_pos: Coord):
@@ -407,7 +411,7 @@ class Game:
     def handle_destruction_mode(self, mouse_pos: Coord):
         for placeable in self.current_room.placed:
             if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
-                self.destruction_mode.remove_from_room(placeable, self.current_room)
+                self.destruction_mode.remove_from_room(placeable, self.current_room) # Remove the object from the room
                 self.beauty = self.process_total_beauty()
 
     def handle_interaction_mode(self, mouse_pos: Coord):
@@ -419,15 +423,15 @@ class Game:
             if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y) and self.current_room.num == 0:
                 self.chip_placement(pattern)
 
-        self.hivemind.handle_bot_click(mouse_pos, self.launch_random_dialogue)
+        self.hivemind.handle_bot_click(mouse_pos, self.launch_random_dialogue) # Handle bot reaction click
 
     def handle_dialog_mode(self):
-        if self.dialogue_manager.click_interaction():
-            self.gui_state = State.INTERACTION
+        if self.dialogue_manager.click_interaction(): # Check if the dialogue is over
+            self.gui_state = State.INTERACTION # Return to the interaction state
             self.paused = False
 
     def handle_confirmation_mode(self, mouse_pos: Coord):
-        flag = self.confirmation_popups[-1].handle_click(mouse_pos)
+        flag = self.confirmation_popups[-1].handle_click(mouse_pos) # Check if the confirmation popup was clicked
         if flag is not None:
             self.confirmation_popups.pop()
 

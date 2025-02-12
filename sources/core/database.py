@@ -2,6 +2,8 @@ import sqlite3
 from hashlib import sha256
 import pygame as pg
 import pickle
+import socket
+import json
 from enum import Enum, auto
 from ui.inputbox import InputBox
 from  ui.infopopup import InfoPopup
@@ -15,8 +17,10 @@ class LoginStates(Enum):
     LOGIN = auto()
 
 class PgDataBase:
-    def __init__(self):
-        self.db_link = "data/userData.db"
+    def __init__(self, server_host = "127.0.0.1", server_port = 5000):
+        self.server_host = server_host
+        self.server_port = server_port
+
         self.gui_state = LoginStates.HOME
 
         self.ready_to_launch = (False, None)
@@ -30,45 +34,42 @@ class PgDataBase:
 #               DATABASE PART
 #-------------------------------------------------
 
-    def initialize_database(self):
-        connection = sqlite3.connect(self.db_link)
-        cursor = connection.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                pickled_data BLOB)
-        ''')
-        connection.commit()
-        connection.close()
+    def send_query(self, query : str, read : bool, query_parameters : tuple = ()):
+        """Send a SQL query to the server and receive the result."""
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.connect((self.server_host, self.server_port)) # Connect to the server
+
+        server.send(pickle.dumps((query, read, query_parameters))) # Send the query to the server
+        
+        response = []
+        while True:
+            packet = server.recv(4096)
+            if not packet: break
+            response.append(packet)
+        response = pickle.loads(b"".join(response))
+
+        server.close()
+        return response
     
     def fetch_all_user_data(self):
-        connection = sqlite3.connect(self.db_link)
-        cursor = connection.cursor()
-        cursor.execute('SELECT username, pickled_data FROM users')
-        result = cursor.fetchall()
-        connection.close()
+        result = self.send_query('SELECT username, pickled_data FROM users', read=True)
+        
 
         result = [(row[0], pickle.loads(row[1])) for row in result]
 
         return result
 
 
-    def hash_password(self, password):
+    def hash_password(self, password : str):
         return sha256(password.encode()).hexdigest()
 
     def fetch_user_data(self, username):
-        connection = sqlite3.connect(self.db_link)
-        cursor = connection.cursor()
-        cursor.execute('SELECT pickled_data FROM users WHERE username == ?', (username,))
-        result = cursor.fetchone()
-        connection.close()
+        result = self.send_query('SELECT pickled_data FROM users WHERE username == ?', read=True, query_parameters=(username,))
 
         if result and result[0]:
-            pickled_data = result[0]
+            pickled_data = result[0][0]
             user_data = pickle.loads(pickled_data)  # Deserialize the data
-            print("got user data")
+            print("Got user data")
             if type(user_data) is dict:
                 return user_data
         
@@ -83,17 +84,14 @@ class PgDataBase:
             self.info_popups.append(InfoPopup("Both fields are required!"))
             return
         
-        connection = sqlite3.connect(self.db_link)
-        cursor = connection.cursor()
         try:
-            cursor.execute('INSERT INTO users (username, password, pickled_data) VALUES (?, ?, ?)', 
-                        (username, self.hash_password(password), pickle.dumps(DEFAULT_SAVE)))
-            connection.commit()
+            pickled_data = pickle.dumps(DEFAULT_SAVE)  # Serialize the default save data to send to the database
+            self.send_query('INSERT INTO users (username, password, pickled_data) VALUES (?, ?, ?)', read=False, query_parameters=(username, self.hash_password(password), pickled_data))
             self.info_popups.append(InfoPopup("User registered successfully!"))
+
         except sqlite3.IntegrityError:
+
             self.info_popups.append(InfoPopup("Username already exists."))
-        finally:
-            connection.close()
 
     def login_user(self):
         username = self.username_input.text
@@ -103,11 +101,7 @@ class PgDataBase:
             self.info_popups.append(InfoPopup("Both fields are required!"))
             return
         
-        connection = sqlite3.connect(self.db_link)
-        cursor = connection.cursor()
-        cursor.execute('SELECT password FROM users WHERE username = ?', (username,))
-        result = cursor.fetchone()
-        connection.close()
+        result = self.send_query('SELECT password FROM users WHERE username = ?', read=True, query_parameters=(username,))
         
         if result and result[0] == self.hash_password(password):
             self.info_popups.append(InfoPopup("Login successful!"))
@@ -123,11 +117,9 @@ class PgDataBase:
             data (dict): The data to be pickled and saved.
         """
         pickled_data = pickle.dumps(data)  # Serialize the data
-        connection = sqlite3.connect(self.db_link)
-        cursor = connection.cursor()
-        cursor.execute('UPDATE users SET pickled_data = ? WHERE username = ?', (pickled_data, username))
-        connection.commit()
-        connection.close()
+
+        self.send_query('UPDATE users SET pickled_data = ? WHERE username = ?', read=False, query_parameters=(pickled_data, username))
+
         print('successfuly saved')
 
 
@@ -158,7 +150,6 @@ class PgDataBase:
                 popup.lifetime -= 1  # Decrement popup's lifetime
 
     def home_screen(self) -> tuple[str, dict]:
-        self.initialize_database()
 
         pg.init()
         fps = 60  # Frame rate
@@ -212,14 +203,14 @@ class PgDataBase:
                             self.password_input.handle_event(event)
                             self.username_input.handle_event(event)
                             close_button.handle_event(event)
-                            accept_register_button.handle_event(event)
+                            if accept_register_button.handle_event(event):
+                                userlist.init(self.fetch_all_user_data())
 
                         case LoginStates.HOME:
                             quit_button.handle_event(event)
                             register_button.handle_event(event)
                             login_button.handle_event(event)
                     
-                    userlist.init(self.fetch_all_user_data())
                     userlist.handle_event(event)
             
             #draw

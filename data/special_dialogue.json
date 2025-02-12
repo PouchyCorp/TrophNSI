@@ -2,13 +2,12 @@
     "destruction" : ["tuto destruction"],
     "inventory" : ["tuto inventory"],
     "shop" : ["tuto shop"],
-    "painting" : ["tuto painting"],
     "color" : ["tuto color"],
     "Auto Cachier" : ["tuto cachier"],
     "spectator" : ["tuto spectator"],
-    "0" : ["intro 0"],
-    "2" : ["intro 2"],
-    "3" : ["intro 3"],
-    "4" : ["intro 4"],
-    "5" : ["intro 5"]
+    "0" : ["intro 0 (painting)"],
+    "2" : ["intro 2 (shop)"],
+    "3" : ["intro 3 (color)"],
+    "4" : ["intro 4 (auto cachier)"],
+    "5" : ["intro 5 (spectator)"]
 }
