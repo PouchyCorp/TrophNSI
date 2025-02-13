@@ -511,6 +511,7 @@ class Game:
         self.draw_gui(mouse_pos)
         self.draw_debug_info(mouse_pos)
         self.render_popups()
+        self.win.blit(self.transparency_win, (0, 0))
 
     def draw_background(self):
         self.win.blit(self.current_room.bg_surf, (0, 0))

@@ -3,3 +3,4 @@ sources/__pycache__
 userData.db
 creative_core_venv
 .pyc
+serverpack/user_data.db
