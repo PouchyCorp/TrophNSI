@@ -198,9 +198,13 @@ SPRITESHEET_ROBOT_5_PACK = (anim.Spritesheet(load_image('data/robots/robot_5.png
                             {"right_dust" :(dust.copy(), (11*6,48*6)),
                               "left_dust" :(dust.copy(), (26*6,48*6))})
 
+SPRITESHEET_ROBOT_6_PACK = (anim.Spritesheet(load_image('data/robots/robot_6.png'),(32*6,48*6)), [8, 8, 17, 23],
+                            {"right_dust" :(dust.copy(), (11*6,48*6)),
+                              "left_dust" :(dust.copy(), (26*6,48*6))})
+
 SPRITESHEET_ROBOT_MUSIQUE_PACK = (anim.Spritesheet(load_image('data/robots/robot_musique.png'),(48*6,32*6)), [8])
 
-LIST_SPRITESHEET_ROBOT = [SPRITESHEET_ROBOT_1_PACK, SPRITESHEET_ROBOT_2_PACK, SPRITESHEET_ROBOT_3_PACK, SPRITESHEET_ROBOT_4_PACK, SPRITESHEET_ROBOT_5_PACK]
+LIST_SPRITESHEET_ROBOT = [SPRITESHEET_ROBOT_1_PACK, SPRITESHEET_ROBOT_2_PACK, SPRITESHEET_ROBOT_3_PACK, SPRITESHEET_ROBOT_4_PACK, SPRITESHEET_ROBOT_5_PACK, SPRITESHEET_ROBOT_6_PACK]
 
 SPRITE_PLANT_1 = load_image("data/plant_2_39x38.png")
 
