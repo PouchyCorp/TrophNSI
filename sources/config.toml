@@ -1,4 +1,7 @@
 #main config file
+[server]
+ip = '127.0.0.1'
+port = 5000
 
 [screen]
 size = [1920,1080]
@@ -7,4 +10,4 @@ fullscreen = false
 [gameplay]
 fps = 60
 cheats = true
-no_login = true
+no_login = false

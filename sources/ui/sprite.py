@@ -1,3 +1,22 @@
+r"""
+   _____            _ _            
+  / ____|          (_) |           
+ | (___  _ __  _ __ _| |_ ___  ___ 
+  \___ \| '_ \| '__| | __/ _ \/ __|
+  ____) | |_) | |  | | ||  __/\__ \
+ |_____/| .__/|_|  |_|\__\___||___/
+        | |                        
+        |_|                        
+
+Key Features:
+-------------
+- Contains all the sprite assets used in the game.
+- Nine-slice algorithm scaling for UI elements.
+- Whiten effect for surfaces, to be used as activated button sprites (to avoid having unnecessary files).
+
+"""
+
+
 from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD, BLEND_RGBA_MULT, Vector2
 from math import sin, pi
 import utils.anim as anim
@@ -13,6 +32,7 @@ def load_image(path : str):
     return sized_sprite.convert_alpha()
 
 def whiten(surface : Surface):
+    """Whiten a surface to simulate a button press effect."""
     dest_surf = surface.copy()
     dest_surf.fill((60,60,60), special_flags=BLEND_RGB_ADD)
     return dest_surf
@@ -21,14 +41,14 @@ def nine_slice_scaling(surface, target_size, margins):
     """
     Scale an image using nine-slice scaling.
     
-    Parameters:
-        image (pygame.Surface): The original image.
-        target_size (tuple): The (width, height) of the scaled image.
-        margins (tuple): The (left, right, top, bottom) margins for the slices.
-    
-    Returns:
-        pygame.Surface: The scaled image.
+    Basically, the image is divided into 9 slices:
+    - 4 corner slices (top-left, top-right, bottom-left, bottom-right) which keep their original size
+    - 4 edge slices (top, bottom, left, right) which are stretched horizontally or vertically
+    - 1 center slice which is stretched both horizontally and vertically
+
+    This permits to scale the image to any size without distorting the corners and edges (allows stretchable patterns).
     """
+
     original_width, original_height = surface.get_size()
     target_width, target_height = target_size
     left, right, top, bottom = margins
@@ -72,6 +92,8 @@ def nine_slice_scaling(surface, target_size, margins):
     return scaled_image
 
 def get_outline(surf, color):
+    """Returns a surface with an outline around the input surface.
+    Home-made algorithm, not the most efficient but it works."""
     outline_width = 3
 
     width, height = surf.get_size()
@@ -88,7 +110,8 @@ def get_outline(surf, color):
 
 
 def fondu(surf : Surface, incr ,speed) -> Surface:
-    """speed is a float between 0 and 1"""
+    """Speed is a float between 0 and 1, incr is a float between 0 and pi.
+    The function does a fade in/out effect on the surface using the sinus function."""
     if incr <= pi:
         speed = pi*speed
         rect = surf.get_rect()

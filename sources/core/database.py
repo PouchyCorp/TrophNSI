@@ -1,9 +1,41 @@
+r"""
+  _____        _        _                                    
+ |  __ \      | |      | |                                   
+ | |  | | __ _| |_ __ _| |__   __ _ ___  ___                 
+ | |  | |/ _` | __/ _` | '_ \ / _` / __|/ _ \                
+ | |__| | (_| | || (_| | |_) | (_| \__ \  __/                
+ |_____/ \__,_|\__\__,_|_.__/ \__,_|___/\___|       
+
+Key features:
+-------------
+- Database class for handling user registration, login, and data storage.
+- Hashing of user passwords for security.
+- Serialization and deserialization of user data for database storage (with a cool packet system ^^).
+- User data getting and saving.
+
+  _    _
+ | |  | |                                                    
+ | |__| | ___  _ __ ___   ___   ___  ___ _ __ ___  ___ _ __  
+ |  __  |/ _ \| '_ ` _ \ / _ \ / __|/ __| '__/ _ \/ _ \ '_ \ 
+ | |  | | (_) | | | | | |  __/ \__ \ (__| | |  __/  __/ | | |
+ |_|  |_|\___/|_| |_| |_|\___| |___/\___|_|  \___|\___|_| |_|
+                                                             
+Key features:
+-------------
+- Home screen with login and registration options.
+- Animated background
+- Text input boxes for username and password.
+
+Note:
+-----
+This shouldve been two separate files, but merging it facilitates the communication between the login screen and the database.
+"""
+
 import sqlite3
 from hashlib import sha256
 import pygame as pg
 import pickle
 import socket
-import json
 from enum import Enum, auto
 from ui.inputbox import InputBox
 from  ui.infopopup import InfoPopup
@@ -17,8 +49,8 @@ class LoginStates(Enum):
     LOGIN = auto()
 
 class PgDataBase:
-    def __init__(self, server_host = "127.0.0.1", server_port = 5000):
-        self.server_host = server_host
+    def __init__(self, server_ip, server_port):
+        self.server_ip = server_ip
         self.server_port = server_port
 
         self.gui_state = LoginStates.HOME
@@ -36,9 +68,26 @@ class PgDataBase:
 #-------------------------------------------------
 
     def send_query(self, query: str, read: bool, query_parameters: tuple = ()):
-        """Send a SQL query to the server and receive the result."""
+        """Send a SQL query to the server and receive the result.
+        The read parameter indicates whether the query is a SELECT query (to let the server know if he needs to send a response).
+        Basic explanation:
+            Sending query to the server:
+        1 - Serialize the query and parameters
+        2 - Send the length of the serialized data first
+        3 - Send the serialized data in chunks
+
+            Receiving the result from the server:
+        1 - Receive the length of the response first
+        2 - Receive the response in chunks
+        3 - Assemble the response
+        3 - Deserialize the response"""
+
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.connect(('127.0.0.1', 5000))  # Connect to the server
+        try:
+            server.connect((self.server_ip, self.server_port)) # Connect to the server
+        except Exception as e:
+            raise ConnectionRefusedError(f'ERROR {e}\n You should go in no_login mode in config.')
+        
         print('connected, sending query')
 
         # Serialize the query and parameters

@@ -1,13 +1,31 @@
+r"""
+   _____            _                            _             _       _        _                    
+  / ____|          | |                          | |           | |     | |      | |                   
+ | |     ___   ___ | |  _ __ ___ _ __ ___   ___ | |_ ___    __| | __ _| |_ __ _| |__   __ _ ___  ___ 
+ | |    / _ \ / _ \| | | '__/ _ \ '_ ` _ \ / _ \| __/ _ \  / _` |/ _` | __/ _` | '_ \ / _` / __|/ _ \
+ | |___| (_) | (_) | | | | |  __/ | | | | | (_) | ||  __/ | (_| | (_| | || (_| | |_) | (_| \__ \  __/
+  \_____\___/ \___/|_| |_|  \___|_| |_| |_|\___/ \__\___|  \__,_|\__,_|\__\__,_|_.__/ \__,_|___/\___|
+                                                                                                     
+Basic SQLite query server that listens for incoming connections from clients and executes the queries they send.                                                                                     
+
+Note:
+----
+I should implement error handling if I have the courage to do so.
+This server is vulnerable to SQL injection attacks, the queries are executed 'as is'.
+"""
+
 import socket
 import sqlite3
 import threading
 import pickle
+import sys
 
-CHUNK_SIZE = 4096
+CHUNK_SIZE = 4096 # The size of the chunks to receive from the client (this should be consistent with the client's CHUNK_SIZE)
 
 # Database setup
 DB_NAME = "user_data.db"
-PORT = 5000
+HOST_IP = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
+PORT = sys.argv[2] if len(sys.argv) > 2 else 5000
 
 def initialize_database():
     connection = sqlite3.connect(DB_NAME)
@@ -39,7 +57,10 @@ def execute_query(query: str, read: bool, query_parameters: tuple = ()):
     return result
 
 def handle_client(client_socket: socket.socket):
-    """Handle communication with a client."""
+    """
+    Handle communication with a client.
+    Read the client's documention for more information (same inner workings, just in reverse).
+    """
     while True:
         # Receive the length of the serialized data first
         data_length = int.from_bytes(client_socket.recv(4), byteorder='big')
@@ -48,7 +69,7 @@ def handle_client(client_socket: socket.socket):
         data = bytearray()
         while len(data) < data_length:
             chunk = client_socket.recv(CHUNK_SIZE)
-            if not chunk:
+            if not chunk: # If the client closes the connection, break the loop
                 break
             data.extend(chunk)
 
@@ -73,12 +94,12 @@ def handle_client(client_socket: socket.socket):
     client_socket.close()
     print("Connection fermée avec un client")
 
-def start_server(port):
+def start_server(host_ip, port):
     """Start the SQLite query server."""
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(("127.0.0.1", port))
+    server.bind((host_ip, port))
     server.listen()
-    print(f"Le serveur écoute en 127.0.0.1 avec sur le port : {port}")
+    print(f"Le serveur écoute en {host_ip} avec sur le port : {port}")
     while True:  # Accept connections from clients
         client_socket, addr = server.accept()
         print(f"Connection établie avec {addr}")
@@ -87,4 +108,4 @@ def start_server(port):
 
 if __name__ == "__main__":
     initialize_database()
-    start_server(PORT)
+    start_server(HOST_IP, PORT)

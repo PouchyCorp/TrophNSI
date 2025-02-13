@@ -1,3 +1,15 @@
+r"""
+  ____        _   _              
+ |  _ \      | | | |             
+ | |_) |_   _| |_| |_ ___  _ __  
+ |  _ <| | | | __| __/ _ \| '_ \ 
+ | |_) | |_| | |_| || (_) | | | |
+ |____/ \__,_|\__|\__\___/|_| |_|
+                                 
+This module is used to create buttons in the game.
+They notably have different effects when clicked and a mouse hover effect.             
+"""
+
 import pygame as pg
 from utils.fonts import TERMINAL_FONT
 

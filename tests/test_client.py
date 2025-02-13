@@ -1,11 +1,16 @@
-import pickle, sqlite3, socket
+import pickle, socket
 from hashlib import sha256
 
 def send_query( query : str,read : bool, query_parameters : tuple = ()):
         """Send a SQL query to the server and receive the result."""
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.connect(('127.0.0.1', 5000)) # Connect to the server
-        print('connected, sending query')
+        try:
+            server.connect(('127.0.0.1', 5000)) # Connect to the server
+        except ConnectionRefusedError:
+            print('Connection refused.')
+            return
+        
+        print('Connected, sending query.')
 
         server.send(pickle.dumps((query, read, query_parameters))) # Send the query to the server
         response = server.recv(4096) #if not a read, response is None
@@ -38,8 +43,8 @@ def fetch_user_data( username):
     return 'default save'
 
 def register_user():
-    username = 'b'
-    password = 'b'
+    username = 'test'
+    password = 'test'
 
     pickled_data = pickle.dumps('default_save')  # Serialize the default save data to send to the database
     send_query('INSERT INTO users (username, password, pickled_data) VALUES (?, ?, ?)', read=False, query_parameters=(username, hash_password(password), pickled_data))
@@ -47,8 +52,8 @@ def register_user():
 
 
 def login_user():
-    username = 'b'
-    password = 'b'
+    username = 'test'
+    password = 'test'
     
     result = send_query('SELECT password FROM users WHERE username = ?', read=True, query_parameters=(username,))
 
@@ -69,8 +74,9 @@ def save_user_data( username, data : dict):
 
     print('successfuly saved')
 
+#tests
 if __name__ == '__main__':
     register_user()
     login_user()
-    fetch_user_data('a')
-    save_user_data('a', {'test': 'test'})
+    fetch_user_data('test')
+    save_user_data('test', {'test': 'test'})

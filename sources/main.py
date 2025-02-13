@@ -1,3 +1,25 @@
+r"""
+  _                            _               
+ | |                          | |              
+ | |     __ _ _   _ _ __   ___| |__   ___ _ __ 
+ | |    / _` | | | | '_ \ / __| '_ \ / _ \ '__|
+ | |___| (_| | |_| | | | | (__| | | |  __/ |   
+ |______\__,_|\__,_|_| |_|\___|_| |_|\___|_|   
+
+This module loads config, initializes Pygame and starts the game.
+
+Key Features:
+-------------
+- Loads configuration from a TOML file.
+- Loads saved game data from a database.
+- Saves game data to a database.
+
+Notes:
+------
+The main loop is in sources/core/logic.py.
+"""
+
+
 import pygame as pg
 import tomli
 
@@ -71,7 +93,7 @@ def main():
     """
     if not config['gameplay']['no_login']:
         from core.database import PgDataBase
-        db = PgDataBase()
+        db = PgDataBase(config['server']['ip'], config['server']['port'])
         username, user_game_data = db.home_screen()
         
         print('Launching game...')

@@ -1,3 +1,23 @@
+r"""
+   _____       _          _                         
+  / ____|     | |        | |                        
+ | (___  _   _| |__   ___| | __ _ ___ ___  ___  ___ 
+  \___ \| | | | '_ \ / __| |/ _` / __/ __|/ _ \/ __|
+  ____) | |_| | |_) | (__| | (_| \__ \__ \  __/\__ \
+ |_____/ \__,_|_.__/ \___|_|\__,_|___/___/\___||___/
+                                                    
+Module dedicated to the subclass of the Placeable class.
+
+Key Features:
+-------------
+    - DoorUp and DoorDown classes for the door objects.
+    - BotPlaceable for the clickable inline bot.
+    - ShopPlaceable for the shop placeable at floor 2.
+    - InvPlaceable for the inventory placeable at floor 1.
+    - AutoCachierPlaceable for the automatic cash register unlock at floor 4.
+    - SpectatorPlaceable for the spectator placeable at floor 5.
+"""
+
 from placeable import Placeable
 import ui.sprite as sprite
 from utils.anim import Animation

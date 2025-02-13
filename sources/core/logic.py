@@ -102,7 +102,7 @@ class Game:
             self.timer.create_timer(3, self.accept_bot, True)
 
         if not self.config['gameplay']['no_login']: # If the player is not in the no_login mode, don't show the spectating placeable
-            self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), PgDataBase())
+            self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), PgDataBase(self.config['server']['ip'], self.config['server']['port']))
             ROOMS[5].placed.append(self.spectating_placeable)
             ROOMS[5].blacklist.append(self.spectating_placeable)
 
