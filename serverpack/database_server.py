@@ -42,11 +42,16 @@ def initialize_database():
 
 def execute_query(query: str, read: bool, query_parameters: tuple = ()):
     """Execute a SQL query on the return the result if read is True."""
+    error_status = "!OK!"
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    print("execute_query ", query)  # debug
 
-    cursor.execute(query, query_parameters)
+    try:
+        cursor.execute(query, query_parameters)
+
+    except sqlite3.IntegrityError:
+        error_status = "!INTEGR!"
+
     if read:  # If the query is a SELECT query, return the result
         result = cursor.fetchall()
     else:  # If the query is an INSERT, UPDATE or DELETE query, commit the changes
@@ -54,7 +59,8 @@ def execute_query(query: str, read: bool, query_parameters: tuple = ()):
         result = None
     print(f"Requete executée : {query}")
     conn.close()
-    return result
+
+    return (error_status, result)
 
 def handle_client(client_socket: socket.socket):
     """
@@ -63,6 +69,12 @@ def handle_client(client_socket: socket.socket):
     """
     while True:
         # Receive the length of the serialized data first
+        try:
+            data_length = int.from_bytes(client_socket.recv(4), byteorder='big')
+        except Exception as e:
+            print(e)
+            break
+            
         data_length = int.from_bytes(client_socket.recv(4), byteorder='big')
 
         # Receive the serialized data in chunks
@@ -77,10 +89,9 @@ def handle_client(client_socket: socket.socket):
             break
 
         query, read, query_parameters = pickle.loads(data)
-        print("Received query:", query)  # debug
-        response = execute_query(query, read, tuple(query_parameters))
-        print("result length", len(response) if response else "No result")  # debug
+        error_status, response = execute_query(query, read, tuple(query_parameters))
 
+        client_socket.send(error_status.encode())
         # Serialize the response
         serialized_response = pickle.dumps(response)
 

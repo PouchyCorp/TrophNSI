@@ -23,8 +23,6 @@ Each frame (60fps):
 
 Certain states, like confirmation prompts and transitions, override standard interactions."""
 
-
-
 from enum import Enum, auto
 class State(Enum):
     INTERACTION = auto()
@@ -184,15 +182,11 @@ class Game:
                 popup.draw(self.win)  # Render the popup on the window
                 popup.lifetime -= 1  # Decrement popup's lifetime
 
-
-#     _______    _________   _____________
-#    / ____/ |  / / ____/ | / /_  __/ ___/
-#   / __/  | | / / __/ /  |/ / / /  \__ \ 
-#  / /___  | |/ / /___/ /|  / / /  ___/ / 
-# /_____/  |___/_____/_/ |_/ /_/  /____/                
-
-
-
+#    ____              __    
+#   / __/  _____ ___  / /____
+#  / _/| |/ / -_) _ \/ __(_-<
+# /___/|___/\__/_//_/\__/___/
+                           
     def event_handler(self, event: pg.event.Event, mouse_pos: Coord):
         """
         Manages all events, eventually dispatching to sub functions like placeable_interaction_handler
@@ -264,7 +258,7 @@ class Game:
             if self.canva.pattern_num == 0:
                 self.popups.append(InfoPopup("you can't save a blank canva"))
             else:
-                self.saved_canva = self.canva.save(self.inventory.inv)
+                self.inventory.inv.append(self.canva.save())
                 self.canva.pattern_num = 0
 
     def toggle_shop(self):

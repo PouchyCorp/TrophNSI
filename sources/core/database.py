@@ -87,8 +87,6 @@ class PgDataBase:
             server.connect((self.server_ip, self.server_port)) # Connect to the server
         except Exception as e:
             raise ConnectionRefusedError(f'ERROR {e}\n You should go in no_login mode in config.')
-        
-        print('connected, sending query')
 
         # Serialize the query and parameters
         serialized_query = pickle.dumps((query, read, query_parameters))
@@ -99,6 +97,13 @@ class PgDataBase:
         # Send the serialized data in chunks
         for i in range(0, len(serialized_query), self.chunk_size):
             server.sendall(serialized_query[i:i + self.chunk_size])
+
+        # Eventually recieve exeption encountered by the server (8 character max)
+        # "!OK!" means no error
+        # "!INTEGR!" means an integrity error (username already exists)
+        error_status = server.recv(8).decode()
+        if error_status != "!OK!":
+            return error_status
 
         # Receive the length of the response first
         response_length = int.from_bytes(server.recv(4), byteorder='big')
@@ -144,32 +149,33 @@ class PgDataBase:
         password = self.password_input.text
         
         if not username or not password:
-            self.info_popups.append(InfoPopup("Both fields are required!"))
+            self.info_popups.append(InfoPopup("Les deux champs sont requis!"))
             return
         
-        try:
-            pickled_data = pickle.dumps(DEFAULT_SAVE)  # Serialize the default save data to send to the database
-            self.send_query('INSERT INTO users (username, password, pickled_data) VALUES (?, ?, ?)', read=False, query_parameters=(username, self.hash_password(password), pickled_data))
-            self.info_popups.append(InfoPopup("User registered successfully!"))
+        pickled_data = pickle.dumps(DEFAULT_SAVE)  # Serialize the default save data to send to the database
+        error_status = self.send_query('INSERT INTO users (username, password, pickled_data) VALUES (?, ?, ?)', read=False, query_parameters=(username, self.hash_password(password), pickled_data))
 
-        except sqlite3.IntegrityError:
+        if error_status == '!INTEGR!':
+            self.info_popups.append(InfoPopup("Ce nom d'utilisateur est déjà pris."))
+        else:
+            self.info_popups.append(InfoPopup("Inscription réussie."))
+                                    
 
-            self.info_popups.append(InfoPopup("Username already exists."))
 
     def login_user(self):
         username = self.username_input.text
         password = self.password_input.text
         
         if not username or not password:
-            self.info_popups.append(InfoPopup("Both fields are required!"))
+            self.info_popups.append(InfoPopup("Les deux champs sont requis!"))
             return
         
         result = self.send_query('SELECT password FROM users WHERE username = ?', read=True, query_parameters=(username,))
         if result and result[0][0] == self.hash_password(password):
-            self.info_popups.append(InfoPopup("Login successful!"))
+            self.info_popups.append(InfoPopup("Connexion réussie."))
             self.ready_to_launch = (True, username)
         else:
-            self.info_popups.append(InfoPopup("Invalid username or password."))
+            self.info_popups.append(InfoPopup("Nom d'utilisateur ou mot de passe incorrect."))
 
     def save_user_data(self, username, data : dict):
         """
@@ -182,7 +188,7 @@ class PgDataBase:
 
         self.send_query('UPDATE users SET pickled_data = ? WHERE username = ?', read=False, query_parameters=(pickled_data, username))
 
-        print('successfuly saved')
+        print(f"{username}'s data successfuly saved !")
 
 
 #-------------------------------------------------

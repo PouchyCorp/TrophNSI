@@ -3,7 +3,7 @@ class Coord:
         '''coordinate system for all objects'''
         self.room_num = room_num
         self.__x, self.__y = xy
-        self.__pixelSize = 6
+        self._pixel_size = 6
 
     @property
     def x(self) -> int:
@@ -40,11 +40,11 @@ class Coord:
             y = self.y - (self.y % 12)
             return (x, y)
         if flag:
-            x = self.x - (self.x % self.__pixelSize) + self.__pixelSize
-            y = self.y - (self.y % self.__pixelSize) + self.__pixelSize
+            x = self.x - (self.x % self._pixel_size) + self._pixel_size
+            y = self.y - (self.y % self._pixel_size) + self._pixel_size
         else:
-            x = self.x - (self.x % self.__pixelSize)
-            y = self.y - (self.y % self.__pixelSize)
+            x = self.x - (self.x % self._pixel_size)
+            y = self.y - (self.y % self._pixel_size)
         return (x, y)
     
     def __eq__(self, value):

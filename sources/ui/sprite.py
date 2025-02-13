@@ -94,6 +94,7 @@ def nine_slice_scaling(surface, target_size, margins):
 def get_outline(surf, color):
     """Returns a surface with an outline around the input surface.
     Home-made algorithm, not the most efficient but it works."""
+    return surf
     outline_width = 3
 
     width, height = surf.get_size()
