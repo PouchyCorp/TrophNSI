@@ -74,9 +74,7 @@ def handle_client(client_socket: socket.socket):
         except Exception as e:
             print(e)
             break
-            
-        data_length = int.from_bytes(client_socket.recv(4), byteorder='big')
-
+        
         # Receive the serialized data in chunks
         data = bytearray()
         while len(data) < data_length:
