@@ -53,7 +53,7 @@ from core.unlockmanager import UnlockManager
 from objects.placeable import Placeable
 from ui.confirmationpopup import ConfirmationPopup
 from utils.sound import SoundManager
-from objects.pattern_inv import Pattern
+from objects.patterns import PatternHolder
 from objects.canva import Canva
 from ui.button import Button
 from core.database import PgDataBase
@@ -89,8 +89,8 @@ class Game:
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
         self.unlock_manager : UnlockManager = unlock_manager
-        self.pattern_inv : list[Pattern] = self.pattern_inv_init()
-        self.canva : Canva = Canva()
+        self.canva : Canva = Canva(Coord(0,(621,30)))
+        self.pattern_holder : PatternHolder = PatternHolder(Coord(0, (0, 0)), canva=self.canva)
         self.paused = False
 
         self.particle_spawners : dict[int,list] = PARTICLE_SPAWNERS
@@ -118,18 +118,6 @@ class Game:
                
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
-
-    def pattern_inv_init(self):
-        inv = []
-        x,y = 100,180
-        for pattern in sprite.PATTERN_LIST:
-            inv.append(Pattern(pattern,(x,y)))
-            if x < 400:
-                x += 150
-            else:
-                y += 150
-                x = 100
-        return inv
 
     def launch_random_dialogue(self, bot_anim):
         """ Function to initiate dialogue easily passed to other functions"""
@@ -200,6 +188,9 @@ class Game:
 
         if event.type == pg.MOUSEBUTTONUP:
             self.handle_mouse_button_up(event, mouse_pos)
+        
+        if self.current_room.num == 0:
+            self.pattern_holder.handle_event(event)
 
 # -----------------------------
 # Keydown event handler
@@ -255,11 +246,8 @@ class Game:
 
     def save_canva(self):
         if self.current_room.num == 0 and self.gui_state == State.INTERACTION:
-            if self.canva.pattern_num == 0:
-                self.popups.append(InfoPopup("you can't save a blank canva"))
-            else:
-                self.inventory.inv.append(self.canva.save())
-                self.canva.pattern_num = 0
+            pass
+        #----------------------------------- To be implemented -----------------------------------
 
     def toggle_shop(self):
         if self.gui_state is State.INTERACTION:
@@ -268,10 +256,6 @@ class Game:
             self.shop.init()
         elif self.gui_state is State.SHOP:
             self.gui_state = State.INTERACTION
-
-    def chip_placement(self,pattern : Pattern):
-        self.gui_state = State.PLACING_PATTERN
-        self.selected_pattern = pattern
 
 # -----------------------------
 # Placeable interaction handler
@@ -415,10 +399,6 @@ class Game:
             if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
                 self.placeable_interaction_handler(placeable)
 
-        for pattern in self.pattern_inv:
-            if pattern.rect.collidepoint(mouse_pos.x, mouse_pos.y) and self.current_room.num == 0:
-                self.chip_placement(pattern)
-
         self.hivemind.handle_bot_click(mouse_pos, self.launch_random_dialogue) # Handle bot reaction click
 
     def handle_dialog_mode(self):
@@ -433,13 +413,6 @@ class Game:
 
         if not self.confirmation_popups:
             self.gui_state = State.INTERACTION
-
-    def handle_placing_pattern_mode(self, mouse_pos: Coord):
-        if self.canva.rect.collidepoint(mouse_pos.x, mouse_pos.y):
-            self.canva.pattern_num += 1
-            self.gui_state = State.PAINTING
-        else:
-            self.popups.append(InfoPopup("you can't place a chip here"))
 
 
 #                    __      __     
@@ -500,7 +473,7 @@ class Game:
         self.draw_background()
         self.draw_current_room()
         self.draw_bots(mouse_pos)
-        self.draw_patterns()
+        self.draw_patterns_and_canva()
         self.draw_particles()
         self.draw_gui(mouse_pos)
         self.draw_debug_info(mouse_pos)
@@ -517,11 +490,10 @@ class Game:
     def draw_bots(self, mouse_pos):
         self.hivemind.draw(self.win, self.current_room.num, mouse_pos, self.transparency_win)
 
-    def draw_patterns(self):
+    def draw_patterns_and_canva(self):
         if self.current_room.num == 0:
-            for pattern in self.pattern_inv:
-                self.win.blit(pattern.button, (pattern.rect.x, pattern.rect.y))
-                self.win.blit(self.canva.surf, self.canva.coord.xy)
+            self.pattern_holder.draw(self.win)
+            self.canva.draw(self.win)
 
     def draw_particles(self):
         spawners: list[ParticleSpawner] = self.particle_spawners.get(self.current_room.num, None)
@@ -570,10 +542,6 @@ class Game:
 
             case State.SHOP:
                 self.shop.draw(self.win, mouse_pos)
-
-            case State.PAINTING:
-                self.canva.paint(mouse_pos, self.selected_pattern, (0, 0, 0))
-                self.gui_state = State.INTERACTION
 
     def draw_debug_info(self, mouse_pos):
         self.win.blit(InfoPopup(

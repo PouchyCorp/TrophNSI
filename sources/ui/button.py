@@ -26,7 +26,7 @@ class Button:
         self.param = param if param else []
 
     def handle_event(self, event):
-        if event.type == pg.MOUSEBUTTONUP:
+        if event.type == pg.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
                 # Activates the button's effect when pressed 
