@@ -167,8 +167,9 @@ class Hivemind:
         """
         if not self.is_line_full():
             spritesheet_args = self.get_random_bot_spritesheet()
-            bot_sprite_height = spritesheet_args[0].img_size[0]
-            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x, 958 - bot_sprite_height + randint(-50, 50))),
+            bot_sprite_height = spritesheet_args[0].img_size[1]
+            random_height = (936 - bot_sprite_height) + randint(0, 132)
+            self.inline_bots[0] = Bot(Coord(1, (self.line_start_x, random_height)),
                                       gold_amount, spritesheet_args[0], spritesheet_args[1], spritesheet_args[2],
                                       randint(1, 3))
 

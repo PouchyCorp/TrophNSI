@@ -176,11 +176,12 @@ SPRITESHEET_ROOFTOP = anim.Spritesheet(load_image('data/rooftop.png'), (320*6,18
 #---------------------------------------------
 
 dust = ParticleSpawner(Coord(0,(0,0)), Vector2(0,0), (50,50,50,100), 60, dir_randomness=2, density=1, speed=0.1)
+none_particle = ParticleSpawner(Coord(0,(0,0)), Vector2(0,0), (0,0,0,0), 0, dir_randomness=0, density=0, speed=0)
 
 SPRITESHEET_ROBOT_1_PACK = (anim.Spritesheet(load_image('data/robots/robot_1.png'),(24*6,46*6)), [8, 8, 8, 8],
                              {"right_dust" :(dust.copy(), (4*6,46*6)),
                               "left_dust" :(dust.copy(), (20*6,46*6)),
-                              "light" :(ParticleSpawner(Coord(0,(0,0)), Vector2(0,0), (26,80,90,150), 60, dir_randomness=0, density=1, speed=0, radius=(5,5)), (13*6,30*6))})
+                              "light" :(ParticleSpawner(Coord(0,(0,0)), Vector2(0,0), (26,80,90,200), 60, dir_randomness=0, density=1, speed=0, radius=(4,4)), (13*6,30*6))})
 
 SPRITESHEET_ROBOT_2_PACK = (anim.Spritesheet(load_image('data/robots/robot_2.png'),(31*6,43*6)), [8, 8, 8, 8],
                             {"right_dust" :(dust.copy(), (6*6,43*6)),
@@ -199,8 +200,10 @@ SPRITESHEET_ROBOT_5_PACK = (anim.Spritesheet(load_image('data/robots/robot_5.png
                               "left_dust" :(dust.copy(), (26*6,48*6))})
 
 SPRITESHEET_ROBOT_6_PACK = (anim.Spritesheet(load_image('data/robots/robot_6.png'),(32*6,48*6)), [8, 8, 17, 23],
-                            {"right_dust" :(dust.copy(), (11*6,48*6)),
-                              "left_dust" :(dust.copy(), (26*6,48*6))})
+                            {"right_dust" :(none_particle.copy(), (11*6,48*6)),
+                              "left_dust" :(none_particle.copy(), (26*6,48*6)),
+                              "smoke_left" : (ParticleSpawner(Coord(0,(0,0)), Vector2(0,1), (150,150,150,200), 5, dir_randomness=0.75, density=5, speed=4, radius=(7,7)), (12*6, 45*6)),
+                              "smoke_right" : (ParticleSpawner(Coord(0,(0,0)), Vector2(0,1), (150,150,150,200), 5, dir_randomness=0.75, density=5, speed=4, radius=(7,7)), (20*6, 45*6))})
 
 SPRITESHEET_ROBOT_MUSIQUE_PACK = (anim.Spritesheet(load_image('data/robots/robot_musique.png'),(48*6,32*6)), [8])
 
