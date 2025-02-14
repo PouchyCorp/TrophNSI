@@ -20,7 +20,7 @@ Key Features:
 from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD, BLEND_RGBA_MULT, Vector2
 from math import sin, pi
 import utils.anim as anim
-from objects.particlesspawner import ParticleSpawner
+from objects.particlesspawner import ParticleSpawner, LineParticleSpawner
 from utils.coord import Coord
 
 if not display.get_init():
@@ -202,8 +202,7 @@ SPRITESHEET_ROBOT_5_PACK = (anim.Spritesheet(load_image('data/robots/robot_5.png
 SPRITESHEET_ROBOT_6_PACK = (anim.Spritesheet(load_image('data/robots/robot_6.png'),(32*6,48*6)), [8, 8, 17, 23],
                             {"right_dust" :(none_particle.copy(), (11*6,48*6)),
                               "left_dust" :(none_particle.copy(), (26*6,48*6)),
-                              "smoke_left" : (ParticleSpawner(Coord(0,(0,0)), Vector2(0,1), (150,150,150,200), 5, dir_randomness=0.75, density=5, speed=4, radius=(7,7)), (12*6, 45*6)),
-                              "smoke_right" : (ParticleSpawner(Coord(0,(0,0)), Vector2(0,1), (150,150,150,200), 5, dir_randomness=0.75, density=5, speed=4, radius=(7,7)), (20*6, 45*6))})
+                              "levitation" : (LineParticleSpawner(Coord(0,(0,0)), Vector2(1,0), Vector2(0,-1), (150,150,150,200), 25, dir_randomness=0, density=5, speed=1, radius=(4,4), line_length=96), (8*6, 48*6))})
 
 SPRITESHEET_ROBOT_MUSIQUE_PACK = (anim.Spritesheet(load_image('data/robots/robot_musique.png'),(48*6,32*6)), [8])
 

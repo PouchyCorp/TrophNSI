@@ -128,5 +128,26 @@ class ConfettiSpawner(ParticleSpawner):
         if self.finished_countdown <= 0:
             self.finished = True
 
+class LineParticleSpawner(ParticleSpawner):
+    def __init__(self, coord, line_vector : Vector2, direction, color, particle_lifetime, gravity = False, total_amount = None, speed = 5, dir_randomness=0.5, density=5, radius = (2, 10), line_length = 120):
+        super().__init__(coord, direction, color, particle_lifetime, gravity, total_amount, speed, dir_randomness, density, radius)
+        self.line_vector = line_vector
+        self.line_length = line_length
+
+    def get_particle(self):
+        rng_rad = randint(*self.radius)
+        rng_dir = Vector2(self.direction.x + uniform(-self.dir_randomness, self.dir_randomness), 
+                          self.direction.y + uniform(-self.dir_randomness, self.dir_randomness))
         
+        if rng_dir.magnitude():
+            rng_dir = rng_dir.normalize()*self.speed
+        
+        rng_col = choice(self.color_lookup_table)
+
+        t = uniform(0, 1)
+        x = self.coord.x + t * self.line_vector.x * self.line_length
+        y = self.coord.y + t * self.line_vector.y * self.line_length
+        coord = Coord(self.coord.room_num, (x, y))
+        
+        return Particle(coord, rng_rad, rng_dir, rng_col , self.gravity, self.particle_lifetime)
     
