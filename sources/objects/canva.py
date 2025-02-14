@@ -2,6 +2,8 @@ import pygame as pg
 from utils.coord import Coord
 from objects.placeable import Placeable
 from objects.patterns import Pattern
+from ui.inputbox import InputBox
+
 
 class Canva:
     def __init__(self, coord : Coord): 
@@ -14,6 +16,9 @@ class Canva:
         self.rect = self.surf.get_rect()
         self.rect.x, self.rect.y = self.coord.xy
         
+        self.name_input = InputBox(1446, 210, 100, 50)
+        self.confirm_button = pg.Rect(1556, 210, 100, 50)
+
         self.name = "peinture"
         self.placed_patterns = []
 
@@ -39,3 +44,14 @@ class Canva:
     
     def draw(self, win):
         win.blit(self.surf, self.coord.xy)
+        self.name_input.draw(win)
+        pg.draw.rect(win, pg.Color(170, 170, 230), self.confirm_button)
+
+    def handle_event(self, event):
+        self.name_input.handle_event(event)
+        if event.type == pg.MOUSEBUTTONUP and self.confirm_button.collidepoint(event.pos):
+            self.name = self.name_input.text
+            self.placed_patterns = []
+            return True
+        return False
+            

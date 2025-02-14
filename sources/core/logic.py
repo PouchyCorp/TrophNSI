@@ -191,6 +191,8 @@ class Game:
         
         if self.current_room.num == 0:
             self.pattern_holder.handle_event(event)
+            if self.canva.handle_event(event):
+                self.confirmation_popups.append(ConfirmationPopup(self.win, "are you sure you want to save the canva ?", self.save_canva))
 
 # -----------------------------
 # Keydown event handler
@@ -209,8 +211,6 @@ class Game:
                 self.toggle_destruction_mode()
             case pg.K_ESCAPE:
                 self.handle_escape_key()
-            case pg.K_i:
-                self.save_canva()
 
     def handle_cheat_keys(self, key):
         match key:
@@ -245,9 +245,7 @@ class Game:
             self.pause()
 
     def save_canva(self):
-        if self.current_room.num == 0 and self.gui_state == State.INTERACTION:
-            pass
-        #----------------------------------- To be implemented -----------------------------------
+        self.inventory.inv.append(self.canva.get_placeable())
 
     def toggle_shop(self):
         if self.gui_state is State.INTERACTION:
