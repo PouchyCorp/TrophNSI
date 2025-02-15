@@ -240,6 +240,7 @@ BUILD_MODE_BORDER = load_image("data/bordure_construction.png")
 
 DESTRUCTION_MODE_BORDER = load_image("data/destruction_bordure.png")
 
+FRAME_PAINTING = load_image("data/cadre.png")
 #---------------------------------------------
 #       List of the different patterns
 #---------------------------------------------
