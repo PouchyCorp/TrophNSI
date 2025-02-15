@@ -6,25 +6,27 @@ from typing_extensions import Optional
 import patterneffect
 
 class Pattern:
-    def __init__(self, coord, thumbnail : pg.Surface, effect = None, color : tuple = (0,0,0,255)):
+    def __init__(self, coord, thumbnail : pg.Surface, price, beauty, effect = None, color : tuple = (0,0,0,255)):
         self.thumbnail = thumbnail
         self.rect = self.thumbnail.get_rect(topleft = coord)
         self.effect = effect
         self.color = color
+        self.price = price
+        self.beauty = beauty
     
     def draw(self, win : pg.Surface):
         win.blit(self.thumbnail, self.rect.topleft)
 
     def get_effect(self):
         if self.effect:
-            return self.effect(self.thumbnail, self.color)
+            return self.effect(self.thumbnail)
     
     def copy(self):
-        return Pattern(self.rect.topleft, self.thumbnail, self.effect, self.color)
+        return Pattern(self.rect.topleft, self.thumbnail, self.price, self.beauty, self.effect, self.color)
 
 class PatternHolder:
     def __init__(self, coord : Coord, canva):
-        self.patterns : list[Pattern] = [Pattern(coord.xy, thumbnail, patterneffect.placeholder) for thumbnail in PATTERN_LIST]
+        self.patterns : list[Pattern] = [Pattern(coord.xy, thumbnail, i+1, i+1,  patterneffect.placeholder) for i, thumbnail in enumerate(PATTERN_LIST)]
         self.coord = coord 
         self.buttons : list[Button] = self.init_buttons()
         self.holded_pattern : Optional[Pattern]= None

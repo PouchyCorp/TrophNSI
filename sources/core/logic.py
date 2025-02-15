@@ -276,7 +276,7 @@ class Game:
             case subplaceable.SpectatorPlaceable:
                 self.handle_spectator_interaction(placeable)
             case _:
-                self.popups.append(InfoPopup('bip boup erreur erreur'))
+                self.popups.append(InfoPopup(placeable.name))
 
     def handle_door_down_interaction(self, placeable):
         if self.current_room.num == 0:

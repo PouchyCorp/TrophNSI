@@ -17,14 +17,20 @@ Key Features:
 """
 
 
-from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD, BLEND_RGBA_MULT, Vector2
+from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD, BLEND_RGBA_MULT, Vector2, surfarray
 from math import sin, pi
 import utils.anim as anim
 from objects.particlesspawner import ParticleSpawner, LineParticleSpawner
 from utils.coord import Coord
 
+
 if not display.get_init():
     display.set_mode((0,0))
+
+def invert_alpha(surface):
+    alpha_array = surfarray.pixels_alpha(surface)
+    alpha_array[:] = 255 - alpha_array[:]  # Invert alpha values (0 <-> 255)
+    del alpha_array
 
 def load_image(path : str):
     sprite = image.load(path)
