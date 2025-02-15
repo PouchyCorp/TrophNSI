@@ -3,13 +3,13 @@ from utils.coord import Coord
 from objects.placeable import Placeable
 from objects.patterns import Pattern
 from ui.inputbox import InputBox
-
+from ui.sprite import FRAME_PAINTING
 
 class Canva:
     def __init__(self, coord : Coord): 
         self.coord = coord
 
-        self.size = (678,1020)
+        self.size = (672,1020)
         self.surf = pg.Surface(self.size)
         self.surf.fill(pg.Color(240,240,240))
         
@@ -24,7 +24,8 @@ class Canva:
 
     def get_placeable(self) -> Placeable:
         scaled_surf = pg.transform.scale_by(self.surf,0.5).convert()
-        placeable = Placeable(self.name, self.coord, scaled_surf)
+        FRAME_PAINTING.blit(scaled_surf,(12,12))
+        placeable = Placeable(self.name, self.coord, FRAME_PAINTING)
         return placeable
     
     def reset(self):
