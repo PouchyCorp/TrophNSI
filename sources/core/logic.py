@@ -490,8 +490,8 @@ class Game:
 
     def draw_patterns_and_canva(self):
         if self.current_room.num == 0:
-            self.pattern_holder.draw(self.win)
             self.canva.draw(self.win)
+            self.pattern_holder.draw(self.win)
 
     def draw_particles(self):
         spawners: list[ParticleSpawner] = self.particle_spawners.get(self.current_room.num, None)

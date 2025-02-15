@@ -18,6 +18,9 @@ class Pattern:
     def get_effect(self):
         if self.effect:
             return self.effect(self.thumbnail, self.color)
+    
+    def copy(self):
+        return Pattern(self.rect.topleft, self.thumbnail, self.effect, self.color)
 
 class PatternHolder:
     def __init__(self, coord : Coord, canva):
@@ -61,7 +64,7 @@ class PatternHolder:
     def drop_pattern(self, pos):
         if self.canva.rect.collidepoint(pos):
             self.holded_pattern.rect.center = pos
-            self.canva.draw_pattern(self.holded_pattern)
+            self.canva.place_pattern(self.holded_pattern.copy())
         self.holded_pattern = None
     
     def draw(self, win : pg.Surface):
