@@ -59,7 +59,7 @@ class Canva:
     def get_placeable(self) -> Placeable:
         scaled_surf = pg.transform.scale_by(self.surf.copy(),0.5).convert()
         FRAME_PAINTING.blit(scaled_surf,(12,12))
-        placeable = Placeable(self.name, self.coord, FRAME_PAINTING, beauty=self.total_beauty, tag="decoration")
+        placeable = Placeable(self.name, self.coord, FRAME_PAINTING.copy(), beauty=self.total_beauty, tag="decoration")
         self.reset()
         return placeable
     
