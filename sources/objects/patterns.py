@@ -79,6 +79,6 @@ class PatternHolder:
     
     def draw(self, win : pg.Surface):
         for button in self.buttons:
-            button.draw(win, False)
+            button.draw(win, button.rect.collidepoint(pg.mouse.get_pos()))
         if self.holded_pattern:
             self.holded_pattern.draw(win)

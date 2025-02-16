@@ -79,7 +79,7 @@ R3 = ROOMS[3]
 R4 = ROOMS[4]
 R5 = ROOMS[5]
 
-DEFAULT_SAVE = {'gold': 0,
+DEFAULT_SAVE = {'gold': 10,
                 "beauty": 0,
                 "inventory": [Placeable('cheater beauty', Coord(2, (100, 100)), sprite.PROP_STATUE, "decoration", y_constraint=0, price=50, beauty=1000)],
 

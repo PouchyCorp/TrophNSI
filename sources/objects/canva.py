@@ -9,6 +9,8 @@ from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
 from utils.fonts import TERMINAL_FONT
 
+COLORS = [(0,0,0), (255,255,255), (255,0,0), (0,0,255), (0,255,0)]
+
 class Canva:
     def __init__(self, coord : Coord, game): 
         self.coord = coord
@@ -22,8 +24,10 @@ class Canva:
         self.rect.x, self.rect.y = self.coord.xy
         
         self.name_input = InputBox(1446, 210, 100, 50)
-        self.confirm_button = Button((1556, 210), int, whiten(NO_BUTTON), NO_BUTTON) # Int is a callable placeholder.
+        self.confirm_button = Button((1556, 210), self.attempt_save, whiten(NO_BUTTON), NO_BUTTON) # Int is a callable placeholder.
         self.paint_button = Button((1556, 310), self.start_painting, whiten(YES_BUTTON), YES_BUTTON)
+
+        self.color_buttons = self.init_color_buttons()
         
         from core.logic import Game
         self.game : Game = game
@@ -34,6 +38,23 @@ class Canva:
 
         self.total_price = 0
         self.total_beauty = 0
+
+        self.current_color = (255,0,0)
+
+    def change_color(self, color):
+        self.current_color = color
+
+    def init_color_buttons(self):
+        buttons : list[Button] = []
+        size = (120,120)
+        x = 12
+        y = 384
+        for color in COLORS:
+            surf = pg.Surface(size)
+            surf.fill(color)
+            buttons.append(Button((x, y), self.change_color, whiten(surf), surf, [color]))
+            y+=size[1]+12
+        return buttons
 
     def get_placeable(self) -> Placeable:
         scaled_surf = pg.transform.scale_by(self.surf.copy(),0.5).convert()
@@ -73,7 +94,7 @@ class Canva:
             self.draw_pattern(temp_surf, pattern)
 
         invert_alpha(temp_surf)
-        temp_surf.fill((200,50,50,0), special_flags=pg.BLEND_RGBA_MAX)
+        temp_surf.fill(self.current_color+tuple([0]), special_flags=pg.BLEND_RGBA_MAX)
 
         self.surf.blit(temp_surf, (0,0))
 
@@ -109,7 +130,10 @@ class Canva:
         else:
             self.game.popups.append(InfoPopup("Vous reposez le pochoir dans l'armoire."))
         self.holded_pattern = None
-    
+    def attempt_save(self):
+        self.name = self.name_input.text
+        self.game.confirmation_popups.append(ConfirmationPopup(self.game.win, "are you sure you want to save the canva ?", self.game.save_canva))
+
     def draw(self, win):
         win.blit(self.surf, self.coord.xy)
 
@@ -124,16 +148,20 @@ class Canva:
         self.name_input.draw(win)
         self.confirm_button.draw(win, self.confirm_button.rect.collidepoint(pg.mouse.get_pos()))
         self.paint_button.draw(win, self.paint_button.rect.collidepoint(pg.mouse.get_pos()))
+        for button in self.color_buttons:
+            button.draw(win, button.rect.collidepoint(pg.mouse.get_pos()))
 
     def handle_event(self, event):
         mouse_pos = pg.mouse.get_pos()
 
         self.name_input.handle_event(event)
         self.paint_button.handle_event(event)
-        if self.confirm_button.handle_event(event):
-            self.name = self.name_input.text
-            self.game.confirmation_popups.append(ConfirmationPopup(self.game.win, "are you sure you want to save the canva ?", self.game.save_canva))
+        self.confirm_button.handle_event(event)
         
+        for button in self.color_buttons:
+            button.handle_event(event)
+
+
         eventual_collided_pattern = [pattern for pattern in self.placed_patterns if pattern.rect.collidepoint(mouse_pos)]
         if event.type == pg.MOUSEBUTTONDOWN and eventual_collided_pattern:
             self.hold_pattern(eventual_collided_pattern[0])
