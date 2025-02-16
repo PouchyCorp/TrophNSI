@@ -3,6 +3,7 @@ import pygame as pg
 from ui.button import Button
 from ui.sprite import whiten, PATTERN_LIST
 from typing_extensions import Optional
+from ui.infopopup import InfoPopup
 import patterneffect
 
 class Pattern:
@@ -30,14 +31,16 @@ class PatternHolder:
         self.coord = coord 
         self.buttons : list[Button] = self.init_buttons()
         self.holded_pattern : Optional[Pattern]= None
-        self.canva = canva
+
+        from objects.canva import Canva
+        self.canva : Canva = canva
 
     def init_buttons(self):
         buttons = []
         y = self.coord.y
         x = self.coord.x
         for i, pattern in enumerate(self.patterns):
-            button = Button((0,0), self.activate_pattern, whiten(pattern.thumbnail), pattern.thumbnail, [i])
+            button = Button((0,0), self.hold_pattern, whiten(pattern.thumbnail), pattern.thumbnail, [i])
             x += button.rect.width * 1.5
             if i and i % 4 == 0:
                 x = self.coord.x
@@ -48,7 +51,8 @@ class PatternHolder:
             buttons.append(button)
         return buttons
 
-    def activate_pattern(self, pattern_id):
+    def hold_pattern(self, pattern_id):
+        self.canva.game.sound_manager.items.play()
         self.holded_pattern = self.patterns[pattern_id]
         self.holded_pattern.rect.center = pg.mouse.get_pos()
 
@@ -67,6 +71,10 @@ class PatternHolder:
         if self.canva.rect.collidepoint(pos):
             self.holded_pattern.rect.center = pos
             self.canva.place_pattern(self.holded_pattern.copy())
+            self.canva.game.sound_manager.items.play()
+        else:
+            self.canva.game.popups.append(InfoPopup("Vous reposez le pochoir dans l'armoire."))
+        
         self.holded_pattern = None
     
     def draw(self, win : pg.Surface):

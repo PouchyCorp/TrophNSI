@@ -5,9 +5,12 @@ from objects.patterns import Pattern
 from ui.inputbox import InputBox
 from ui.sprite import FRAME_PAINTING, invert_alpha, YES_BUTTON, NO_BUTTON, whiten
 from ui.button import Button
+from ui.confirmationpopup import ConfirmationPopup
+from ui.infopopup import InfoPopup
+from utils.fonts import TERMINAL_FONT
 
 class Canva:
-    def __init__(self, coord : Coord): 
+    def __init__(self, coord : Coord, game): 
         self.coord = coord
 
         self.size = (672,1020)
@@ -20,7 +23,10 @@ class Canva:
         
         self.name_input = InputBox(1446, 210, 100, 50)
         self.confirm_button = Button((1556, 210), int, whiten(NO_BUTTON), NO_BUTTON) # Int is a callable placeholder.
-        self.paint_button = Button((1556, 250), self.start_painting, whiten(YES_BUTTON), YES_BUTTON)
+        self.paint_button = Button((1556, 310), self.start_painting, whiten(YES_BUTTON), YES_BUTTON)
+        
+        from core.logic import Game
+        self.game : Game = game
 
         self.name = "peinture"
         self.placed_patterns : list[Pattern] = []
@@ -32,17 +38,31 @@ class Canva:
     def get_placeable(self) -> Placeable:
         scaled_surf = pg.transform.scale_by(self.surf.copy(),0.5).convert()
         FRAME_PAINTING.blit(scaled_surf,(12,12))
-        placeable = Placeable(self.name, self.coord, FRAME_PAINTING)
+        placeable = Placeable(self.name, self.coord, FRAME_PAINTING, beauty=self.total_beauty, tag="decoration")
         self.reset()
         return placeable
+    
+    def check_price(self, price):
+        if self.game.money - price >= 0:
+            self.game.money -= price
+            return True
+        else:
+            self.game.popups.append(InfoPopup("Vous n'avez pas assez d'argent pour peindre :("))
+            self.game.sound_manager.incorrect.play()
+            return False
 
     def get_price(self):
         self.total_price = 0
         for pattern in self.placed_patterns:
             self.total_price += pattern.price
+        return self.total_price
+
+    def add_to_beauty(self, patterns : list[Pattern]):
+        for pattern in patterns:
+            self.total_beauty += pattern.beauty
     
     def reset(self):
-        self.__init__(self.coord)
+        self.__init__(self.coord, self.game)
     
     def get_next_stage(self):
         temp_surf = pg.Surface(self.size)
@@ -58,7 +78,9 @@ class Canva:
         self.surf.blit(temp_surf, (0,0))
 
     def start_painting(self):
-        self.get_next_stage()
+        if self.check_price(self.get_price()):
+            self.get_next_stage()
+            self.add_to_beauty(self.placed_patterns)
     
     def draw_pattern(self, surf, pattern : Pattern):
         """Imprints the pattern on the canva."""
@@ -77,11 +99,15 @@ class Canva:
         self.get_price()
         self.holded_pattern = pattern
         self.holded_pattern.rect.center = pg.mouse.get_pos()
+        self.game.sound_manager.items.play()
     
     def drop_pattern(self, pos):
         if self.rect.collidepoint(pos):
             self.holded_pattern.rect.center = pos
             self.place_pattern(self.holded_pattern)
+            self.game.sound_manager.items.play()
+        else:
+            self.game.popups.append(InfoPopup("Vous reposez le pochoir dans l'armoire."))
         self.holded_pattern = None
     
     def draw(self, win):
@@ -92,6 +118,8 @@ class Canva:
         
         if self.holded_pattern:
             self.holded_pattern.draw(win)
+        
+        win.blit(TERMINAL_FONT.render(f"Prix : {self.total_price} / Beauté totale : {self.total_beauty}", True, 'blue'), (1356, 110))
 
         self.name_input.draw(win)
         self.confirm_button.draw(win, self.confirm_button.rect.collidepoint(pg.mouse.get_pos()))
@@ -104,11 +132,12 @@ class Canva:
         self.paint_button.handle_event(event)
         if self.confirm_button.handle_event(event):
             self.name = self.name_input.text
-            return True
+            self.game.confirmation_popups.append(ConfirmationPopup(self.game.win, "are you sure you want to save the canva ?", self.game.save_canva))
         
         eventual_collided_pattern = [pattern for pattern in self.placed_patterns if pattern.rect.collidepoint(mouse_pos)]
         if event.type == pg.MOUSEBUTTONDOWN and eventual_collided_pattern:
             self.hold_pattern(eventual_collided_pattern[0])
+
         
         if self.holded_pattern:
             if event.type == pg.MOUSEBUTTONUP:

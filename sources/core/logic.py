@@ -29,8 +29,6 @@ class State(Enum):
     BUILD = auto()
     DESTRUCTION = auto()
     INVENTORY = auto()
-    PAINTING = auto()
-    PLACING_PATTERN = auto()
     DIALOG = auto()
     TRANSITION = auto()
     CONFIRMATION = auto()
@@ -89,7 +87,7 @@ class Game:
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
         self.unlock_manager : UnlockManager = unlock_manager
-        self.canva : Canva = Canva(Coord(0,(621,30)))
+        self.canva : Canva = Canva(Coord(0,(621,30)), self)
         self.pattern_holder : PatternHolder = PatternHolder(Coord(0, (0, 0)), canva=self.canva)
         self.paused = False
 
@@ -139,6 +137,7 @@ class Game:
         self.quit_button.rect.center = self.win.get_rect().center
         
     def quit(self):
+        print('Quitting game ...')
         pg.event.post(pg.event.Event(pg.QUIT))
     
     def reset_guistate(self):
@@ -186,13 +185,12 @@ class Game:
         if hasattr(self, "spectating_placeable") and self.spectating_placeable.open and self.current_room.num == 5:
             self.spectating_placeable.user_list.handle_event(event)
 
-        if event.type == pg.MOUSEBUTTONUP:
-            self.handle_mouse_button_up(event, mouse_pos)
+        if event.type == pg.MOUSEBUTTONDOWN:
+            self.handle_mouse_button_down(event, mouse_pos)
         
         if self.current_room.num == 0:
             self.pattern_holder.handle_event(event)
-            if self.canva.handle_event(event):
-                self.confirmation_popups.append(ConfirmationPopup(self.win, "are you sure you want to save the canva ?", self.save_canva))
+            self.canva.handle_event(event)
 
 # -----------------------------
 # Keydown event handler
@@ -338,7 +336,7 @@ class Game:
 # Mouse button up event handler
 # -----------------------------
 
-    def handle_mouse_button_up(self, event: pg.event.Event, mouse_pos: Coord):
+    def handle_mouse_button_down(self, event: pg.event.Event, mouse_pos: Coord):
         """
         Handles mouse button release events based on the current GUI state.
         """
@@ -363,9 +361,6 @@ class Game:
 
             case State.CONFIRMATION:
                 self.handle_confirmation_mode(mouse_pos)
-
-            case State.PLACING_PATTERN:
-                self.handle_placing_pattern_mode(mouse_pos)
 
             case State.PAUSED:
                 self.quit_button.handle_event(event)
