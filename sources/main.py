@@ -16,7 +16,7 @@ Key Features:
 
 Notes:
 ------
-The main loop is in sources/core/logic.py.
+The main loop is in sources/core/logic.py
 """
 
 

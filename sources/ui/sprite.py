@@ -18,7 +18,7 @@ Key Features:
 
 
 from pygame import image, Surface, transform, SRCALPHA, BLEND_RGBA_MAX, display, Rect, BLEND_RGB_ADD, BLEND_RGBA_MULT, Vector2, surfarray
-from math import sin, pi
+from math import sin, pi, sqrt, acos, atan2, degrees, cos
 import utils.anim as anim
 from objects.particlesspawner import ParticleSpawner, LineParticleSpawner
 from utils.coord import Coord
@@ -129,6 +129,36 @@ def fondu(surf : Surface, incr ,speed) -> Surface:
         incr += speed
     
     return incr
+
+def point_rotate(image, origin, pivot, angle):
+    image_rect = image.get_rect(topleft = (origin[0] - pivot[0], origin[1]-pivot[1]))
+    offset_center_to_pivot = Vector2(origin) - image_rect.center
+    rotated_offset = offset_center_to_pivot.rotate(-angle)
+    rotated_image_center = (origin[0] - rotated_offset.x, origin[1] - rotated_offset.y)
+    rotated_image = transform.rotate(image, angle)
+    rotated_image_rect = rotated_image.get_rect(center = rotated_image_center)
+    return rotated_image, rotated_image_rect
+
+def inverse_kinematics(target, root, length1, length2):
+    """ Compute the angles needed to reach the target using 2D inverse kinematics """
+    dx = target[0] - root[0]
+    dy = target[1] - root[1]
+    distance = sqrt(dx**2 + dy**2)
+
+    # Constrain target distance
+    distance = min(distance, length1 + length2)
+
+    # Compute angle for the second joint using the Law of Cosines
+    cos_angle2 = (dx**2 + dy**2 - length1**2 - length2**2) / (2 * length1 * length2)
+    angle2 = acos(max(-1, min(1, cos_angle2)))  # Clamp to valid range
+
+    # Compute angle for the first joint using the Law of Sines
+    k1 = length1 + length2 * cos(angle2)
+    k2 = length2 * sin(angle2)
+    angle1 = atan2(dy, dx) - atan2(k2, k1)
+
+    # Transform into global angles
+    return degrees(angle1), degrees(angle2 + angle1)
 
 
 BG1 = load_image("data/bg_test_approfondis.png")
@@ -245,6 +275,10 @@ CHIP_BUTTON = load_image("data/chip_button.png")
 BUILD_MODE_BORDER = load_image("data/bordure_construction.png")
 
 DESTRUCTION_MODE_BORDER = load_image("data/destruction_bordure.png")
+
+ARM = load_image("data/bra_articuler_1.png")
+
+SPRAYER = load_image("data/buse.png")
 
 FRAME_PAINTING = load_image("data/cadre.png")
 #---------------------------------------------

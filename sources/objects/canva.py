@@ -3,7 +3,7 @@ from utils.coord import Coord
 from objects.placeable import Placeable
 from objects.patterns import Pattern
 from ui.inputbox import InputBox
-from ui.sprite import FRAME_PAINTING, invert_alpha, YES_BUTTON, NO_BUTTON, whiten
+from ui.sprite import FRAME_PAINTING, invert_alpha, YES_BUTTON, NO_BUTTON, whiten, ARM, SPRAYER, point_rotate, inverse_kinematics
 from ui.button import Button
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
@@ -40,6 +40,11 @@ class Canva:
 
         self.total_price = 0
         self.total_beauty = 0
+
+        self.arm_root = (552, 469)
+        self.default_target = (572, 469)
+        self.arm = {'surf' : ARM.copy(), 'len' : ARM.copy().get_size()[0], 'angle' : 0}
+        self.forearm = {'surf' : ARM.copy(), 'len' : ARM.copy().get_size()[0], 'angle' : 0}
 
         self.current_color = (255,0,0)
 
@@ -127,16 +132,24 @@ class Canva:
                       ["R",width],["D",optimal_height],["L",width], ["D",optimal_height],
                       ["R",width],["D",optimal_height],["L",width], ["D",optimal_height], ["R",width]]            
         current_dir = path_stack.pop()
-
+        active = True
+        static_particles.active = True
+        aura_particles.active = True
         clock = pg.time.Clock()
         while path_stack:
             clock.tick(60)
 
-            center.xy = (self.coord.x+paint_gun_pos[0]+circle_radius, self.coord.y+paint_gun_pos[1]+circle_radius)
-            self.surf.blit(self.get_round_mask(next_surf, tuple(paint_gun_pos), circle_radius), paint_gun_pos)
+            if current_dir == 'toggle':
+                active = not active
+                static_particles.active = not static_particles.active
+                aura_particles.active = not aura_particles.active
+                current_dir = path_stack.pop()
 
             if current_dir[1] <= 0:
                 current_dir = path_stack.pop()
+            
+            if active:
+                self.surf.blit(self.get_round_mask(next_surf, tuple(paint_gun_pos), circle_radius), paint_gun_pos)
 
             current_dir[1] -= step
 
@@ -152,16 +165,22 @@ class Canva:
                     paint_gun_pos[0] -= next_step
                 case "D":
                     paint_gun_pos[1] += next_step
+                case "U":
+                    paint_gun_pos[1] -= next_step
             
             mouse_pos = Coord(0,pg.mouse.get_pos())
+            center.xy = (self.coord.x+paint_gun_pos[0]+circle_radius, self.coord.y+paint_gun_pos[1]+circle_radius)
+
             self.game.update(mouse_pos)
             self.game.draw(mouse_pos)
+            self.blit_arms(self.game.win)
+    
+            self.arm['angle'], self.forearm['angle'] = inverse_kinematics(center.xy, self.arm_root, self.arm['len'], self.forearm['len'])
 
             pg.display.flip()
 
         static_particles.active = False
         aura_particles.active = False
-
         self.game.timer.create_timer(5, self.game.particle_spawners[0].remove, arguments=[static_particles])
         self.game.timer.create_timer(5, self.game.particle_spawners[0].remove, arguments=[aura_particles])
 
@@ -202,7 +221,7 @@ class Canva:
         self.name = self.name_input.text
         self.game.confirmation_popups.append(ConfirmationPopup(self.game.win, "are you sure you want to save the canva ?", self.game.save_canva))
 
-    def draw(self, win):
+    def draw(self, win : pg.Surface):
         win.blit(self.surf, self.coord.xy)
 
         for placed_pattern in self.placed_patterns:
@@ -218,6 +237,26 @@ class Canva:
         self.paint_button.draw(win, self.paint_button.rect.collidepoint(pg.mouse.get_pos()))
         for button in self.color_buttons:
             button.draw(win, button.rect.collidepoint(pg.mouse.get_pos()))
+        
+        self.blit_arms(win)
+    
+    def blit_arms(self, win):
+        rotated_surf, rect = point_rotate(self.arm['surf'], self.arm_root, (5,5), -self.arm['angle'])
+        relative_arm_vector = pg.Vector2(self.arm['len'], 0)
+        rotated_arm_vector = relative_arm_vector.rotate(self.arm['angle'])
+        global_arm_end_pos = rotated_arm_vector + pg.Vector2(self.arm_root)
+
+        rotated_surf2, rect2 = point_rotate(self.forearm['surf'], global_arm_end_pos, (5,5), -self.forearm['angle'])
+
+        relative_forearm_vector = pg.Vector2(self.forearm['len'], 0)
+        rotated_forearm_vector = relative_forearm_vector.rotate(self.forearm['angle'])
+        global_forearm_end_pos = rotated_forearm_vector + rotated_arm_vector + pg.Vector2(self.arm_root)
+
+        sprayer_rect = SPRAYER.get_rect(center = global_forearm_end_pos)
+
+        win.blit(rotated_surf, rect)
+        win.blit(rotated_surf2, rect2)
+        win.blit(SPRAYER, sprayer_rect)
 
     def handle_event(self, event):
         mouse_pos = pg.mouse.get_pos()
