@@ -3,6 +3,7 @@ from utils.coord import Coord
 from typing_extensions import Optional
 from random import randint, uniform, choice
 from colorsys import rgb_to_hls, hls_to_rgb
+from math import cos, sin, pi
 
 class Particle:
     def __init__(self, coord : Coord, radius : float, direction : Vector2, color : Optional[tuple], gravity = 0, lifetime = 60):
@@ -147,6 +148,32 @@ class LineParticleSpawner(ParticleSpawner):
         t = uniform(0, 1)
         x = self.coord.x + t * self.line_vector.x * self.line_length
         y = self.coord.y + t * self.line_vector.y * self.line_length
+        coord = Coord(self.coord.room_num, (x, y))
+        
+        return Particle(coord, rng_rad, rng_dir, rng_col , self.gravity, self.particle_lifetime)
+    
+class CircleParticleSpawner(ParticleSpawner):
+    def __init__(self, coord, aura_radius, direction, color, particle_lifetime, gravity = False, total_amount = None, speed = 5, dir_randomness=0.5, density=5, radius = (2, 10)):
+        super().__init__(coord, direction, color, particle_lifetime, gravity, total_amount, speed, dir_randomness, density, radius)
+        self.aura_radius = aura_radius
+
+    def get_particle(self):
+        rng_rad = randint(*self.radius)
+        rng_dir = Vector2(self.direction.x + uniform(-self.dir_randomness, self.dir_randomness), 
+                          self.direction.y + uniform(-self.dir_randomness, self.dir_randomness))
+        
+        if rng_dir.magnitude():
+            rng_dir = rng_dir.normalize()*self.speed
+        
+        rng_col = choice(self.color_lookup_table)
+
+        rng_vec = Vector2(cos(uniform(-pi, pi)),
+                          sin(uniform(-pi, pi)))
+        rng_vec.normalize()
+        scaled_rng_vec = rng_vec*uniform(0,self.aura_radius)
+        x = self.coord.x+scaled_rng_vec.x
+        y = self.coord.y+scaled_rng_vec.y
+        
         coord = Coord(self.coord.room_num, (x, y))
         
         return Particle(coord, rng_rad, rng_dir, rng_col , self.gravity, self.particle_lifetime)

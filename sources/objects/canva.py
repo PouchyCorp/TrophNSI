@@ -8,6 +8,8 @@ from ui.button import Button
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
 from utils.fonts import TERMINAL_FONT
+from math import sqrt, ceil
+from objects.particlesspawner import CircleParticleSpawner, ParticleSpawner
 
 COLORS = [(0,0,0), (255,255,255), (255,0,0), (0,0,255), (0,255,0)]
 
@@ -85,22 +87,87 @@ class Canva:
     def reset(self):
         self.__init__(self.coord, self.game)
     
-    def get_next_stage(self):
-        temp_surf = pg.Surface(self.size)
-        temp_surf = temp_surf.convert_alpha()
-        temp_surf.fill((0,0,0,0))
+    def get_round_mask(self, surface : pg.Surface, xy : tuple, circle_radius):
+        circle_surf = pg.Surface((circle_radius * 2, circle_radius * 2), pg.SRCALPHA)
+        pg.draw.circle(circle_surf, (255, 255, 255, 255), (circle_radius, circle_radius), circle_radius)
+
+        circle_surf.blit(surface, (-xy[0], -xy[1]), special_flags=pg.BLEND_RGBA_MIN)
+        return circle_surf
+    
+    def get_next_surf(self):
+        next_surf = pg.Surface(self.size)
+        next_surf = next_surf.convert_alpha()
+        next_surf.fill((0,0,0,0))
 
         for pattern in self.placed_patterns:
-            self.draw_pattern(temp_surf, pattern)
+            self.draw_pattern(next_surf, pattern)
 
-        invert_alpha(temp_surf)
-        temp_surf.fill(self.current_color+tuple([0]), special_flags=pg.BLEND_RGBA_MAX)
+        invert_alpha(next_surf)
+        next_surf.fill(self.current_color+tuple([0]), special_flags=pg.BLEND_RGBA_MAX)
+        return next_surf
+    
+    def start_anim(self, next_surf):
 
-        self.surf.blit(temp_surf, (0,0))
+        circle_radius = 120
+        step = 25
+        optimal_corner = ceil((circle_radius-(circle_radius*sqrt(2)/2)))
+        optimal_height = ceil(circle_radius*sqrt(2))
+        width = (self.size[0]-(circle_radius+optimal_corner))
+
+        paint_gun_pos = [-optimal_corner, -optimal_corner]
+
+        center = Coord(0,(self.coord.x+paint_gun_pos[0]+circle_radius, self.coord.y+paint_gun_pos[1]+circle_radius))
+        static_particles = CircleParticleSpawner(center, circle_radius, pg.Vector2(0,0), self.current_color, 600, density=50, dir_randomness=0, radius=(10,20))
+        aura_particles = ParticleSpawner(center, pg.Vector2(0,0), self.current_color, 60, dir_randomness=2)
+
+
+        self.game.particle_spawners[0] += [static_particles, aura_particles]
+        #order is inversed as it is a stack
+        path_stack = [["R",width], ["D",optimal_height],["L",width],["D",optimal_height],
+                      ["R",width],["D",optimal_height],["L",width], ["D",optimal_height],
+                      ["R",width],["D",optimal_height],["L",width], ["D",optimal_height], ["R",width]]            
+        current_dir = path_stack.pop()
+
+        clock = pg.time.Clock()
+        while path_stack:
+            clock.tick(60)
+
+            center.xy = (self.coord.x+paint_gun_pos[0]+circle_radius, self.coord.y+paint_gun_pos[1]+circle_radius)
+            self.surf.blit(self.get_round_mask(next_surf, tuple(paint_gun_pos), circle_radius), paint_gun_pos)
+
+            if current_dir[1] <= 0:
+                current_dir = path_stack.pop()
+
+            current_dir[1] -= step
+
+            if current_dir[1] < 0:
+                next_step = step + current_dir[1]
+            else:
+                next_step = step
+
+            match current_dir[0]:
+                case "R":
+                    paint_gun_pos[0] += next_step
+                case "L":
+                    paint_gun_pos[0] -= next_step
+                case "D":
+                    paint_gun_pos[1] += next_step
+            
+            mouse_pos = Coord(0,pg.mouse.get_pos())
+            self.game.update(mouse_pos)
+            self.game.draw(mouse_pos)
+
+            pg.display.flip()
+
+        static_particles.active = False
+        aura_particles.active = False
+
+        self.game.timer.create_timer(5, self.game.particle_spawners[0].remove, arguments=[static_particles])
+        self.game.timer.create_timer(5, self.game.particle_spawners[0].remove, arguments=[aura_particles])
 
     def start_painting(self):
         if self.check_price(self.get_price()):
-            self.get_next_stage()
+            self.start_anim(self.get_next_surf())
             self.add_to_beauty(self.placed_patterns)
     
     def draw_pattern(self, surf, pattern : Pattern):
@@ -130,6 +197,7 @@ class Canva:
         else:
             self.game.popups.append(InfoPopup("Vous reposez le pochoir dans l'armoire."))
         self.holded_pattern = None
+
     def attempt_save(self):
         self.name = self.name_input.text
         self.game.confirmation_popups.append(ConfirmationPopup(self.game.win, "are you sure you want to save the canva ?", self.game.save_canva))
