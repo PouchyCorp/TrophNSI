@@ -135,6 +135,10 @@ class Canva:
         active = True
         static_particles.active = True
         aura_particles.active = True
+        
+        true_next_surf = self.surf.copy()
+        true_next_surf.blit(next_surf, (0,0))
+
         clock = pg.time.Clock()
         while path_stack:
             clock.tick(60)
@@ -178,7 +182,8 @@ class Canva:
             self.arm['angle'], self.forearm['angle'] = inverse_kinematics(center.xy, self.arm_root, self.arm['len'], self.forearm['len'])
 
             pg.display.flip()
-
+        
+        self.surf = true_next_surf
         static_particles.active = False
         aura_particles.active = False
         self.game.timer.create_timer(5, self.game.particle_spawners[0].remove, arguments=[static_particles])
