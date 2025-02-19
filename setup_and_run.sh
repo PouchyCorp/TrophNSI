@@ -16,6 +16,3 @@ pip install -r requirements.txt
 echo "Launching the game..."
 echo "Credits : PouchyCorp, Tioh, Ytyt, Leih"
 python3 sources/main.py
-
-# Deactivate the environment
-source creative_core_venv/bin/deactivate
