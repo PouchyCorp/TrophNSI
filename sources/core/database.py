@@ -259,7 +259,7 @@ class PgDataBase:
                     from sys import exit
                     exit()
 
-                if event.type in [pg.MOUSEBUTTONUP, pg.KEYDOWN]:
+                if event.type in [pg.MOUSEBUTTONUP, pg.KEYDOWN, pg.MOUSEBUTTONDOWN]:
                     match self.gui_state:
                         case LoginStates.LOGIN:
                             self.password_input.handle_event(event)

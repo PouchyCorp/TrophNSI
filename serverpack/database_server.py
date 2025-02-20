@@ -39,6 +39,7 @@ def initialize_database():
     ''')
     connection.commit()
     connection.close()
+    print("Base de donnée initialisée :)")
 
 def execute_query(query: str, read: bool, query_parameters: tuple = ()):
     """Execute a SQL query on the return the result if read is True."""
