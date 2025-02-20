@@ -38,15 +38,14 @@ def init_rooms():
 
     # R1
     R1 = Room(1, sprite.BG1)
-    test_canva = Placeable('test_canva', Coord(
-        1, (1000, 100)), Surface((48*6, 64*6)), "decoration")
+    guichet = subplaceable.DeskPlaceable('guichet', Coord(1, (900, 500)), Surface((0,0)))
     auto_cachier = subplaceable.AutoCachierPlaceable(
         'AutoCachierPlaceable', Coord(1, (1500, 700)), Surface((10*6, 10*6)))
     inventory_plcb = subplaceable.InvPlaceable(
         "Inventory", Coord(1, (1536, 186)), Surface((53*6, 31*6)))
-    R1.placed += [test_canva, stairs_up,
+    R1.placed += [guichet, stairs_up,
                   stairs_down, auto_cachier, inventory_plcb]
-    R1.blacklist += [stairs_up, stairs_down, auto_cachier, inventory_plcb]
+    R1.blacklist += [stairs_up, stairs_down, auto_cachier, inventory_plcb, guichet]
 
     # R2
     R2 = Room(2, sprite.BG3)

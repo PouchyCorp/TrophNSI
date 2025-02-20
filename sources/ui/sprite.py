@@ -224,6 +224,8 @@ SPRITESHEET_BAS_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_bas.
 
 SPRITESHEET_DOOR_BLINK_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_anim_blink.png"),False, True), (42*6, 29*6))
 
+COUNTER_DESK = anim.Spritesheet(load_image('data/guichet_57x66_14framees.png'), (57*6,66*6))
+
 WINDOW = load_image('data/bord.png')
 
 SPRITESHEET_CHIP = anim.Spritesheet(load_image('data/chip.png'), (48*6, 48*6))
@@ -312,6 +314,7 @@ ARM = load_image("data/bra_articuler_1.png")
 SPRAYER = load_image("data/buse.png")
 
 FRAME_PAINTING = load_image("data/cadre.png")
+
 #---------------------------------------------
 #       List of the different patterns
 #---------------------------------------------

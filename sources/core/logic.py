@@ -102,6 +102,8 @@ class Game:
             ROOMS[5].placed.append(self.spectating_placeable)
             ROOMS[5].blacklist.append(self.spectating_placeable)
 
+        self.cachier_desk = [plbl for plbl in ROOMS[1].placed if type(plbl) == subplaceable.DeskPlaceable][0]
+
     def change_floor(self, direction):
         """to move up : 1
            to move down : -1"""
@@ -155,7 +157,8 @@ class Game:
         accepted_bot_money_amount = self.hivemind.free_last_bot(R1)
         if accepted_bot_money_amount: # Attempt to free the last bot and checks output
             self.money += accepted_bot_money_amount  # Increment currency
-
+        self.cachier_desk.active = True
+        
     def launch_transition(self):
         self.gui_state = State.TRANSITION  # Set the GUI to the transition state
         self.incr_fondu = 0  # Reset the transition variable

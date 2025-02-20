@@ -135,5 +135,23 @@ class SpectatorPlaceable(Placeable):
         if self.open:
             self.user_list.init(self.pg_database.fetch_all_user_data())
 
+class DeskPlaceable(Placeable):
+    def __init__(self, name, coord, surf, tag = None):
+        super().__init__(name, coord, surf, tag)
+        self.anim_bg = Animation(sprite.COUNTER_DESK, 0, 14, repeat=False)
+        self.surf = self.anim_bg.reset_frame()
+        print(self.surf)
+        self.active = False
+
+    def update_sprite(self, is_hovered, color = ...):
+        if self.anim_bg.is_finished():
+            self.active = False
+            self.surf = self.anim_bg.reset_frame()
+
+        if self.active:
+            self.surf = self.anim_bg.get_frame()
+        
+        self.temp_surf = self.surf.copy()
+        self.temp_rect = self.rect.copy()
 
 
