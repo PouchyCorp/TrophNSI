@@ -28,11 +28,20 @@ if not display.get_init():
     display.set_mode((0,0))
 
 def invert_alpha(surface):
+    """
+    Invert the alpha values of a surface.
+    Intended to be used for the canva next_surf computing.
+    Behaves unintuitively with not fully opaque or fully transparent pixels.
+    
+    This function takes a Pygame surface and inverts its alpha values, making
+    fully transparent pixels fully opaque and vice versa.
+    """
     alpha_array = surfarray.pixels_alpha(surface)
     alpha_array[:] = 255 - alpha_array[:]  # Invert alpha values (0 <-> 255)
     del alpha_array
 
 def load_image(path : str):
+    """ Custom routine to load, resize and optimize all sprites."""
     sprite = image.load(path)
     sized_sprite = transform.scale_by(sprite, 6)
     return sized_sprite.convert_alpha()
@@ -131,12 +140,34 @@ def fondu(surf : Surface, incr ,speed) -> Surface:
     return incr
 
 def point_rotate(image, origin, pivot, angle):
-    image_rect = image.get_rect(topleft = (origin[0] - pivot[0], origin[1]-pivot[1]))
+    """
+    Rotate an image around a pivot point.
+    This is needed because of the weird way pygame rotates sprites.
+
+    Parameters:
+    - image: The image to be rotated.
+    - origin: The top-left corner of the image before rotation.
+    - pivot: The point around which the image will be rotated.
+    - angle: The angle of rotation in degrees.
+    """
+    # Get the rectangle of the image with the top-left corner at the origin adjusted by the pivot
+    image_rect = image.get_rect(topleft=(origin[0] - pivot[0], origin[1] - pivot[1]))
+    
+    # Calculate the offset from the center of the image to the pivot point
     offset_center_to_pivot = Vector2(origin) - image_rect.center
+    
+    # Rotate the offset by the negative angle
     rotated_offset = offset_center_to_pivot.rotate(-angle)
+    
+    # Calculate the new center of the rotated image
     rotated_image_center = (origin[0] - rotated_offset.x, origin[1] - rotated_offset.y)
+    
+    # Rotate the image
     rotated_image = transform.rotate(image, angle)
-    rotated_image_rect = rotated_image.get_rect(center = rotated_image_center)
+    
+    # Get the rectangle of the rotated image with the new center
+    rotated_image_rect = rotated_image.get_rect(center=rotated_image_center)
+    
     return rotated_image, rotated_image_rect
 
 def inverse_kinematics(target, root, length1, length2):
