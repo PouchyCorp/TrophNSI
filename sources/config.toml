@@ -5,9 +5,9 @@ port = 5000
 
 [screen]
 size = [1920,1080]
-fullscreen = false
+fullscreen = true
 
 [gameplay]
 fps = 60
 cheats = true
-no_login = false
+no_login = true
