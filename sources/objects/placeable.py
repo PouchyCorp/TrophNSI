@@ -61,6 +61,10 @@ class Placeable:
     def get_blit_args(self):
         """Returns the surface and rectangle for blitting."""
         return self.temp_surf, self.temp_rect
+    
+    def draw_foreground(self, win):
+        """Placeholder method for foreground sprite; meant to be overridden in subclasses."""
+        pass
 
     def draw_outline(self, win: Surface, color: tuple):
         """Draws an outline around the surface on the given window."""

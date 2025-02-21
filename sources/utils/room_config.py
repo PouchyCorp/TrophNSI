@@ -38,7 +38,7 @@ def init_rooms():
 
     # R1
     R1 = Room(1, sprite.BG1)
-    guichet = subplaceable.DeskPlaceable('guichet', Coord(1, (900, 500)), Surface((0,0)))
+    guichet = subplaceable.DeskPlaceable('guichet', Coord(1, (480, 680)), Surface((0,0)))
     auto_cachier = subplaceable.AutoCachierPlaceable(
         'AutoCachierPlaceable', Coord(1, (1500, 700)), Surface((10*6, 10*6)))
     inventory_plcb = subplaceable.InvPlaceable(

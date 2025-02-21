@@ -471,6 +471,7 @@ class Game:
         self.draw_bots(mouse_pos)
         self.draw_patterns_and_canva()
         self.draw_particles()
+        self.draw_foreground()
         self.draw_gui(mouse_pos)
         self.draw_debug_info(mouse_pos)
         self.render_popups()
@@ -482,6 +483,9 @@ class Game:
 
     def draw_current_room(self):
         self.current_room.draw_placed(self.win)
+    
+    def draw_foreground(self):
+        self.current_room.draw_placed_foreground(self.win)
 
     def draw_bots(self, mouse_pos):
         self.hivemind.draw(self.win, self.current_room.num, mouse_pos, self.transparency_win)

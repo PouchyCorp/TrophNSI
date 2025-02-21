@@ -47,6 +47,10 @@ class Room:
             if placeable.temporary:
                 self.placed.remove(placeable)
     
+    def draw_placed_foreground(self, win):
+        for placeable in self.placed:
+            placeable.draw_foreground(win)
+    
     def get_beauty_in_room(self):
         total = 0
         for placeable in self.placed:

@@ -224,7 +224,9 @@ SPRITESHEET_BAS_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_bas.
 
 SPRITESHEET_DOOR_BLINK_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_anim_blink.png"),False, True), (42*6, 29*6))
 
-COUNTER_DESK = anim.Spritesheet(load_image('data/guichet_57x66_14framees.png'), (57*6,66*6))
+DESK_FG = anim.Spritesheet(load_image('data/guichet_1.png'), (57*6,66*6))
+
+DESK_BG = anim.Spritesheet(load_image('data/guichet_2.png'), (57*6,66*6))
 
 WINDOW = load_image('data/bord.png')
 

@@ -138,9 +138,6 @@ class Hivemind:
     def create_react_bot(self, TIMER: TimerManager):
         """
         Periodically selects a random bot to react.
-
-        Args:
-            TIMER (TimerManager): TimerManager instance for managing timers.
         """
         if self.liberated_bots:
             random_bot = choice(self.liberated_bots)
@@ -150,7 +147,6 @@ class Hivemind:
     def get_random_bot_spritesheet(self) -> tuple[Spritesheet, list]:
         """
         Fetch a random bot spritesheet.
-
         Returns:
             tuple: A tuple containing the spritesheet and associated data.
         """
@@ -161,20 +157,20 @@ class Hivemind:
     def add_bot(self, gold_amount: int = 10):
         """
         Add a bot to the inline bot list if space is available.
-
-        Args:
-            gold_amount (int): The amount of gold assigned to the bot.
         """
         if not self.is_line_full():
             spritesheet_args = self.get_random_bot_spritesheet()
             bot_sprite_height = spritesheet_args[0].img_size[1]
-            random_height = (936 - bot_sprite_height) + randint(0, 132)
+            random_height = (936 - bot_sprite_height) + randint(30, 132)
             self.inline_bots[0] = Bot(Coord(1, (self.line_start_x, random_height)),
                                       gold_amount, spritesheet_args[0], spritesheet_args[1], spritesheet_args[2],
                                       randint(1, 3))
 
     
     def free_last_bot(self, current_room):
+        """
+        Returns proper amount of money the bot owes.
+        """
         if type(self.inline_bots[-1]) is Bot:
 
             #Updates all the attributes needed to init a working bot.
@@ -188,6 +184,7 @@ class Hivemind:
             #plays sound
             self.sound_manager.achieve.play()
             return last_bot_money_amount
+        
         return False
         
     

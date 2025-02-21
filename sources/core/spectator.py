@@ -19,7 +19,6 @@ Key Features:
 import pygame as pg
 import tomli
 from utils.coord import Coord
-from ui.inventory import Inventory
 from utils.room_config import init_rooms
 from ui.sprite import ARROW_LEFT, ARROW_RIGHT, whiten, QUIT_BUTTON
 from ui.button import Button
