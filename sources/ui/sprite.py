@@ -317,6 +317,8 @@ SPRAYER = load_image("data/buse.png")
 
 FRAME_PAINTING = load_image("data/cadre.png")
 
+PRETTY_BG = load_image("data/joli_background.jpg")
+
 #---------------------------------------------
 #       List of the different patterns
 #---------------------------------------------

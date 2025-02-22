@@ -229,6 +229,9 @@ class PgDataBase:
 
         import ui.sprite as sprite
 
+        background = sprite.PRETTY_BG
+        bg_offset = 0
+
         quit_button = Button((0,0), self.quit, sprite.whiten(sprite.QUIT_BUTTON) , sprite.QUIT_BUTTON)
         close_button = Button((0,0), self.close, sprite.whiten(sprite.CLOSE_BUTTON) , sprite.CLOSE_BUTTON)
         register_button = Button((0,0), self.change_gui_to_register, sprite.whiten(sprite.REGISTER_BUTTON), sprite.REGISTER_BUTTON)
@@ -282,6 +285,12 @@ class PgDataBase:
                     userlist.handle_event(event)
             
             #draw
+            WIN.blit(background, (0,0), (bg_offset, 0, *WIN.get_size()))
+            bg_offset += 2
+
+            if bg_offset > background.get_width()-WIN.get_width():
+                bg_offset = 0
+
             match self.gui_state:
                 case LoginStates.LOGIN:
                     self.password_input.draw(WIN)
