@@ -473,7 +473,8 @@ class Game:
         self.draw_particles()
         self.draw_foreground()
         self.draw_gui(mouse_pos)
-        self.draw_debug_info(mouse_pos)
+        if self.config['gameplay']['debug']:
+            self.draw_debug_info(mouse_pos)
         self.render_popups()
         self.win.blit(self.transparency_win, (0, 0))
 

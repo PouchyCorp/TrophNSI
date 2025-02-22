@@ -341,7 +341,6 @@ class CanvaAnimationHandler:
 
             # Refresh the display
             pg.display.flip()
-            print(center.xy)
 
         # Finalize the painting animation by setting the canvas surface to the true next surface
         self.canva.surf = true_next_surf
