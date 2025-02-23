@@ -230,7 +230,7 @@ class OfflineHomescreen:
         bg_offset = 0
 
         quit_button = Button((0,0), self.quit, sprite.whiten(sprite.QUIT_BUTTON) , sprite.QUIT_BUTTON)
-        play_button = Button((0,0), self.play, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
+        play_button = Button((0,0), self.play, sprite.whiten(sprite.PLAY_BUTTON), sprite.PLAY_BUTTON)
 
         play_button.rect.center = win_rect.center
         quit_button.rect.center = play_button.rect.centerx, play_button.rect.centery + play_button.rect.width + 30

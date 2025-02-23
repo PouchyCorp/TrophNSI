@@ -299,6 +299,8 @@ LOGIN_BUTTON = load_image("data/login.png")
 
 QUIT_BUTTON = load_image("data/quit.png")
 
+PLAY_BUTTON = load_image('data/jouer.png')
+
 CLOSE_BUTTON = load_image("data/close.png")
 
 REGISTER_BUTTON = load_image("data/register.png")
