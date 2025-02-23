@@ -54,7 +54,6 @@ from utils.sound import SoundManager
 from objects.patterns import PatternHolder
 from objects.canva import Canva
 from ui.button import Button
-from core.database import PgDataBase
 from objects.particlesspawner import ParticleSpawner
 
 class Game:
@@ -97,12 +96,12 @@ class Game:
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
             self.timer.create_timer(3, self.accept_bot, True)
 
-        if not self.config['gameplay']['no_login']: # If the player is not in the no_login mode, don't show the spectating placeable
-            self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), PgDataBase(self.config['server']['ip'], self.config['server']['port']))
+        if not self.config['gameplay']['offline_mode']: # If the player is not in the no_login mode, don't init the spectating placeable
+            self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), self.config)
             ROOMS[5].placed.append(self.spectating_placeable)
             ROOMS[5].blacklist.append(self.spectating_placeable)
 
-        self.cachier_desk = [plbl for plbl in ROOMS[1].placed if type(plbl) == subplaceable.DeskPlaceable][0]
+        self.cachier_desk = [plbl for plbl in ROOMS[1].placed if type(plbl) == subplaceable.DeskPlaceable][0] # Very ugly indeed
 
     def change_floor(self, direction):
         """to move up : 1

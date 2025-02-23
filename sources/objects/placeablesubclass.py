@@ -123,17 +123,18 @@ class AutoCachierPlaceable(Placeable):
     pass
 
 class SpectatorPlaceable(Placeable):
-    def __init__(self, name, coord, surf, pg_database, tag = None):
+    def __init__(self, name, coord, surf, config, tag = None):
         super().__init__(name, coord, surf, tag)
-        self.pg_database = pg_database
         from ui.userlist import UserList
-        self.user_list = UserList(self.coord.xy, self.pg_database.fetch_all_user_data())
+        from utils.database import Database
+        self.database = Database(config['server']['ip'], config['server']['port'], [])
+        self.user_list = UserList(self.coord.xy, self.database.fetch_all_user_data())
         self.open = False
         
     def interaction(self):
         self.open = not self.open
         if self.open:
-            self.user_list.init(self.pg_database.fetch_all_user_data())
+            self.user_list.init(self.database.fetch_all_user_data())
 
 class DeskPlaceable(Placeable):
     def __init__(self, name, coord, surf, tag = None):

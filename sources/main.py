@@ -27,13 +27,6 @@ import tomli
 with open('sources/config.toml', 'rb') as f:
     config = tomli.load(f)
 
-def initialize_pygame():
-    """
-    Initializes Pygame and its mixer.
-    """
-    pg.init()
-    pg.mixer.init()
-
 def create_display():
     """
     Creates and returns the game window and a transparent surface for rendering.
@@ -54,14 +47,6 @@ def setup_window():
     pg.display.set_icon(pg.image.load('data/big_icon.png'))
     pg.display.set_caption('Creative Core')
 
-def load_game_modules():
-    """
-    Dynamically imports necessary game modules.
-    """
-    from core.logic import Game
-    from utils.room_config import ROOMS
-    return Game, ROOMS
-
 def place_inventory_items(game_save_dict, rooms):
     """
     Places saved inventory items in their respective rooms.
@@ -74,12 +59,15 @@ def start_game(game_save_dict):
     """
     Initializes and starts the game loop with the provided save data.
     """
-    initialize_pygame()
+    pg.init()
+    pg.mixer.init()
+
     win, transparency_win = create_display()
     setup_window()
-    Game, rooms = load_game_modules()
+    from core.logic import Game
+    from utils.room_config import ROOMS
     
-    place_inventory_items(game_save_dict, rooms)
+    place_inventory_items(game_save_dict, ROOMS)
     
     # Initialize the game with saved data
     game = Game(win, config, game_save_dict['inventory'], game_save_dict['shop'],
@@ -91,19 +79,22 @@ def main():
     """
     Oversees the game flow, handling login if necessary.
     """
-    if not config['gameplay']['no_login']:
-        from core.database import PgDataBase
-        db = PgDataBase(config['server']['ip'], config['server']['port'])
-        username, user_game_data = db.home_screen()
+    if not config['gameplay']['offline_mode']:
+        from core.homescreen import OnlineHomescreen
+        homescreen = OnlineHomescreen(config['server']['ip'], config['server']['port'])
+        username, user_game_data = homescreen.main_loop()
         
         print('Launching game...')
         data_to_save = start_game(user_game_data)
         
         print('Saving game...')
-        db.save_user_data(username, data_to_save)
+        homescreen.database.save_user_data(username, data_to_save)
+
     else:
         from utils.room_config import DEFAULT_SAVE
+        from core.homescreen import OfflineHomescreen
+        OfflineHomescreen().main_loop()
         start_game(DEFAULT_SAVE)
-
+9
 if __name__ == "__main__":
     main()
