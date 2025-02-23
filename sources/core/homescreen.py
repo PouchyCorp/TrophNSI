@@ -1,18 +1,4 @@
 r"""
-  _____        _        _                                    
- |  __ \      | |      | |                                   
- | |  | | __ _| |_ __ _| |__   __ _ ___  ___                 
- | |  | |/ _` | __/ _` | '_ \ / _` / __|/ _ \                
- | |__| | (_| | || (_| | |_) | (_| \__ \  __/                
- |_____/ \__,_|\__\__,_|_.__/ \__,_|___/\___|       
-
-Key features:
--------------
-- Database class for handling user registration, login, and data storage.
-- Hashing of user passwords for security.
-- Serialization and deserialization of user data for database storage (with a cool packet system ^^).
-- User data getting and saving.
-
   _    _
  | |  | |                                                    
  | |__| | ___  _ __ ___   ___   ___  ___ _ __ ___  ___ _ __  
@@ -22,13 +8,11 @@ Key features:
                                                              
 Key features:
 -------------
+- Offline option
 - Home screen with login and registration options.
 - Animated background
 - Text input boxes for username and password.
 
-Note:
------
-This shouldve been two separate files, but merging it facilitates the communication between the login screen and the database.
 """
 
 import pygame as pg

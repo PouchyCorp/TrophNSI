@@ -1,3 +1,18 @@
+r""" 
+  _____        _        _                                    
+ |  __ \      | |      | |                                   
+ | |  | | __ _| |_ __ _| |__   __ _ ___  ___                 
+ | |  | |/ _` | __/ _` | '_ \ / _` / __|/ _ \                
+ | |__| | (_| | || (_| | |_) | (_| \__ \  __/                
+ |_____/ \__,_|\__\__,_|_.__/ \__,_|___/\___|       
+
+Key features:
+-------------
+- Database class for handling user registration, login, and data storage.
+- Hashing of user passwords for security.
+- Serialization and deserialization of user data for database storage (with a cool packet system ^^).
+- User data getting and saving."""
+
 import socket, pickle
 from hashlib import sha256
 from ui.infopopup import InfoPopup
