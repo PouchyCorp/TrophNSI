@@ -11,4 +11,4 @@ fullscreen = true
 fps = 60
 cheats = true
 debug = true
-no_login = false
+no_login = true

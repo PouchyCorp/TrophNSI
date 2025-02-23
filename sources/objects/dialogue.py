@@ -48,6 +48,8 @@ class Dialogue:
         self.bliting_list : list[pg.Surface]= []
         self.part_ind = 0
         self.showed_texte = self.textes[self.part_ind]
+        self.page = 0
+        self.page_size = 5
     
     def get_text_surf(self, bot_name):
         return TERMINAL_FONT.render(f"{bot_name}@botOS:~$ {self.anim_chars}" , False, 'green')
@@ -56,10 +58,14 @@ class Dialogue:
         if self.showed_texte != self.anim_chars:
             self.anim_chars += self.showed_texte[len(self.anim_chars)]
 
-        if len(self.bliting_list)-1 < self.part_ind:
-            self.bliting_list.append(self.get_text_surf(bot_name))
+        if self.page != self.part_ind//self.page_size: # If page changed
+            self.page = self.part_ind//self.page_size
+            self.bliting_list = [] # Reset showed texts
+
+        if len(self.bliting_list)+(self.page*self.page_size)-1 < self.part_ind: # If dialogue text animation finished
+            self.bliting_list.append(self.get_text_surf(bot_name)) # Add new line
         else:
-            self.bliting_list[self.part_ind] = self.get_text_surf(bot_name)
+            self.bliting_list[self.part_ind-(self.page*self.page_size)] = self.get_text_surf(bot_name) # Update line
     
     def is_on_last_part(self):
         return True if self.part_ind == len(self.textes)-1 else False
@@ -82,7 +88,7 @@ class DialogueManager():
         self.special_dialogues = self.special_init()
         self.selected_dialogue : Dialogue = None
         self.bot_anim : Animation = None #idle anim of the robot clicked
-        self.background = sprite.DIALBOX#sprite.nine_slice_scaling(sprite.WINDOW, (1300, 252), 12)
+        self.background = sprite.DIALBOX
 
     def init(self) -> list[Dialogue]:
         with open("data/dialogue.json", encoding='utf8') as file:
