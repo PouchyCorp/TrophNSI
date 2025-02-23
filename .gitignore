@@ -5,3 +5,4 @@ creative_core_venv
 .pyc
 serverpack/user_data.db
 .DS_Store
+serverpack/user_data.db
