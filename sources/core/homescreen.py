@@ -8,8 +8,8 @@ r"""
                                                              
 Key features:
 -------------
-- Offline option
-- Home screen with login and registration options.
+- Online and offlie version
+- Home screen with login and registration options (FSM implementation).
 - Animated background
 - Text input boxes for username and password.
 
@@ -22,6 +22,7 @@ from  ui.infopopup import InfoPopup
 from ui.button import Button
 from ui.userlist import UserList
 from utils.database import Database
+import ui.sprite as sprite
 
 class LoginStates(Enum):
     HOME = auto()
@@ -85,13 +86,11 @@ class OnlineHomescreen:
         WIN.blit(font.render(f"Connection à {self.database.server_ip} / {self.database.server_port} ...", True, 'white'), (100, WIN.get_rect().centery))
         pg.display.flip()
 
-        import ui.sprite as sprite
-
         self.background = sprite.PRETTY_BG
         self.bg_offset = 0
 
-        self.quitbutton = Button((0,0), self.quit, sprite.whiten(sprite.QUIT_BUTTON) , sprite.QUIT_BUTTON)
-        self.close_button = Button((0,0), self.close, sprite.whiten(sprite.CLOSE_BUTTON) , sprite.CLOSE_BUTTON)
+        self.quitbutton = Button((0,0), self.quit, sprite.whiten(sprite.QUIT_BUTTON), sprite.QUIT_BUTTON)
+        self.close_button = Button((0,0), self.close, sprite.whiten(sprite.CLOSE_BUTTON), sprite.CLOSE_BUTTON)
         self.register_button = Button((0,0), self.change_gui_to_register, sprite.whiten(sprite.REGISTER_BUTTON), sprite.REGISTER_BUTTON)
         self.login_button = Button((0,0), self.change_gui_to_login, sprite.whiten(sprite.LOGIN_BUTTON), sprite.LOGIN_BUTTON)
         self.accept_login_button = Button((0,0), self.database.login_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON, param=self.query_params)
@@ -107,6 +106,10 @@ class OnlineHomescreen:
         self.accept_register_button.rect.center = self.register_button.rect.center
         self.password_input.rect.center = self.login_button.rect.center
         self.username_input.rect.center = (self.password_input.rect.centerx, self.password_input.rect.centery-self.password_input.rect.height-30)
+
+        border = 30
+        size = (self.password_input.rect.width + border*2, self.password_input.rect.bottom-self.username_input.rect.y + border*2)
+        self.inputbox_background = sprite.nine_slice_scaling(sprite.WINDOW, size, (12, 12, 12, 12)) 
 
         while not self.launch_status['ready']:
             CLOCK.tick(fps)  # Maintain frame rate
@@ -170,12 +173,14 @@ class OnlineHomescreen:
 
         match self.gui_state:
             case LoginStates.LOGIN:
+                WIN.blit(self.inputbox_background, (self.username_input.rect.x-30, self.username_input.rect.y-30))
                 self.password_input.draw(WIN)
                 self.username_input.draw(WIN)
                 self.close_button.draw(WIN, self.close_button.rect.collidepoint(mouse_pos))
                 self.accept_login_button.draw(WIN, self.accept_login_button.rect.collidepoint(mouse_pos))
 
             case LoginStates.REGISTER:
+                WIN.blit(self.inputbox_background, (self.username_input.rect.x-30, self.username_input.rect.y-30))
                 self.password_input.draw(WIN)
                 self.username_input.draw(WIN)
                 self.close_button.draw(WIN, self.close_button.rect.collidepoint(mouse_pos))

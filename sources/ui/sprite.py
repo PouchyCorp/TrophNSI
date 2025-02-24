@@ -36,7 +36,7 @@ def invert_alpha(surface):
     This function takes a Pygame surface and inverts its alpha values, making
     fully transparent pixels fully opaque and vice versa.
     """
-    alpha_array = surfarray.pixels_alpha(surface)
+    alpha_array = surfarray.pixels_alpha(surface) # Uses Numpy arrays for performance reasons
     alpha_array[:] = 255 - alpha_array[:]  # Invert alpha values (0 <-> 255)
     del alpha_array
 
@@ -55,6 +55,7 @@ def whiten(surface : Surface):
 def nine_slice_scaling(surface, target_size, margins):
     """
     Scale an image using nine-slice scaling.
+    Inspired by https://en.wikipedia.org/wiki/9-slice_scaling
     
     Basically, the image is divided into 9 slices:
     - 4 corner slices (top-left, top-right, bottom-left, bottom-right) which keep their original size
@@ -171,7 +172,8 @@ def point_rotate(image, origin, pivot, angle):
     return rotated_image, rotated_image_rect
 
 def inverse_kinematics(target, root, length1, length2):
-    """ Compute the angles needed to reach the target using 2D inverse kinematics """
+    """Compute the angles needed to reach the target using 2D inverse kinematics 
+        Algorithm inspired by https://www.alanzucconi.com/2018/05/02/ik-2d-1/"""
     dx = target[0] - root[0]
     dy = target[1] - root[1]
     distance = sqrt(dx**2 + dy**2)

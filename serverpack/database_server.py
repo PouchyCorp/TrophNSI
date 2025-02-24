@@ -25,7 +25,7 @@ CHUNK_SIZE = 4096 # The size of the chunks to receive from the client (this shou
 # Database setup
 DB_NAME = "user_data.db"
 HOST_IP = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
-PORT = sys.argv[2] if len(sys.argv) > 2 else 5000
+PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 5000
 
 def initialize_database():
     connection = sqlite3.connect(DB_NAME)
