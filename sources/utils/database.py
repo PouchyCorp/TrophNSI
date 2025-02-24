@@ -121,14 +121,15 @@ class Database:
     def login_user(self, username, password):
         if not username or not password:
             self.info_popups.append(InfoPopup("Les deux champs sont requis!"))
-            return
+            return False
         
         result = self.send_query('SELECT password FROM users WHERE username = ?', read=True, query_parameters=(username,))
         if result and result[0][0] == self.hash_password(password):
             self.info_popups.append(InfoPopup("Connexion réussie."))
-            self.ready_to_launch = (True, username)
+            return True
         else:
             self.info_popups.append(InfoPopup("Nom d'utilisateur ou mot de passe incorrect."))
+            return False
 
     def save_user_data(self, username, data : dict):
         """

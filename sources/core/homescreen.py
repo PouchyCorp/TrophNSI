@@ -23,6 +23,7 @@ from ui.button import Button
 from ui.userlist import UserList
 from utils.database import Database
 import ui.sprite as sprite
+from utils.fonts import TERMINAL_FONT
 
 class LoginStates(Enum):
     HOME = auto()
@@ -39,20 +40,19 @@ class OnlineHomescreen:
         self.username_input = InputBox(10,10,600,50)
         self.password_input = InputBox(10,70,600,50)
 
-        self.query_params = [self.username_input.text, self.password_input.text]
-
         self.info_popups : list[InfoPopup]= []
 
         self.database = Database(server_ip, server_port, self.info_popups)
 
 #-------------------------------------------------
-#               GUI PART
+#               BUTTON ACTIONS
 #-------------------------------------------------
+
     def quit(self):
         if self.gui_state is LoginStates.HOME:
             from sys import exit
             exit()
-    
+
     def close(self):
         self.gui_state = LoginStates.HOME
 
@@ -62,14 +62,17 @@ class OnlineHomescreen:
     def change_gui_to_register(self):
         self.gui_state = LoginStates.REGISTER
     
-    def render_popups(self, win):  
-        # Iterate over existing popups to render and manage their lifetime
-        for popup in self.info_popups:
-            if popup.lifetime <= 0:
-                self.info_popups.remove(popup)
-            else:
-                popup.draw(win)
-                popup.lifetime -= 1
+    def attempt_register(self):
+        self.database.register_user(self.username_input.text, self.password_input.text)
+    
+    def attempt_login(self):
+        status = self.database.login_user(self.username_input.text, self.password_input.text)
+        if status:
+            self.launch_status = {'ready' : True, 'username' : self.username_input.text}
+
+#-------------------------------------------------
+#               MAIN LOOP
+#-------------------------------------------------
 
     def main_loop(self) -> tuple[str, dict]:
 
@@ -93,8 +96,8 @@ class OnlineHomescreen:
         self.close_button = Button((0,0), self.close, sprite.whiten(sprite.CLOSE_BUTTON), sprite.CLOSE_BUTTON)
         self.register_button = Button((0,0), self.change_gui_to_register, sprite.whiten(sprite.REGISTER_BUTTON), sprite.REGISTER_BUTTON)
         self.login_button = Button((0,0), self.change_gui_to_login, sprite.whiten(sprite.LOGIN_BUTTON), sprite.LOGIN_BUTTON)
-        self.accept_login_button = Button((0,0), self.database.login_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON, param=self.query_params)
-        self.accept_register_button = Button((0,0), self.database.register_user, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON, param=self.query_params)
+        self.accept_login_button = Button((0,0), self.attempt_login, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
+        self.accept_register_button = Button((0,0), self.attempt_register, sprite.whiten(sprite.CONFIRM_BUTTON), sprite.CONFIRM_BUTTON)
  
         userlist = UserList((0,0), self.database.fetch_all_user_data())
 
@@ -107,7 +110,7 @@ class OnlineHomescreen:
         self.password_input.rect.center = self.login_button.rect.center
         self.username_input.rect.center = (self.password_input.rect.centerx, self.password_input.rect.centery-self.password_input.rect.height-30)
 
-        border = 30
+        border = 36
         size = (self.password_input.rect.width + border*2, self.password_input.rect.bottom-self.username_input.rect.y + border*2)
         self.inputbox_background = sprite.nine_slice_scaling(sprite.WINDOW, size, (12, 12, 12, 12)) 
 
@@ -128,7 +131,6 @@ class OnlineHomescreen:
                         case LoginStates.LOGIN:
                             self.password_input.handle_event(event)
                             self.username_input.handle_event(event)
-                            self.query_params = [self.username_input.text, self.password_input.text]
 
                             self.close_button.handle_event(event)
                             self.accept_login_button.handle_event(event)
@@ -136,7 +138,6 @@ class OnlineHomescreen:
                         case LoginStates.REGISTER:
                             self.password_input.handle_event(event)
                             self.username_input.handle_event(event)
-                            self.query_params = [self.username_input.text, self.password_input.text]
 
                             self.close_button.handle_event(event)
                             if self.accept_register_button.handle_event(event):
@@ -163,6 +164,15 @@ class OnlineHomescreen:
         #if root terminated and ready to launch, returns game data
         if self.launch_status['ready']:
             return self.launch_status['username'], self.database.fetch_user_data(self.launch_status['username'])
+    
+    def render_popups(self, win):  
+        # Iterate over existing popups to render and manage their lifetime
+        for popup in self.info_popups:
+            if popup.lifetime <= 0:
+                self.info_popups.remove(popup)
+            else:
+                popup.draw(win)
+                popup.lifetime -= 1
 
     def draw(self, WIN : pg.Surface, mouse_pos : tuple):
         WIN.blit(self.background, (0,0), (self.bg_offset, 0, *WIN.get_size()))
@@ -171,16 +181,23 @@ class OnlineHomescreen:
         if self.bg_offset > self.background.get_width()-WIN.get_width():
             self.bg_offset = 0
 
+        username_label = TERMINAL_FONT.render("Nom d'utilisateur", True, (168, 112, 62))
+        password_label = TERMINAL_FONT.render("Mot de passe", True, (168, 112, 62))
+
         match self.gui_state:
             case LoginStates.LOGIN:
-                WIN.blit(self.inputbox_background, (self.username_input.rect.x-30, self.username_input.rect.y-30))
+                WIN.blit(self.inputbox_background, (self.username_input.rect.x-36, self.username_input.rect.y-36))
+                WIN.blit(username_label, (self.username_input.rect.x, self.username_input.rect.y-username_label.get_height()))
+                WIN.blit(password_label, (self.password_input.rect.x, self.password_input.rect.y-username_label.get_height()))
                 self.password_input.draw(WIN)
                 self.username_input.draw(WIN)
                 self.close_button.draw(WIN, self.close_button.rect.collidepoint(mouse_pos))
                 self.accept_login_button.draw(WIN, self.accept_login_button.rect.collidepoint(mouse_pos))
 
             case LoginStates.REGISTER:
-                WIN.blit(self.inputbox_background, (self.username_input.rect.x-30, self.username_input.rect.y-30))
+                WIN.blit(self.inputbox_background, (self.username_input.rect.x-36, self.username_input.rect.y-36))
+                WIN.blit(username_label, (self.username_input.rect.x, self.username_input.rect.y-username_label.get_height()))
+                WIN.blit(password_label, (self.password_input.rect.x, self.password_input.rect.y-password_label.get_height()))
                 self.password_input.draw(WIN)
                 self.username_input.draw(WIN)
                 self.close_button.draw(WIN, self.close_button.rect.collidepoint(mouse_pos))
