@@ -1,8 +1,8 @@
 import pygame as pg
 from utils.fonts import TERMINAL_FONT
 
-COLOR_ACTIVE = (60,60,60)
-COLOR_INACTIVE = (50,50,50)
+COLOR_ACTIVE = (255, 212, 163)
+COLOR_INACTIVE = (168, 112, 62)
 class InputBox:
     def __init__(self, x, y, w, h, text=''):
         self.rect = pg.Rect(x, y, w, h)
