@@ -128,8 +128,14 @@ class Game:
     def launch_special_dialogue(self, dialogue_name):
         self.gui_state = State.DIALOG
         self.temp_bg = pg.transform.grayscale(self.win)
-        self.dialogue_manager.special_dialogue(dialogue_name)  # Trigger a random dialogue.
-        self.dialogue_manager.bot_anim = None
+        if dialogue_name=='0':
+            self.dialogue_manager.special_dialogue(dialogue_name)
+            InfoPopup("ATTENDEZ !! ")
+            self.dialogue_manager.special_dialogue("0.5")
+            self.dialogue_manager.bot_anim = None
+        else:
+            self.dialogue_manager.special_dialogue(dialogue_name)  # Trigger a random dialogue.
+            self.dialogue_manager.bot_anim = None
 
     def pause(self):
         self.gui_state = State.PAUSED
