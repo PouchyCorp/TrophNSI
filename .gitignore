@@ -1,8 +1,7 @@
 __pycache__
 sources/__pycache__
-userData.db
 creative_core_venv
 .pyc
 serverpack/server_venv
 .DS_Store
-user_data.db
+.db
