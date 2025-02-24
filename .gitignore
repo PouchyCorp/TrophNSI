@@ -3,6 +3,6 @@ sources/__pycache__
 userData.db
 creative_core_venv
 .pyc
-serverpack/user_data.db
+serverpack/server_venv
 .DS_Store
-serverpack/user_data.db
+user_data.db
