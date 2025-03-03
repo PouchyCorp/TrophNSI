@@ -121,12 +121,14 @@ class Game:
     def launch_random_dialogue(self, bot_anim):
         """ Function to initiate dialogue easily passed to other functions"""
         self.gui_state = State.DIALOG
+        self.paused = True
         self.temp_bg = pg.transform.grayscale(self.win)
         self.dialogue_manager.random_dialogue()  # Trigger a random dialogue
         self.dialogue_manager.bot_anim = bot_anim.copy()  # Copy the bot's surface for display
     
     def launch_special_dialogue(self, dialogue_name):
         self.gui_state = State.DIALOG
+        self.paused = True
         self.temp_bg = pg.transform.grayscale(self.win)
         if dialogue_name=='0':
             self.dialogue_manager.special_dialogue(dialogue_name)
@@ -139,6 +141,7 @@ class Game:
 
     def pause(self):
         self.gui_state = State.PAUSED
+        self.paused = True
         self.temp_bg = pg.transform.grayscale(self.win)
         self.quit_button = Button((0,0), self.quit, sprite.whiten(sprite.QUIT_BUTTON), sprite.QUIT_BUTTON)
         self.quit_button.rect.center = self.win.get_rect().center
@@ -148,6 +151,7 @@ class Game:
         pg.event.post(pg.event.Event(pg.QUIT))
     
     def reset_guistate(self):
+        self.paused = False
         self.gui_state = State.INTERACTION
 
     def process_total_beauty(self):
@@ -236,17 +240,17 @@ class Game:
             self.gui_state = State.INVENTORY
             self.inventory.init()
         elif self.gui_state is State.INVENTORY:
-            self.gui_state = State.INTERACTION
+            self.reset_guistate()
 
     def toggle_destruction_mode(self):
         if self.gui_state is State.INTERACTION:
             self.gui_state = State.DESTRUCTION
         else:
-            self.gui_state = State.INTERACTION
+            self.reset_guistate()
 
     def handle_escape_key(self):
         if self.gui_state not in [State.TRANSITION, State.CONFIRMATION, State.INTERACTION]:
-            self.gui_state = State.INTERACTION
+            self.reset_guistate()
         elif self.gui_state is State.INTERACTION:
             self.pause()
 
@@ -259,7 +263,7 @@ class Game:
             self.sound_manager.shop.play()
             self.shop.init()
         elif self.gui_state is State.SHOP:
-            self.gui_state = State.INTERACTION
+            self.reset_guistate()
 
 # -----------------------------
 # Placeable interaction handler
@@ -397,14 +401,14 @@ class Game:
 
     def handle_interaction_mode(self, mouse_pos: Coord):
         for placeable in self.current_room.placed:
-            if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y):
+            if placeable.rect.collidepoint(mouse_pos.x, mouse_pos.y): # Check if the mouse is over a placeable
                 self.placeable_interaction_handler(placeable)
 
         self.hivemind.handle_bot_click(mouse_pos, self.launch_random_dialogue) # Handle bot reaction click
 
     def handle_dialog_mode(self):
         if self.dialogue_manager.click_interaction(): # Check if the dialogue is over
-            self.gui_state = State.INTERACTION # Return to the interaction state
+            self.reset_guistate() # Return to the interaction state
             self.paused = False
 
     def handle_confirmation_mode(self, mouse_pos: Coord):
@@ -412,8 +416,8 @@ class Game:
         if flag is not None:
             self.confirmation_popups.pop()
 
-        if not self.confirmation_popups:
-            self.gui_state = State.INTERACTION
+        if not self.confirmation_popups: # If there are no more confirmation popups
+            self.reset_guistate() # Return to the interaction state
 
 
 #                    __      __     
@@ -481,7 +485,8 @@ class Game:
         if self.config['gameplay']['debug']:
             self.draw_debug_info(mouse_pos)
         self.render_popups()
-        self.win.blit(self.transparency_win, (0, 0))
+        if not self.paused:
+            self.win.blit(self.transparency_win, (0, 0))
 
     def draw_background(self):
         self.win.blit(self.current_room.bg_surf, (0, 0))
@@ -530,13 +535,14 @@ class Game:
 
             case State.PAUSED:
                 self.win.blit(self.temp_bg, (0, 0))
+                self.paused = True
                 self.quit_button.draw(self.win, self.quit_button.rect.collidepoint(mouse_pos.xy))
 
             case State.TRANSITION:
                 if self.incr_fondu <= pi:
-                    self.incr_fondu = sprite.fondu(self.win, self.incr_fondu, 0.0125)
+                    self.incr_fondu = sprite.fondu(self.win, self.incr_fondu, 0.0125) #
                 else:
-                    self.gui_state = State.INTERACTION
+                    self.reset_guistate() 
 
             case State.CONFIRMATION:
                 if self.confirmation_popups:
@@ -568,7 +574,7 @@ class Game:
         fps = self.config['gameplay']['fps']  # Frame rate
         while True:
             self.clock.tick(fps)  # Maintain frame rate
-            mouse_pos: Coord = Coord(self.current_room.num, pg.mouse.get_pos())  # Create a coordinate object for the mouse position
+            mouse_pos: Coord = Coord(self.current_room.num, pg.mouse.get_pos())  # Coordinates of the mouse (to not call pg.mouse.get_pos() multiple times)
             events = pg.event.get()  # Get all events from the event queue
 
             for event in events:
@@ -578,10 +584,10 @@ class Game:
                 
                 self.event_handler(event, mouse_pos)
             
-            if not self.paused:
+            if not self.paused: # If the game is not paused
                 self.update(mouse_pos)
 
-            self.draw(mouse_pos)
+            self.draw(mouse_pos) # Draw the game
 
 
             pg.display.flip()  # Update the display

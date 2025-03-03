@@ -122,6 +122,7 @@ class DialogueManager():
         self.selected_dialogue = self.special_dialogues[dialogue_name]
 
     def click_interaction(self):
+        """Return True if the dialogue is finished"""
         if self.selected_dialogue.is_on_last_part():
             return True
         else:
@@ -129,7 +130,7 @@ class DialogueManager():
             return False
 
     def update(self):
-        bot_name = "anonyme"
+        bot_name = "anon"
         self.selected_dialogue.update(bot_name)
 
     def draw(self, screen : pg.Surface):
