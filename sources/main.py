@@ -95,6 +95,6 @@ def main():
         from core.homescreen import OfflineHomescreen
         OfflineHomescreen().main_loop()
         start_game(DEFAULT_SAVE)
-9
+
 if __name__ == "__main__":
     main()

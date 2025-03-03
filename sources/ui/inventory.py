@@ -1,11 +1,13 @@
 from objects.placeable import Placeable
 from utils.coord import Coord
-from pygame import Surface, transform, BLEND_RGB_MIN, font, draw, BLEND_RGB_ADD
+from pygame import Surface, transform, BLEND_RGB_MIN
 from ui.sprite import WINDOW, nine_slice_scaling, ARROW_LEFT, ARROW_RIGHT, whiten, QUIT_BUTTON
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
 from ui.button import Button
 from objects.particlesspawner import ConfettiSpawner
+from math import ceil
+from utils.fonts import TERMINAL_FONT, TERMINAL_FONT_BIG
 
 BORDER_AROUND_WINDOW = 24
 OBJECT_SIZE = 180
@@ -18,26 +20,34 @@ class Inventory:
         self.inv: list[Placeable] = content  # List of owned items
         self.displayed_objects: list[tuple[Placeable, Surface]] = []  # Rendered items on the current page
         self._page: int = 0  # Current page index
-        self.font = font.SysFont(None, 30)  # Font for labels
+        self.font = TERMINAL_FONT # Font for labels
         self.title = title  # Title of the inventory
         width = BORDER_AROUND_WINDOW * 2 + OBJECT_SIZE*2 + 20
         height = OBJECT_SIZE*5
         self.window_sprite = nine_slice_scaling(WINDOW, (width, height), (12, 12, 12, 12))
         self.sound_manager = None
 
+        # Navigation buttons
         self.button_prev = Button((60,984), self.handle_navigation_left, whiten(ARROW_LEFT), ARROW_LEFT)
         self.button_next = Button((292,984), self.handle_navigation_right, whiten(ARROW_RIGHT), ARROW_RIGHT)
 
-        self.up_button = Button((10,10), change_floor_func, 
-                        whiten(transform.rotate(ARROW_RIGHT, 90)), 
-                        transform.rotate(ARROW_RIGHT, 90), [1])
-        self.down_button = Button((10,100), change_floor_func, 
-                            whiten(transform.rotate(ARROW_LEFT, 90)), 
-                            transform.rotate(ARROW_LEFT, 90), [-1])
+        SCALED_ARROW_RIGHT = transform.scale_by(ARROW_RIGHT, 2)
+        SCALED_ARROW_LEFT = transform.scale_by(ARROW_LEFT, 2)
+
+        self.up_button = Button((1758, 228), change_floor_func, 
+                        whiten(transform.rotate(SCALED_ARROW_RIGHT, 90)), 
+                        transform.rotate(SCALED_ARROW_RIGHT, 90), [1])
+        self.down_button = Button((1758,498), change_floor_func, 
+                            whiten(transform.rotate(SCALED_ARROW_LEFT, 90)), 
+                            transform.rotate(SCALED_ARROW_LEFT, 90), [-1])
         
-        self.quit_button = Button((0,800), quit_func, 
+        self.quit_button = Button((786,930), quit_func, 
                             whiten(QUIT_BUTTON), 
                             QUIT_BUTTON)
+        
+        # Labels
+        self.label_surf = self.font.render("Inventory", True, (255, 212, 163))
+        
         
     def init(self):
         """Initializes the objects for rendering on the current page."""
@@ -64,7 +74,7 @@ class Inventory:
                 thumbnail_surf.fill((50, 50, 50), special_flags=BLEND_RGB_MIN)
 
             # Position the thumbnail
-            thumbnail_rect.centerx = 324-OBJECT_SIZE-20 if ind % 2 == 0 else 324
+            thumbnail_rect.centerx = 324-OBJECT_SIZE-20 if ind % 2 == 0 else 324 # Big blob of magic numbers
             thumbnail_rect.y = 84 + (220 * (ind // 2))
 
             # Create a new Placeable for the thumbnail
@@ -73,7 +83,7 @@ class Inventory:
             thumbnail_placeable.pixelise()
 
             # Create a label for the object
-            label_surf = self.font.render(obj.name, True, "green")
+            label_surf = self.font.render(obj.name, True, (255, 212, 163))
 
             # Add to processed list
             processed_objects.append((thumbnail_placeable, label_surf))
@@ -83,20 +93,24 @@ class Inventory:
     def draw(self, win: Surface, mouse_pos: Coord):
         """Draws the inventory or shop interface on the screen."""
         win.blit(self.window_sprite, (12, 60))
-        self._draw_title(win)
+        self._draw_labels(win)
         self._mouse_highlight(win, mouse_pos)
 
         # Draw objects and their labels
         win.blits([(plcb.surf, plcb.rect.topleft) for plcb, _ in self.displayed_objects])
-        win.blits([(txt_surf, (plcb.rect.x, plcb.rect.y + 190)) for plcb, txt_surf in self.displayed_objects])
+        win.blits([(txt_surf, (plcb.rect.centerx-(txt_surf.get_width()//2), plcb.rect.y + 190)) for plcb, txt_surf in self.displayed_objects])
 
         # Draw navigation buttons
         self._draw_navigation_buttons(win, mouse_pos)
 
-    def _draw_title(self, win: Surface):
-        """Draws the title of the inventory or shop."""
-        title_surf = self.font.render(self.title, True, "white")
-        win.blit(title_surf, (BORDER_AROUND_WINDOW, 42))
+    def _draw_labels(self, win: Surface):
+        """Draws the different labels on the inventory window."""
+        title_surf = self.font.render(self.title, True, (255, 212, 163))
+        page_surf = self.font.render(f"Page {self._page + 1}/{ceil(len(self.inv)/ITEMS_PER_PAGE)}", True, (255, 212, 163))
+        floor_surf = TERMINAL_FONT_BIG.render("Changer d'étage", True, (255, 212, 163))
+        win.blit(title_surf, (BORDER_AROUND_WINDOW+30, 42))
+        win.blit(floor_surf, (1758-floor_surf.get_width()//2, 438))
+        win.blit(page_surf, (168, 1002))
 
     def _mouse_highlight(self, win: Surface, mouse_pos: Coord):
         """Highlights the item under the mouse pointer."""
