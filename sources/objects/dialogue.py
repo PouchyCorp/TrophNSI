@@ -86,7 +86,7 @@ class DialogueManager():
     def __init__(self):    #nécessite de donner le chemin exacte du fichier
         self.dialogues : list[Dialogue] = self.init()
         self.special_dialogues = self.special_init()
-        self.selected_dialogue : Dialogue = None
+        self.selected_dialogue : Dialogue = Dialogue(["You shouldn't see this message"])
         self.bot_anim : Animation = None #idle anim of the robot clicked
         self.background = sprite.DIALBOX
 
