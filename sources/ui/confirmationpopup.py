@@ -1,20 +1,16 @@
 import pygame as pg
 from utils.coord import Coord
 from ui.sprite import WINDOW, nine_slice_scaling, YES_BUTTON, NO_BUTTON
+from utils.fonts import TERMINAL_FONT_BIG
+
 class ConfirmationPopup:
     def __init__(self, screen : pg.Surface, question : str, yes_func, no_func = None, yes_func_args : list = [], no_func_args : list = []):
         """
         Initialize the confirmation popup.
-
-        :param screen: The pygame screen to draw on.
-        :param question: The question text to display.
-        :param yes_func: The action when approving (function).
-        :param no_func: The action when disapproving (function) (optional).
-        :param background: A pygame.Surface object for the background (optional).
         """
         self.screen = screen
         self.question = question
-        self.font = pg.font.Font(None, 36)
+        self.font = TERMINAL_FONT_BIG
         self.background : pg.Surface = nine_slice_scaling(WINDOW,(600,200), (12, 12, 12, 12))
         
         self.yes_button = self._create_button(yes_func, yes_func_args, YES_BUTTON)
@@ -52,7 +48,7 @@ class ConfirmationPopup:
         """Draw the popup, including background, question, and buttons."""
         self.screen.blit(self.background, self.rect.topleft)
 
-        question_surface = self.font.render(self.question, True, (255, 255, 255))
+        question_surface = self.font.render(self.question, True, (255, 212, 163))
         question_rect = question_surface.get_rect(center=(self.rect.centerx, self.rect.top + self.rect.height // 3))
         self.screen.blit(question_surface, question_rect)
 

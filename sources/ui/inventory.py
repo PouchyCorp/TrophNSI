@@ -78,7 +78,7 @@ class Inventory:
             thumbnail_rect.y = 84 + (220 * (ind // 2))
 
             # Create a new Placeable for the thumbnail
-            thumbnail_placeable = Placeable(obj.name, Coord(obj.coord.room_num, thumbnail_rect.topleft), thumbnail_surf)
+            thumbnail_placeable = Placeable(obj.name, Coord(obj.coord.room_num, thumbnail_rect.topleft), thumbnail_surf, price=obj.price)
             thumbnail_placeable.id = obj.id
             thumbnail_placeable.pixelise()
 
@@ -107,9 +107,7 @@ class Inventory:
         """Draws the different labels on the inventory window."""
         title_surf = self.font.render(self.title, True, (255, 212, 163))
         page_surf = self.font.render(f"Page {self._page + 1}/{ceil(len(self.inv)/ITEMS_PER_PAGE)}", True, (255, 212, 163))
-        floor_surf = TERMINAL_FONT_BIG.render("Changer d'étage", True, (255, 212, 163))
         win.blit(title_surf, (BORDER_AROUND_WINDOW+30, 42))
-        win.blit(floor_surf, (1758-floor_surf.get_width()//2, 438))
         win.blit(page_surf, (168, 1002))
 
     def _mouse_highlight(self, win: Surface, mouse_pos: Coord):
@@ -165,6 +163,10 @@ class Inventory:
         self.up_button.draw(win, self.up_button.rect.collidepoint(mouse_pos.xy))
         self.down_button.draw(win, self.down_button.rect.collidepoint(mouse_pos.xy))
         self.quit_button.draw(win, self.quit_button.rect.collidepoint(mouse_pos.xy))
+        floor_surf = TERMINAL_FONT_BIG.render("Changer d'étage", True, (255, 212, 163))
+        win.blit(floor_surf, (1758-floor_surf.get_width()//2, 438))
+
+
 
     def handle_floor_navigation_buttons(self, event):
         self.up_button.handle_event(event)
@@ -196,6 +198,14 @@ class Shop(Inventory):
         clicked_showed_obj_id = self._select_item(mouse_pos)  # Check if an inventory item was clicked, and if the object is already placed
         if clicked_showed_obj_id:
             clicked_obj = self._search_by_id(clicked_showed_obj_id)  # Retrieve the object by its ID
-            game.confirmation_popups.append(ConfirmationPopup(game.win, f"acheter cet objet pour {clicked_obj.price}$?", self.buy_object, yes_func_args=[clicked_obj, game]))
+            game.confirmation_popups.append(ConfirmationPopup(game.win, f"Acheter cet objet pour {clicked_obj.price}¥?", self.buy_object, yes_func_args=[clicked_obj, game]))
             from core.logic import State
             game.gui_state = State.CONFIRMATION
+    
+
+    def draw(self, win, mouse_pos):
+        super().draw(win, mouse_pos)
+        for plcb, _ in self.displayed_objects:
+            price_label = TERMINAL_FONT.render(f"{plcb.price}¥", True, (168, 112, 62))
+            win.blit(price_label, (plcb.rect.centerx-price_label.get_width()//2, plcb.rect.y + 215))
+        
