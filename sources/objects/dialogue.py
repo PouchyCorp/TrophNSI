@@ -84,13 +84,13 @@ class Dialogue:
 
 class DialogueManager():
     def __init__(self):    #nécessite de donner le chemin exacte du fichier
-        self.dialogues : list[Dialogue] = self.init()
-        self.special_dialogues = self.special_init()
+        self.dialogues : list[Dialogue] = self.__init()
+        self.special_dialogues = self.__special_init()
         self.selected_dialogue : Dialogue = Dialogue(["You shouldn't see this message"])
         self.bot_anim : Animation = None #idle anim of the robot clicked
         self.background = sprite.DIALBOX
 
-    def init(self) -> list[Dialogue]:
+    def __init(self) -> list[Dialogue]:
         with open("data/dialogue.json", encoding='utf8') as file:
             json_string = file.read()
             dialogues = []
@@ -100,7 +100,7 @@ class DialogueManager():
                     dialogues.append(Dialogue(dialogue))
             return dialogues
     
-    def special_init(self) -> dict[str, Dialogue]:
+    def __special_init(self) -> dict[str, Dialogue]:
         with open("data/special_dialogue.json", encoding='utf8') as file:
             json_string = file.read()
             special_dialogues = {}

@@ -22,6 +22,11 @@ from ui.infopopup import InfoPopup
 from objects.particlesspawner import ConfettiSpawner
 from utils.coord import Coord
 
+from typing_extensions import TYPE_CHECKING
+
+# Very ugly, but it's the only way to avoid circular imports
+if TYPE_CHECKING:
+    from core.logic import Game 
 
 class UnlockManager:
     def __init__(self) -> None:
@@ -53,13 +58,20 @@ class UnlockManager:
             return True
         return False
 
-    def try_to_unlock_floor(self, num: int, game):
-        game.confirmation_popups.append(ConfirmationPopup(game.win, f"Débloquer pour {self.floor_price[str(num)]}¥ ?", self.unlock_floor, yes_func_args=[num, game]))
+    def try_to_unlock_floor(self, num: int, game : 'Game'):
+        if not self.is_floor_unlocked(num):
+            game.confirmation_popups.append(ConfirmationPopup(game.win, f"Débloquer pour {self.floor_price[str(num)]}¥ ?", self.unlock_floor, yes_func_args=[num, game]))
+        else:
+            game.popups.append(InfoPopup(f"Vous avez déjà débloqué l'étage {num} !"))
 
-    def try_to_unlock_feature(self, name, game):
-        game.confirmation_popups.append(ConfirmationPopup(game.win, f"Débloquer pour {self.feature_price[name]}¥ ?", self.unlock_feature, yes_func_args=[name, game]))
+    def try_to_unlock_feature(self, name, game : 'Game'):
+        if not self.is_feature_discovered(name):
+            game.confirmation_popups.append(ConfirmationPopup(game.win, f"Débloquer pour {self.feature_price[name]}¥ ?", self.unlock_feature, yes_func_args=[name, game]))
+        else:
+            game.popups.append(InfoPopup(f"Vous avez déjà débloqué {name} !"))
+            game.sound_manager.incorrect.play()
 
-    def unlock_floor(self, num: int, game):
+    def unlock_floor(self, num: int, game : 'Game'):
         """unlocks the floor if possible and return left money"""
         assert str(num) in self.floor_price, "this should not happend"
         if not self.is_floor_unlocked(num) and game.money-self.floor_price[str(num)] >= 0:
@@ -73,7 +85,7 @@ class UnlockManager:
                 InfoPopup("Pas assez d'argent pour débloquer l'étage :("))
             game.sound_manager.incorrect.play()
 
-    def unlock_feature(self, feature_name, game):
+    def unlock_feature(self, feature_name, game : 'Game'):
         """unlocks the floor if possible and return left money"""
         assert feature_name in self.feature_price, "this should not happend"
         if not self.is_feature_unlocked(feature_name) and game.money-self.feature_price[feature_name] >= 0:
