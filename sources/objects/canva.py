@@ -3,12 +3,12 @@ from utils.coord import Coord
 from objects.placeable import Placeable
 from objects.patterns import Pattern
 from ui.inputbox import InputBox
-from ui.sprite import FRAME_PAINTING, invert_alpha, YES_BUTTON, NO_BUTTON, whiten, ARM, SPRAYER, point_rotate, inverse_kinematics
+from ui.sprite import FRAME_PAINTING, invert_alpha, PAINT_BUTTON, SAVE_BUTTON, CANVA_UI_NAME, CANVA_UI_PAINT, whiten, ARM, SPRAYER, point_rotate, inverse_kinematics
 from ui.button import Button
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
 from utils.fonts import TERMINAL_FONT
-from math import sqrt, ceil
+from math import sqrt, ceil, pi, sin
 from objects.particlesspawner import CircleParticleSpawner, ParticleSpawner
 
 COLORS = [(0,0,0), (255,255,255), (255,0,0), (0,0,255), (0,255,0)]
@@ -29,9 +29,9 @@ class Canva:
         self.rect.x, self.rect.y = self.coord.xy
         
         # Initialize UI elements
-        self.name_input = InputBox(1446, 210, 100, 50)
-        self.confirm_button = Button((1556, 210), self.attempt_save, whiten(NO_BUTTON), NO_BUTTON)
-        self.paint_button = Button((1556, 310), self.start_painting, whiten(YES_BUTTON), YES_BUTTON)
+        self.name_input = InputBox(1380, 372, 198, 40)
+        self.confirm_button = Button((1584, 378), self.attempt_save, whiten(SAVE_BUTTON), SAVE_BUTTON)
+        self.paint_button = Button((1464, 228), self.start_painting, whiten(PAINT_BUTTON), PAINT_BUTTON)
 
         # Initialize color selection buttons
         self.color_buttons = self.init_color_buttons()
@@ -58,6 +58,8 @@ class Canva:
         # Set the current color for painting
         self.current_color = (255,0,0)
 
+        self.color_gauge_incr = -pi
+
         # Initialize the animation handler
         self.animation_handler = CanvaAnimationHandler(self)
 
@@ -82,7 +84,7 @@ class Canva:
         """Create and return a Placeable object from the current canvas."""
         scaled_surf = pg.transform.scale_by(self.surf.copy(),0.5).convert()
         FRAME_PAINTING.blit(scaled_surf,(12,12))
-        placeable = Placeable(self.name, self.coord, FRAME_PAINTING.copy(), beauty=self.total_beauty, tag="decoration")
+        placeable = Placeable(self.name, self.coord.copy(), FRAME_PAINTING.copy(), beauty=self.total_beauty, tag="decoration")
         self.reset()
         return placeable
     
@@ -175,9 +177,10 @@ class Canva:
         """Attempt to save the current canvas."""
         # Set the canvas name from the input box and show a confirmation popup
         self.name = self.name_input.text
-        self.game.confirmation_popups.append(ConfirmationPopup(self.game.win, "are you sure you want to save the canva ?", self.game.save_canva))
+        self.game.confirmation_popups.append(ConfirmationPopup(self.game.win, "Sauvegarder la toile ?", self.game.save_canva))
 
     def draw(self, win : pg.Surface):
+        print(self.coord)
         """Draw the canvas and its elements on the given window surface."""
         # Draw the canvas surface
         win.blit(self.surf, self.coord.xy)
@@ -192,6 +195,20 @@ class Canva:
         
         # Draw the price and total beauty text
         win.blit(TERMINAL_FONT.render(f"Prix : {self.total_price} / Beauté totale : {self.total_beauty}", True, 'blue'), (1356, 110))
+
+        # Draw and update the color gauge
+
+        self.color_gauge_incr += pi/60
+        if self.color_gauge_incr > pi:
+            self.color_gauge_incr = -pi
+        
+        color_gauge = pg.Surface((80, 120))
+        color_gauge.fill(self.current_color)
+        win.blit(color_gauge, (1386,164+sin(self.color_gauge_incr)*5))
+
+        # Draw UI
+        win.blit(CANVA_UI_PAINT, (1356, 114))
+        win.blit(CANVA_UI_NAME, (1356, 314))
 
         # Draw the input box and buttons
         self.name_input.draw(win)

@@ -230,6 +230,14 @@ DESK_FG = anim.Spritesheet(load_image('data/guichet_1.png'), (57*6,66*6))
 
 DESK_BG = anim.Spritesheet(load_image('data/guichet_2.png'), (57*6,66*6))
 
+CANVA_UI_PAINT = load_image('data/ui_canva_1.png')
+
+CANVA_UI_NAME = load_image('data/ui_canva2.png')
+
+PAINT_BUTTON = load_image('data/bouton_canva_ui_paint.png')
+
+SAVE_BUTTON = load_image('data/bouton_canva_ui_name.png')
+
 WINDOW = load_image('data/bord.png')
 
 SPRITESHEET_CHIP = anim.Spritesheet(load_image('data/chip.png'), (48*6, 48*6))
