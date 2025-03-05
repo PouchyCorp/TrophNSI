@@ -193,69 +193,70 @@ def inverse_kinematics(target, root, length1, length2):
     # Transform into global angles
     return degrees(angle1), degrees(angle2 + angle1)
 
-
+# Backgrounds
 BG1 = load_image("data/bg_test_approfondis.png")
-
-BG3 = load_image("data/R2.png")
-
-BG4 = load_image("data/R3.png")
-
-BG5 = load_image("data/R4.png")
-
-BG6 = load_image("data/R5.png")
-
 BG2 = load_image("data/bg_test_paint.png")
+BG3 = load_image("data/R2.png")
+BG4 = load_image("data/R3.png")
+BG5 = load_image("data/R4.png")
+BG6 = load_image("data/R5.png")
+PRETTY_BG = load_image("data/joli_background.jpg")
 
+# Icons
 ICON_1 = load_image('data/icon_inv_test.png')
-
 CHIP = load_image('data/chip.png')
 
+# UI Elements
+CANVA_UI_PAINT = load_image('data/ui_canva_1.png')
+CANVA_UI_NAME = load_image('data/ui_canva2.png')
+PAINT_BUTTON = load_image('data/bouton_canva_ui_paint.png')
+SAVE_BUTTON = load_image('data/bouton_canva_ui_name.png')
+WINDOW = load_image('data/bord.png')
+YES_BUTTON = load_image("data/oui.png")
+NO_BUTTON = load_image("data/non.png")
+LOGIN_BUTTON = load_image("data/login.png")
+QUIT_BUTTON = load_image("data/quit.png")
+PLAY_BUTTON = load_image('data/jouer.png')
+CLOSE_BUTTON = load_image("data/close.png")
+REGISTER_BUTTON = load_image("data/register.png")
+CONFIRM_BUTTON = load_image("data/confirm.png")
+CHIP_BUTTON = load_image("data/chip_button.png")
+BUILD_MODE_BORDER = load_image("data/bordure_construction.png")
+DESTRUCTION_MODE_BORDER = load_image("data/destruction_bordure.png")
+DIALBOX = load_image("data/pop_up_dialogue.png")
+ARROW_LEFT = load_image("data/fleche_gauche.png")
+ARROW_RIGHT = load_image("data/fleche_droite.png")
+
+# Spritesheets
 SPRITESHEET_INVENTORY = anim.Spritesheet(load_image('data/etagere.png'), (53*6, 31*6))
-
 SPRITESHEET_HAUT = anim.Spritesheet(load_image("data/prt_haut.png"), (42*6, 29*6))
-
 SPRITESHEET_BAS = anim.Spritesheet(load_image("data/prt_bas.png"), (42*6, 29*6))
-
 SPRITESHEET_DOOR_BLINK = anim.Spritesheet(load_image("data/prt_anim_blink.png"), (42*6, 29*6))
-
-PROP_STATUE = load_image('data/props_statue.png')
-
 SPRITESHEET_HAUT_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_haut.png"),False, True), (42*6, 29*6))
-
 SPRITESHEET_BAS_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_bas.png"),False, True), (42*6, 29*6))
-
 SPRITESHEET_DOOR_BLINK_FLIP = anim.Spritesheet(transform.flip(load_image("data/prt_anim_blink.png"),False, True), (42*6, 29*6))
+SPRITESHEET_CHIP = anim.Spritesheet(load_image('data/chip.png'), (48*6, 48*6))
+SPRITESHEET_ROOFTOP = anim.Spritesheet(load_image('data/rooftop.png'), (320*6,180*6))
+EXCLAMATION_SPRITESHEET = anim.Spritesheet(load_image("data/exclamation_2x9.png"),(2*6,9*6))
 
+# Desks
 DESK_FG = anim.Spritesheet(load_image('data/guichet_1.png'), (57*6,66*6))
-
 DESK_BG = anim.Spritesheet(load_image('data/guichet_2.png'), (57*6,66*6))
 
-CANVA_UI_PAINT = load_image('data/ui_canva_1.png')
+# Props
+PROP_STATUE = load_image('data/props_statue.png')
+SPRITE_PLANT_1 = load_image("data/plant_2_39x38.png")
+SPRITE_PLANT_2 = load_image("data/plant_3_28x48.png")
 
-CANVA_UI_NAME = load_image('data/ui_canva2.png')
-
-PAINT_BUTTON = load_image('data/bouton_canva_ui_paint.png')
-
-SAVE_BUTTON = load_image('data/bouton_canva_ui_name.png')
-
-WINDOW = load_image('data/bord.png')
-
-SPRITESHEET_CHIP = anim.Spritesheet(load_image('data/chip.png'), (48*6, 48*6))
-
-SPRITESHEET_ROOFTOP = anim.Spritesheet(load_image('data/rooftop.png'), (320*6,180*6))
-
+# Robots
 #---------------------------------------------
 #       The format for the robot anim is:
 #line 1 - Walk Right
 #line 2 - Walk Left
 #line 3 - Idle Right
 #line 4 - Watch Wall
-#---------------------------------------------
-#
 #dict is the particle + the relative offset from the origin of the bot
-#
 #---------------------------------------------
-
 dust = ParticleSpawner(Coord(0,(0,0)), Vector2(0,0), (50,50,50,100), 60, dir_randomness=2, density=1, speed=0.1)
 none_particle = ParticleSpawner(Coord(0,(0,0)), Vector2(0,0), (0,0,0,0), 0, dir_randomness=0, density=0, speed=0)
 
@@ -289,50 +290,13 @@ SPRITESHEET_ROBOT_MUSIQUE_PACK = (anim.Spritesheet(load_image('data/robots/robot
 
 LIST_SPRITESHEET_ROBOT = [SPRITESHEET_ROBOT_1_PACK, SPRITESHEET_ROBOT_2_PACK, SPRITESHEET_ROBOT_3_PACK, SPRITESHEET_ROBOT_4_PACK, SPRITESHEET_ROBOT_5_PACK, SPRITESHEET_ROBOT_6_PACK]
 
-SPRITE_PLANT_1 = load_image("data/plant_2_39x38.png")
-
-SPRITE_PLANT_2 = load_image("data/plant_3_28x48.png")
-
-ARROW_LEFT = load_image("data/fleche_gauche.png")
-
-ARROW_RIGHT  = load_image("data/fleche_droite.png")
-
-DIALBOX = load_image("data/pop_up_dialogue.png")
-
-EXCLAMATION_SPRITESHEET = anim.Spritesheet(load_image("data/exclamation_2x9.png"),(2*6,9*6))
-
-YES_BUTTON = load_image("data/oui.png")
-
-NO_BUTTON = load_image("data/non.png")
-
-LOGIN_BUTTON = load_image("data/login.png")
-
-QUIT_BUTTON = load_image("data/quit.png")
-
-PLAY_BUTTON = load_image('data/jouer.png')
-
-CLOSE_BUTTON = load_image("data/close.png")
-
-REGISTER_BUTTON = load_image("data/register.png")
-
-CONFIRM_BUTTON = load_image("data/confirm.png")
-
-CHIP_BUTTON = load_image("data/chip_button.png")
-
-BUILD_MODE_BORDER = load_image("data/bordure_construction.png")
-
-DESTRUCTION_MODE_BORDER = load_image("data/destruction_bordure.png")
-
+# Arm and Sprayer
 ARM = load_image("data/bra_articuler_1.png")
-
 SPRAYER = load_image("data/buse.png")
 
+# Frame and Patterns
 FRAME_PAINTING = load_image("data/cadre.png")
-
-PRETTY_BG = load_image("data/joli_background.jpg")
-
-#---------------------------------------------
-#       List of the different patterns
-#---------------------------------------------
-
 PATTERN_LIST = [load_image("data/pattern_storage/pattern_"+str(num)+".png") for num in range(1,16)]
+
+# Cutscenes
+CUTSCENES : dict[str, (anim.Animation, str)] = {"floor2": (anim.Animation("data\caissier_anim_30frmaes.png"), "2")}

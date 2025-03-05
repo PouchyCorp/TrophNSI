@@ -55,6 +55,7 @@ from objects.patterns import PatternHolder
 from objects.canva import Canva
 from ui.button import Button
 from objects.particlesspawner import ParticleSpawner
+from ui.cinematic import CinematicPlayer
 
 class Game:
     def __init__(self, win : pg.Surface, config : dict, inventory, shop, gold, unlock_manager, transparency_win):
@@ -113,7 +114,7 @@ class Game:
             # Checks if floor already visited and launches dialogue if not
             if not self.unlock_manager.is_floor_discovered(self.current_room.num):
                 self.unlock_manager.discovered_floors.append(str(self.current_room.num))
-                self.timer.create_timer(0.75, self.launch_special_dialogue, arguments=[str(self.current_room.num)])
+                CinematicPlayer(*sprite.CUTSCENES[f"floor{self.current_room.num}"]).play(self)
                
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
@@ -131,13 +132,12 @@ class Game:
         self.paused = True
         self.temp_bg = pg.transform.grayscale(self.win)
         if dialogue_name=='0':
-            self.dialogue_manager.special_dialogue(dialogue_name)
-            InfoPopup("ATTENDEZ !! ")
-            self.dialogue_manager.special_dialogue("0.5")
-            self.dialogue_manager.bot_anim = None
+            self.popups.append(InfoPopup("ATTENDEZ !! "))
+            self.timer.create_timer(1, self.dialogue_manager.special_dialogue, arguments=[dialogue_name])  # Trigger a random dialogue with a delay
+            self.dialogue_manager.bot_anim = None # TO DO : Add a special animation for this dialogue
         else:
             self.dialogue_manager.special_dialogue(dialogue_name)  # Trigger a random dialogue.
-            self.dialogue_manager.bot_anim = None
+            self.dialogue_manager.bot_anim = None # TO DO : Add a special animation for this dialogue
 
     def pause(self):
         self.gui_state = State.PAUSED
@@ -289,15 +289,13 @@ class Game:
                 self.popups.append(InfoPopup(placeable.name))
 
     def handle_door_down_interaction(self, placeable):
-        if self.current_room.num == 0:
-            self.popups.append(InfoPopup("you can't go further down"))
-        elif self.unlock_manager.is_floor_unlocked(self.current_room.num-1):
-            self.timer.create_timer(0.75, self.change_floor, arguments=[-1])
-            self.sound_manager.down.play()
-            self.launch_transition()
+        if self.unlock_manager.is_floor_unlocked(self.current_room.num-1): # Check if the next floor is unlocked
+            self.timer.create_timer(0.75, self.change_floor, arguments=[-1]) # Change floor
+            self.sound_manager.down.play() # Play sound
+            self.launch_transition() # Launch transition
             placeable.interaction(self.timer)
         else:
-            self.unlock_manager.try_to_unlock_floor(self.current_room.num-1, self)
+            self.unlock_manager.try_to_unlock_floor(self.current_room.num-1, self) # Try to unlock the next floor
 
     def handle_door_up_interaction(self, placeable):
         if self.unlock_manager.is_floor_unlocked(self.current_room.num+1): # Check if the next floor is unlocked
