@@ -28,7 +28,7 @@ class CinematicPlayer:
             return self.dialogue.click_interaction()
             
     def play_anim(self, game : 'Game'):
-        band_size = (game.win.get_width(), 180)
+        band_size = (game.win.get_width(), 140)
         black_band = pg.Surface(band_size)
         clock = pg.time.Clock()
         while not self.anim.is_finished() and not self.is_finished:
