@@ -49,11 +49,9 @@ def init_rooms():
 
     # R2
     R2 = Room(2, sprite.BG3)
-    test_canva = Placeable('test_canva', Coord(
-        2, (100, 100)), Surface((48*6, 64*6)), "decoration")
     shop = subplaceable.ShopPlaceable('shop', Coord(
         2, (1000, 100)), Surface((50*6, 90*6)), "shop")
-    R2.placed += [stairs_up, stairs_down, test_canva, shop]
+    R2.placed += [stairs_up, stairs_down, shop]
     R2.blacklist += [stairs_up, stairs_down, shop]
 
     # R3
