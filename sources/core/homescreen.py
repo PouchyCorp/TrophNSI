@@ -181,8 +181,8 @@ class OnlineHomescreen:
         if self.bg_offset > self.background.get_width()-WIN.get_width():
             self.bg_offset = 0
 
-        username_label = TERMINAL_FONT.render("Nom d'utilisateur", True, (168, 112, 62))
-        password_label = TERMINAL_FONT.render("Mot de passe", True, (168, 112, 62))
+        username_label = TERMINAL_FONT.render("Nom d'utilisateur", False, (168, 112, 62))
+        password_label = TERMINAL_FONT.render("Mot de passe", False, (168, 112, 62))
 
         match self.gui_state:
             case LoginStates.LOGIN:

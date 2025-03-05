@@ -7,7 +7,7 @@ from ui.sprite import FRAME_PAINTING, invert_alpha, PAINT_BUTTON, SAVE_BUTTON, C
 from ui.button import Button
 from ui.confirmationpopup import ConfirmationPopup
 from ui.infopopup import InfoPopup
-from utils.fonts import TERMINAL_FONT
+from utils.fonts import TERMINAL_FONT, TERMINAL_FONT_VERYBIG
 from math import sqrt, ceil, pi, sin
 from objects.particlesspawner import CircleParticleSpawner, ParticleSpawner
 
@@ -180,7 +180,6 @@ class Canva:
         self.game.confirmation_popups.append(ConfirmationPopup(self.game.win, "Sauvegarder la toile ?", self.game.save_canva))
 
     def draw(self, win : pg.Surface):
-        print(self.coord)
         """Draw the canvas and its elements on the given window surface."""
         # Draw the canvas surface
         win.blit(self.surf, self.coord.xy)
@@ -192,12 +191,8 @@ class Canva:
         # Draw the held pattern if there is one
         if self.holded_pattern:
             self.holded_pattern.draw(win)
-        
-        # Draw the price and total beauty text
-        win.blit(TERMINAL_FONT.render(f"Prix : {self.total_price} / Beauté totale : {self.total_beauty}", True, 'blue'), (1356, 110))
 
         # Draw and update the color gauge
-
         self.color_gauge_incr += pi/60
         if self.color_gauge_incr > pi:
             self.color_gauge_incr = -pi
@@ -209,6 +204,15 @@ class Canva:
         # Draw UI
         win.blit(CANVA_UI_PAINT, (1356, 114))
         win.blit(CANVA_UI_NAME, (1356, 314))
+
+         # Draw the price and total beauty text
+        price_label = TERMINAL_FONT_VERYBIG.render(str(self.total_price)+"¥", False, (255, 212, 163))
+        price_rect = price_label.get_rect(bottomleft=(1584, 210))
+        win.blit(price_label, price_rect)
+
+        beauty_label = TERMINAL_FONT_VERYBIG.render(str(self.total_beauty), False, (255, 212, 163))
+        beauty_rect = beauty_label.get_rect(bottomleft=(1554, 486))
+        win.blit(beauty_label, beauty_rect)
 
         # Draw the input box and buttons
         self.name_input.draw(win)

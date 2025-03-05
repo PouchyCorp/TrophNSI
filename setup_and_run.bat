@@ -1,11 +1,4 @@
 @echo off
-:: check if Python is installed
-python --version >nul 2>&1
-if %ERRORLEVEL% neq 0 (
-    echo Python is not installed
-    pause
-    exit /b
-)
 
 :: create a virtual environment
 echo Creating a virtual environment...

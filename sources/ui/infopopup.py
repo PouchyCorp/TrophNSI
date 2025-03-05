@@ -6,7 +6,7 @@ class InfoPopup:
     def __init__(self, text):
         self.text : str = text
         
-        self.text_surf = TERMINAL_FONT.render(self.text, True, "white")
+        self.text_surf = TERMINAL_FONT.render(self.text, False, "white")
         txt_rect = self.text_surf.get_rect()
         self.bg_surf = nine_slice_scaling(WINDOW,(txt_rect.w+30, txt_rect.h+30), (12, 12, 12, 12))
         self.bg_surf.blit(self.text_surf, (18,18))

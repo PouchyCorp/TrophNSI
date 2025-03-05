@@ -20,9 +20,9 @@ class UserList:
         self.processed_tabs = []
         for i, data in enumerate(self.displayed_content):
             username, dic = data
-            username_surf = TERMINAL_FONT.render(f"Musée de {username}", True, "white")
-            beauty_surf = TERMINAL_FONT.render(f"beauté : {dic['beauty']}", True, "white")
-            floor_unlock_surf = TERMINAL_FONT.render(f"étages débloqués : {len(dic['unlocks'].unlocked_floors)-1} / 5", True, "white")
+            username_surf = TERMINAL_FONT.render(f"Musée de {username}", False, "white")
+            beauty_surf = TERMINAL_FONT.render(f"beauté : {dic['beauty']}", False, "white")
+            floor_unlock_surf = TERMINAL_FONT.render(f"étages débloqués : {len(dic['unlocks'].unlocked_floors)-1} / 5", False, "white")
             rect = Rect(self.coord[0]+24, self.coord[1]+(100*i)+24, 1000, 100)
             
             bg_surf = nine_slice_scaling(WINDOW, rect.size, (12,12,12,12))
