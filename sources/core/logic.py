@@ -114,6 +114,7 @@ class Game:
             # Checks if floor already visited and launches dialogue if not
             if not self.unlock_manager.is_floor_discovered(self.current_room.num):
                 self.unlock_manager.discovered_floors.append(str(self.current_room.num))
+                self.reset_guistate()
                 CinematicPlayer(*sprite.CUTSCENES[f"floor{self.current_room.num}"]).play(self)
                
         else:
