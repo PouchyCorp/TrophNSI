@@ -300,4 +300,4 @@ FRAME_PAINTING = load_image("data/cadre.png")
 PATTERN_LIST = [load_image("data/pattern_storage/pattern_"+str(num)+".png") for num in range(1,16)]
 
 # Cutscenes
-CUTSCENES : dict[str, (anim.Animation, str)] = {"floor2": (anim.Animation(SPRITESHEET_CUTSCENE_2, 0, 30, 15, False), "2")}
+CUTSCENES : dict[str, (anim.Animation, str)] = {"floor0" : (), "floor2": (anim.Animation(SPRITESHEET_CUTSCENE_2, 0, 30, 15, False), "2")}

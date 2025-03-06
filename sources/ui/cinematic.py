@@ -10,14 +10,17 @@ if TYPE_CHECKING:
     from core.logic import Game 
 
 class CinematicPlayer:
-    def __init__(self, anim : Animation, dialogue_name, introspection_dialogue_name = None):
+    def __init__(self, anim : Animation = None, dialogue_name = None, introspection_dialogue_name = None):
         self.anim = anim
 
         self.dialogue = DialogueManager()
         self.dialogue_name = dialogue_name
         self.introspection_dialogue = introspection_dialogue_name
 
-        self.cutscene_surf = self.anim.reset_frame()
+        if self.anim:
+            self.cutscene_surf = self.anim.reset_frame()
+        else:
+            self.cutscene_surf = pg.Surface((320*6, 180*6), pg.SRCALPHA)
         self.is_finished = False
     
     def get_status_event(self, event, game):
@@ -131,7 +134,8 @@ class CinematicPlayer:
 
     def play(self, game : 'Game'):
         # Play the animation sequence
-        self.__play_anim(game)
+        if self.anim:
+            self.__play_anim(game)
 
         # If there is a dialogue name, play the dialogue sequence
         if self.dialogue_name:

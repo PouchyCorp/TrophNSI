@@ -495,7 +495,7 @@ class Game:
         self.current_room.draw_placed(self.win)
     
     def draw_foreground(self):
-        self.current_room.draw_placed_foreground(self.win)
+        self.current_room.draw_placed_foreground(self.transparency_win)
 
     def draw_bots(self, mouse_pos):
         self.hivemind.draw(self.win, self.current_room.num, mouse_pos, self.transparency_win)
