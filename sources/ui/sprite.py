@@ -238,7 +238,7 @@ SPRITESHEET_DOOR_BLINK_FLIP = anim.Spritesheet(transform.flip(load_image("data/p
 SPRITESHEET_CHIP = anim.Spritesheet(load_image('data/chip.png'), (48*6, 48*6))
 SPRITESHEET_ROOFTOP = anim.Spritesheet(load_image('data/rooftop.png'), (320*6,180*6))
 EXCLAMATION_SPRITESHEET = anim.Spritesheet(load_image("data/exclamation_2x9.png"),(2*6,9*6))
-SPRITESHEET_CUTSCENE_2 = anim.Spritesheet(load_image("data\caissier_anim_30frmaes.png"), (320*6, 180*6))
+SPRITESHEET_CUTSCENE_2 = anim.Spritesheet(load_image("data/caissier_anim_30frmaes.png"), (320*6, 180*6))
 
 # Desks
 DESK_FG = anim.Spritesheet(load_image('data/guichet_1.png'), (57*6,66*6))
