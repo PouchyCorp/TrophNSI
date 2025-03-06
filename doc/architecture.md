@@ -16,23 +16,43 @@ Chaque module clé a ses propres responsabilités :
 - **[room.py](/sources/core/room.py)** (gestion des objets dans la pièce)
 - **[spectator.py](/sources/core/spectator.py)** (visualise en lecture seule une sauvegarde)
 - **[unlockmanager.py](/sources/core/unlockmanager.py)** (gestion et stockage de la progression du joueur)
+- **[buildmode.py](/sources/core/buildmode.py)** (gestion des modes de construction et de destruction)
 
 ### Les Modules d'Interface Utilisateur
 - **[inventory.py](/sources/ui/inventory.py)** (gestion de l'inventaire)
 - **[button.py](/sources/ui/button.py)** (éléments de bouton)
 - **[infopopup.py](/sources/ui/infopopup.py)** (popups d'information)
+- **[userlist.py](/sources/ui/userlist.py)** (affichage de la liste des utilisateurs dans le contexte du mode spectateur)
+- **[sprite.py](/sources/ui/sprite.py)** (gestion des sprites et des animations)
 
 ### Les Modules d'Objets
 - **[placeable.py](/sources/objects/placeable.py)** (classe de base des objets placés)
 - **[placeablesubclass.py](/sources/objects/placeablesubclass.py)** (sous-classes d'objets avec des comportements spécifiques) 
 - **[canva.py](/sources/objects/canva.py)** (gestion du système de peinture)
-- **[patterns.py](/sources/objects/patterns.py)** (stockage et )
+- **[patterns.py](/sources/objects/patterns.py)** (stockage et gestion des motifs)
+- **[dialogue.py](/sources/objects/dialogue.py)** (gestion des dialogues)
+- **[bot.py](/sources/objects/bot.py)** (gestion des bots et de leur comportement)
 
 ### Les Modules Utilitaires
-- **[coord.py](/sources/utils/coord.py)** (systeme de coordonnées)
+- **[coord.py](/sources/utils/coord.py)** (système de coordonnées)
 - **[anim.py](/sources/utils/anim.py)** (animations)
-- **[sound.py](/sources/utils/sound.py)** (effets sonores).
+- **[sound.py](/sources/utils/sound.py)** (effets sonores)
+- **[room_config.py](/sources/utils/room_config.py)** (configuration des pièces)
+- **[database.py](/sources/utils/database.py)** (gestion de la base de données)
 
 Nous pensons architecture modulaire permet une gestion efficace du jeu, facilitant la maintenance et les extensions.
 
-# Pour plus d'information sur le déroulé du code, regardez timeline.md
+## Note sur la programmation objet
+
+Nous avons utilisés de maniere intensive de la programmation orientée objet dans notre projet. Selon nous, cela présente plusieurs avantages. 
+Voici deux exemples concrets pris dans notre code :
+
+**Utilisation de l'héritage:**
+Le fichier placeablesubclass.py montre l'utilisation de l'héritage pour créer différentes classes d'objets (BotPlaceable, ShopPlaceable, etc.) qui héritent de la classe de base Placeable. Cela permet de réutiliser le code commun tout en ajoutant des comportements spécifiques à chaque classe dérivée.
+
+**Encapsulation et modularité:**
+Le fichier anim.py illustre bien le concept de l'encapsulation où la classe Animation encapsule les détails de l'animation d'une spritesheet, rendant le code plus modulaire et facile à maintenir.
+
+Cela nous a permi de rendre le code plus facile à naviguer et nous a donné beaucoup d'experience à travailler avec des Objets.
+
+# Pour plus d'information sur le déroulé de la boucle principale, regardez la [timeline](/doc/timeline.md)
