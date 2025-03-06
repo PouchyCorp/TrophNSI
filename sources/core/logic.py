@@ -96,6 +96,9 @@ class Game:
         # Initialize unlocks effects.
         if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
             self.timer.create_timer(3, self.accept_bot, True)
+        if not self.unlock_manager.is_floor_discovered("1"):
+            CinematicPlayer(*sprite.CUTSCENES["floor1"])
+        self.update_all_locked_status()
 
         if not self.config['gameplay']['offline_mode']: # If the player is not in the no_login mode, don't init the spectating placeable
             self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), self.config)
@@ -108,30 +111,44 @@ class Game:
         """to move up : 1
            to move down : -1"""
 
+        # Check if the next room is within the limits and unlocked
         if 0 <= self.current_room.num + direction <= 5 and (self.unlock_manager.is_floor_unlocked(self.current_room.num + direction) or self.config['gameplay']['cheats']):
 
             self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
+            self.update_all_locked_status() # Update doors lock state
+
             # Checks if floor already visited and launches dialogue if not
             if not self.unlock_manager.is_floor_discovered(self.current_room.num):
                 self.unlock_manager.discovered_floors.append(str(self.current_room.num))
                 self.reset_guistate()
                 CinematicPlayer(*sprite.CUTSCENES[f"floor{self.current_room.num}"]).play(self)
+            
                
         else:
             self.popups.append(InfoPopup("you can't go off limits"))  # Show popup if trying to go below limits
+    
+    def update_all_locked_status(self):
+        """ Updates the locked status of all unlockable placeable in the current room
+        Intended to be called when a new floor is discovered or when a new feature is unlocked"""
+        for door in self.current_room.placed:
+            if type(door) in [subplaceable.DoorUp, subplaceable.DoorDown]:
+                door.update_lock_status(self.unlock_manager, self.current_room)
 
     def launch_random_dialogue(self, bot_anim):
-        """ Function to initiate dialogue easily passed to other functions"""
+        """ Function to initiate dialogue easily passed to other functions
+        Intended to be called when a reacting bot is clicked"""
         self.gui_state = State.DIALOG
         self.paused = True
-        self.temp_bg = pg.transform.grayscale(self.win)
+        self.temp_bg = pg.transform.grayscale(self.win) # Grayscale the background
         self.dialogue_manager.random_dialogue()  # Trigger a random dialogue
         self.dialogue_manager.bot_anim = bot_anim.copy()  # Copy the bot's surface for display
     
     def launch_special_dialogue(self, dialogue_name):
+        """ Function to initiate dialogue easily passed to other functions
+        Intended to be called when a unique dialogue from the story is triggered"""
         self.gui_state = State.DIALOG
         self.paused = True
-        self.temp_bg = pg.transform.grayscale(self.win)
+        self.temp_bg = pg.transform.grayscale(self.win) # Grayscale the background
         if dialogue_name=='0':
             self.popups.append(InfoPopup("ATTENDEZ !! "))
             self.timer.create_timer(1, self.dialogue_manager.special_dialogue, arguments=[dialogue_name])  # Trigger a random dialogue with a delay
@@ -141,6 +158,7 @@ class Game:
             self.dialogue_manager.bot_anim = None # TO DO : Add a special animation for this dialogue
 
     def pause(self):
+        """ Pauses the game and displays the pause menu"""
         self.gui_state = State.PAUSED
         self.paused = True
         self.temp_bg = pg.transform.grayscale(self.win)
@@ -170,10 +188,12 @@ class Game:
         self.cachier_desk.active = True
         
     def launch_transition(self):
+        """ Launches the transition effect when changing floors"""
         self.gui_state = State.TRANSITION  # Set the GUI to the transition state
         self.incr_fondu = 0  # Reset the transition variable
     
     def render_popups(self):  
+        """ Render all infopopups on the window """
         # Iterate over existing popups to render and manage their lifetime
         for popup in self.popups:
             if popup.lifetime <= 0:
@@ -210,6 +230,7 @@ class Game:
 # -----------------------------
 
     def keydown_handler(self, event : pg.event.Event):
+        """Passes the key event to the proper handler based on the current GUI state"""
         if self.config['gameplay']['cheats']:
             self.handle_cheat_keys(event.key)
         self.handle_regular_keys(event.key)
@@ -224,6 +245,8 @@ class Game:
                 self.handle_escape_key()
 
     def handle_cheat_keys(self, key):
+        """Grant the player the ability to access cheats
+        Cheats are available in the config file"""
         match key:
             case pg.K_UP:
                 self.change_floor(1)
@@ -539,7 +562,7 @@ class Game:
 
             case State.TRANSITION:
                 if self.incr_fondu <= pi:
-                    self.incr_fondu = sprite.fondu(self.win, self.incr_fondu, 0.0125) #
+                    self.incr_fondu = sprite.fondu([self.win, self.transparency_win], self.incr_fondu, 0.0125) #
                 else:
                     self.reset_guistate() 
 

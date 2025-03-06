@@ -23,6 +23,8 @@ import ui.sprite as sprite
 from utils.anim import Animation
 from typing import Optional
 from utils.timermanager import TimerManager
+from core.unlockmanager import UnlockManager
+from pygame.transform import grayscale 
 
 class DoorUp(Placeable):
     def __init__(self, name, coord, surf, tag = None):
@@ -35,6 +37,17 @@ class DoorUp(Placeable):
         self.rect.width, self.rect.height = _rect.width, _rect.height
         self.anim.reset_frame()
         self.door_down : Optional[DoorDown] = None
+        self.locked = True
+
+        self.locked_surf = sprite.SPRITESHEET_DOOR_BLINK.get_img((0,0))       #create a locked door surface
+        self.locked_surf = grayscale(self.locked_surf)
+        lock = sprite.LOCK
+        lock_rect = lock.get_rect(center=self.locked_surf.get_rect().center)    #center the lock on the door
+        self.locked_surf.blit(lock, lock_rect)       #blit the lock on the door
+    
+    def update_lock_status(self, unlock_manager : UnlockManager, current_room):
+        if unlock_manager.is_floor_discovered(str(current_room.num+1)):
+            self.locked = False
     
     def pair_door_down(self, door_down):
         self.door_down = door_down
@@ -46,6 +59,10 @@ class DoorUp(Placeable):
             else:           #delete the blinking animation after closing when the mouse isn't on the door
                 self.surf = sprite.SPRITESHEET_DOOR_BLINK.get_img((0,0))
                 self.anim = None
+        
+        if self.locked:
+            self.surf = self.locked_surf
+            self.anim = None
     
         super().update_sprite(is_hovered, color)
     
@@ -71,7 +88,17 @@ class DoorDown(Placeable):
         _rect = self.anim.get_frame().get_rect()
         self.rect.width, self.rect.height = _rect.width, _rect.height
         self.door_up : Optional[DoorUp] = None
+        self.locked = True
 
+        self.locked_surf = sprite.SPRITESHEET_DOOR_BLINK.get_img((0,0))       #create a locked door surface
+        self.locked_surf = grayscale(self.locked_surf)
+        lock = sprite.LOCK
+        lock_rect = lock.get_rect(center=self.locked_surf.get_rect().center)    #center the lock on the door
+        self.locked_surf.blit(lock, lock_rect)       #blit the lock on the door
+
+    def update_lock_status(self, unlock_manager : UnlockManager, current_room):
+        if unlock_manager.is_floor_discovered(str(current_room.num-1)):
+            self.locked = False
     
     def pair_door_up(self, door_up):
         self.door_up = door_up

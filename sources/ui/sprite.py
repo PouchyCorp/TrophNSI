@@ -125,17 +125,17 @@ def get_outline(surf, color):
     return outline_surface
 
 
-def fondu(surf : Surface, incr ,speed) -> Surface:
+def fondu(surfs : list[Surface], incr ,speed) -> Surface:
     """Speed is a float between 0 and 1, incr is a float between 0 and pi.
-    The function does a fade in/out effect on the surface using the sinus function."""
+    The function does a fade in/out effect on a list of surface using the sinus function."""
     if incr <= pi:
         speed = pi*speed
-        rect = surf.get_rect()
-        black_surf = Surface((rect.w, rect.h), SRCALPHA)
-        color = (0,0,0,round(255*sin(incr)))
-        black_surf.fill(color)
-        surf.blit(black_surf, (0,0))
-
+        for surf in surfs:
+            rect = surf.get_rect()
+            black_surf = Surface((rect.w, rect.h), SRCALPHA)
+            color = (0,0,0,round(255*sin(incr)))
+            black_surf.fill(color)
+            surf.blit(black_surf, (0,0))
         incr += speed
     
     return incr
@@ -226,6 +226,7 @@ DESTRUCTION_MODE_BORDER = load_image("data/destruction_bordure.png")
 DIALBOX = load_image("data/pop_up_dialogue.png")
 ARROW_LEFT = load_image("data/fleche_gauche.png")
 ARROW_RIGHT = load_image("data/fleche_droite.png")
+LOCK = load_image("data/cadena.png")
 
 # Spritesheets
 SPRITESHEET_INVENTORY = anim.Spritesheet(load_image('data/etagere.png'), (53*6, 31*6))
@@ -300,4 +301,4 @@ FRAME_PAINTING = load_image("data/cadre.png")
 PATTERN_LIST = [load_image("data/pattern_storage/pattern_"+str(num)+".png") for num in range(1,16)]
 
 # Cutscenes
-CUTSCENES : dict[str, (anim.Animation, str)] = {"floor0" : (), "floor2": (anim.Animation(SPRITESHEET_CUTSCENE_2, 0, 30, 15, False), "2")}
+CUTSCENES : dict[str, (anim.Animation, str)] = {"floor0" : (),"floor1" : (), "floor2": (anim.Animation(SPRITESHEET_CUTSCENE_2, 0, 30, 15, False), "2"), "floor3" : (), "floor4" : (), "floor5" : ()}

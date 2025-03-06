@@ -34,7 +34,7 @@ class UnlockManager:
         self.unlocked_floors = ["0", "1"]
         self.unlocked_features = []
         self.discovered_features = []
-        self.discovered_floors = ["1"]
+        self.discovered_floors = []
         self.floor_price = {"2": 10, "3": 100, "4": 1000, "5": 10000}
         self.feature_price = {"Auto Cachier": 5000}
 
@@ -88,6 +88,7 @@ class UnlockManager:
             game.sound_manager.achieve.play()
             # Make it rain confetti
             game.particle_spawners[game.current_room.num].append(ConfettiSpawner(Coord(1,(0,0)),500))
+            game.update_all_locked_status()
         else:
             game.popups.append(
                 InfoPopup("Pas assez d'argent pour débloquer l'étage :("))
@@ -111,6 +112,7 @@ class UnlockManager:
             
             # Make it rain confetti
             game.particle_spawners[game.current_room.num].append(ConfettiSpawner(Coord(1, (0, 0)), 500))
+            game.update_all_locked_status() # Update the locked status of all proper objects
 
             self.discovered_features.append(feature_name)
             game.timer.create_timer(1, game.launch_special_dialogue, arguments=[feature_name])
