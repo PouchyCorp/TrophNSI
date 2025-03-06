@@ -59,6 +59,7 @@ from ui.cinematic import CinematicPlayer
 
 class Game:
     def __init__(self, win : pg.Surface, config : dict, inventory, shop, gold, unlock_manager, transparency_win):
+        """Initializes the game with the provided configuration and save data."""
         self.config = config
         self.win : pg.Surface = win
         self.timer : TimerManager = TimerManager()
@@ -94,13 +95,15 @@ class Game:
         self.particle_spawners : dict[int,list] = PARTICLE_SPAWNERS
 
         # Initialize unlocks effects.
-        if self.unlock_manager.is_feature_unlocked("Auto Cachier"):
-            self.timer.create_timer(3, self.accept_bot, True)
-        if not self.unlock_manager.is_floor_discovered("1"):
-            CinematicPlayer(*sprite.CUTSCENES["floor1"])
-        self.update_all_locked_status()
+        if self.unlock_manager.is_feature_unlocked("Auto Cachier"): # If the auto cachier is unlocked
+            self.timer.create_timer(3, self.accept_bot, True) # Accept a bot every 3 seconds (effect of the auto cachier unlock)
+        if not self.unlock_manager.is_floor_discovered("1"): # If the first floor is not discovered (equivalent to the 1st time the player enters the game)
+            self.unlock_manager.discovered_floors.append("1")
+            CinematicPlayer(*sprite.CUTSCENES["floor1"]) # Launch the first floor tutorial
+            
+        self.update_all_locked_status() # Update doors lock state
 
-        if not self.config['gameplay']['offline_mode']: # If the player is not in the no_login mode, don't init the spectating placeable
+        if not self.config['gameplay']['offline_mode']: # If the player is not in the no_login mode, don't initialize the spectating placeable
             self.spectating_placeable = subplaceable.SpectatorPlaceable('spectating_placeable', Coord(5,(100,100)), pg.Surface((100,100)), self.config)
             ROOMS[5].placed.append(self.spectating_placeable)
             ROOMS[5].blacklist.append(self.spectating_placeable)
@@ -108,13 +111,13 @@ class Game:
         self.cachier_desk = [plbl for plbl in ROOMS[1].placed if type(plbl) == subplaceable.DeskPlaceable][0] # Very ugly indeed
 
     def change_floor(self, direction):
-        """to move up : 1
-           to move down : -1"""
+        """ Changes the current room to the next one in the given direction 
+        (1 for up, -1 for down)"""
 
         # Check if the next room is within the limits and unlocked
         if 0 <= self.current_room.num + direction <= 5 and (self.unlock_manager.is_floor_unlocked(self.current_room.num + direction) or self.config['gameplay']['cheats']):
 
-            self.current_room = ROOMS[self.current_room.num + direction]  # Move to the previous room
+            self.current_room = ROOMS[self.current_room.num + direction]  # Move to the next room
             self.update_all_locked_status() # Update doors lock state
 
             # Checks if floor already visited and launches dialogue if not
@@ -535,9 +538,11 @@ class Game:
                 spawner.draw_all(self.transparency_win)
 
     def draw_gui(self, mouse_pos):
+        """Draws the GUI elements based on the current state"""
         match self.gui_state:
             case State.INTERACTION:
-                if hasattr(self, "spectating_placeable") and self.spectating_placeable.open and self.current_room.num == 5:
+                # hasattr is used because the spectating placeable is disabled in offline mode
+                if hasattr(self, "spectating_placeable") and self.spectating_placeable.open and self.current_room.num == 5: # If the spectating placeable is open and on last floor
                     self.spectating_placeable.user_list.draw(self.win)
 
             case State.BUILD:
