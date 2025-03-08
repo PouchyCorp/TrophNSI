@@ -46,9 +46,7 @@ class DoorUp(Placeable):
         self.locked_surf.blit(lock, lock_rect)       #blit the lock on the door
     
     def update_lock_status(self, unlock_manager : UnlockManager, current_room):
-        
         if unlock_manager.is_floor_unlocked(str(current_room.num+1)):
-            print(1)
             self.locked = False
         else:
             self.locked = True
@@ -57,18 +55,17 @@ class DoorUp(Placeable):
         self.door_down = door_down
 
     def update_sprite(self, is_hovered : bool, color : tuple = (150, 150, 255)):
-        if self.anim != self.anim_open and self.anim_close.is_finished():     #check if the animation is finish
+        if self.anim != self.anim_open and self.anim_close.is_finished():     # Check if the animation is finished
             if is_hovered:
                 self.anim = self.anim_blink
-            else:           #delete the blinking animation after closing when the mouse isn't on the door
+            else:           # Delete the blinking animation after closing when the mouse isn't on the door
                 self.surf = sprite.SPRITESHEET_DOOR_BLINK.get_img((0,0))
                 self.anim = None
-        
-        if self.locked:
-            self.surf.blit(self.locked_surf)
-            self.anim = None
     
         super().update_sprite(is_hovered, color)
+
+        if self.locked:
+            self.temp_surf.blit(self.locked_surf, (3,3) if is_hovered else (0,0)) # Draw the lock on the door (offset if hovered because of the outline)
     
     def interaction(self, timer : TimerManager):
         self.anim_open.reset_frame()        #reset all animations when the mouse is on the door to expect the change of floor
@@ -98,7 +95,7 @@ class DoorDown(Placeable):
         self.locked_surf = grayscale(self.locked_surf)
         lock = sprite.LOCK
         lock_rect = lock.get_rect(center=self.locked_surf.get_rect().center)    #center the lock on the door
-        self.locked_surf.blit(lock, lock_rect)       #blit the lock on the door
+        self.locked_surf.blit(lock, lock_rect)       #blit the lock on the special surface
 
     def update_lock_status(self, unlock_manager : UnlockManager, current_room):
         if unlock_manager.is_floor_unlocked(str(current_room.num-1)):
@@ -118,6 +115,9 @@ class DoorDown(Placeable):
                 self.anim = None
     
         super().update_sprite(is_hovered, color)
+
+        if self.locked:
+            self.temp_surf.blit(self.locked_surf, (3,3) if is_hovered else (0,0)) # Draw the lock on the door (offset if hovered because of the outline)
     
     def interaction(self, timer : TimerManager):
         self.anim_open.reset_frame()        #reset all animations when the mouse is on the door to expect the change of floor
