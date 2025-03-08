@@ -249,6 +249,7 @@ DESK_BG = anim.Spritesheet(load_image('data/guichet_2.png'), (57*6,66*6))
 PROP_STATUE = load_image('data/props_statue.png')
 SPRITE_PLANT_1 = load_image("data/plant_2_39x38.png")
 SPRITE_PLANT_2 = load_image("data/plant_3_28x48.png")
+FRAME_PAINTING = load_image("data/cadre.png")
 
 # Robots
 #---------------------------------------------
@@ -297,8 +298,9 @@ ARM = load_image("data/bra_articuler_1.png")
 SPRAYER = load_image("data/buse.png")
 
 # Frame and Patterns
-FRAME_PAINTING = load_image("data/cadre.png")
+DRAWER_HOLDER = load_image("data/etagere_canva.png")
 PATTERN_LIST = [load_image("data/pattern_storage/pattern_"+str(num)+".png") for num in range(1,16)]
+DRAWER_LIST = [load_image("data/drawers/bouton_"+str(num)+".png") for num in range(1,16)]
 
 # Cutscenes
 CUTSCENES : dict[str, (anim.Animation, str)] = {"floor0" : (),"floor1" : (), "floor2": (anim.Animation(SPRITESHEET_CUTSCENE_2, 0, 30, 15, False), "2"), "floor3" : (), "floor4" : (), "floor5" : ()}

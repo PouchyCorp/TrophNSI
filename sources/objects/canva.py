@@ -99,7 +99,8 @@ class Canva:
             return False
 
     def get_price(self):
-        """Calculate and return the total price of all placed patterns."""
+        """Calculate and return the total price of all placed patterns.
+        Side effect: Set the total price of the canvas."""
         self.total_price = 0
         for pattern in self.placed_patterns:
             self.total_price += pattern.price
@@ -160,6 +161,11 @@ class Canva:
         self.holded_pattern = pattern
         self.holded_pattern.rect.center = pg.mouse.get_pos()
         self.game.sound_manager.items.play()
+    
+    def hold_pattern_from_drawer(self, pattern):
+        """Hold a pattern from the drawer for moving."""
+        self.holded_pattern = pattern.copy()
+        self.holded_pattern.rect.center = pg.mouse.get_pos()
     
     def drop_pattern(self, pos):
         """Drop the held pattern at the given position."""
