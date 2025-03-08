@@ -88,7 +88,7 @@ class Game:
         self.money : int = gold
         self.beauty : float = self.process_total_beauty()
         self.unlock_manager : UnlockManager = unlock_manager
-        self.canva : Canva = Canva(Coord(0,(621,30)), self)
+        self.canva : Canva = Canva(Coord(0,(618,24)), self)
         self.pattern_holder : PatternHolder = PatternHolder(Coord(0, (0, 0)), canva=self.canva)
         self.paused = False
 
