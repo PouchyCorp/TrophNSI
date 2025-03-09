@@ -24,7 +24,7 @@ To get a local copy up and running, follow these steps.
 
 ### Prerequisites
 - [Python 3.11+](https://www.python.org/downloads/)
-- [Git](https://git-scm.com/downloads)
+- [Git](https://git-scm.com/downloads) (You can manually install dependencies and launch )
 
 ## Installation
 
@@ -55,6 +55,8 @@ Follow the steps below to set up "Creative Core" on your system.
 3. Start the launcher:
    ```shell
    setup_and_run.bat
+
+### To launch the game server, go to [server instruction](/serverpack/server_instructions.md)
 
 ## Credits
 - PouchyCorp
