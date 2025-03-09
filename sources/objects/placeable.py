@@ -113,11 +113,12 @@ class Placeable:
             raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attribute_name}'")
     
     def __getstate__(self):
-        state = self.__dict__
+        state = self.__dict__.copy()
         state["surf"] = (image.tostring(self.surf, "RGBA"), self.surf.get_size())
         state['temp_surf'] = state['surf']
         return state
     
     def __setstate__(self, state : dict):
         self.__dict__ = state
-        self.surf = image.frombuffer(self.surf[0], self.surf[1], "RGBA") 
+        self.surf = image.frombuffer(self.surf[0], self.surf[1], "RGBA")
+        self.temp_surf = self.surf.copy()

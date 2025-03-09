@@ -1,12 +1,30 @@
+"""
+                 _                 _   _                 
+     /\         (_)               | | (_)                
+    /  \   _ __  _ _ __ ___   __ _| |_ _  ___  _ __  ___ 
+   / /\ \ | '_ \| | '_ ` _ \ / _` | __| |/ _ \| '_ \/ __|
+  / ____ \| | | | | | | | | | (_| | |_| | (_) | | | \__ \
+ /_/    \_\_| |_|_|_| |_| |_|\__,_|\__|_|\___/|_| |_|___/
+                                                         
+Key Features:
+-------------
+- Spritesheet class for loading and extracting images from a spritesheet.
+- Animation class for managing animations with spritesheets.
+- Tests for pickling and unpickling Spritesheet instances are in tests/pickling_tests.py.
+
+"""
+
 from pygame import Surface, SRCALPHA, image
 
 class Spritesheet:
     def __init__(self, sprite : Surface, img_size : tuple[int]) -> None:
+        """Initializes the spritesheet with the image and the size of the images in the spritesheet."""
         self.surf = sprite
         self.rect = self.surf.get_rect()
         self.img_size = img_size
 
     def get_img(self, coord : tuple[int]) -> Surface:
+        """Returns the image at the given coordinates in the spritesheet."""
         surf = Surface((self.img_size[0], self.img_size[1]), flags=SRCALPHA)
         coord_x_px = coord[0]*self.img_size[0] #take the last x-coord to calculate the next position
         coord_y_py = coord[1]*self.img_size[1] #take the last y-coord to calculate the next position
@@ -14,17 +32,22 @@ class Spritesheet:
         return surf
     
     def __getstate__(self):
-        state = self.__dict__
+        """Returns the state of the object for safely pickling.
+        Needed because the Surface object cannot be pickled, so we convert it to a bytestring."""
+        state = self.__dict__.copy()
         state["surf"] = (image.tostring(self.surf, "RGBA"), self.surf.get_size())
         return state
     
     def __setstate__(self, state : dict):
+        """Sets the state of the object after safely unpickling.
+        Needed because the Surface object cannot be pickled, so we convert it back from a bytestring."""
         self.__dict__ = state
         self.surf = image.frombuffer(self.surf[0], self.surf[1], "RGBA") 
 
 
 class Animation:
     def __init__(self, spritesheet : Spritesheet, line : int, length : int, speed : int = 6, repeat = True ) -> None:
+        """Initializes the animation with the spritesheet, the line of the spritesheet to use, the number of frames in the animation, the speed of the animation, and whether the animation should repeat."""
         self.spritesheet = spritesheet
         self.img_index : int = 0
         self.line = line
@@ -34,12 +57,15 @@ class Animation:
         self.repeat = repeat
 
     def get_frame(self) -> Surface:
+        """returns the current frame of the animation and changes the frame if needed.  
+        Needs to be called every frame to update the animation with the right speed."""
         if self.img_index == self.length-1 and self.repeat:
-            self.img_index = 0                  #reste to 0 the spritesheet
+            self.img_index = 0
         
+        # if the proper amount of skipped frames is reached, we change the frame
         if self.__speed_incr >= self.speed and self.img_index != self.length-1 :
             self.img_index += 1
-            self.__speed_incr = 0           #setup the speed of the animation
+            self.__speed_incr = 0
         else:
             self.__speed_incr += 1
         
@@ -47,28 +73,18 @@ class Animation:
         return new_surf
     
     def reset_frame(self):
+        """resets the animation to the first frame.  
+        Can be useful for restarting the animation from the beginning
+        returns 1st frame of the animation."""
         self.img_index = 0  
 
-        new_surf = self.spritesheet.get_img((self.img_index, self.line))
+        new_surf = self.spritesheet.get_img((0, self.line))
         return new_surf
     
     def copy(self):
         return Animation(self.spritesheet,self.line,self.length,self.speed,self.repeat)
 
     def is_finished(self):
+        """checks if the animation has reached its last frame."""
         if self.img_index == self.length-1 : #check if it's the last picture of the spritesheet
             return True
-        
-
-if __name__ == "__main__":
-    print('launching tests')
-
-    test = Spritesheet(Surface((10,10)),(1,1))
-    
-    import pickle
-    
-    pickled_data = pickle.dumps(test)
-
-    unpickled_data = pickle.loads(pickled_data)
-
-    print(unpickled_data.__dict__)
