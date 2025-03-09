@@ -239,7 +239,8 @@ SPRITESHEET_DOOR_BLINK_FLIP = anim.Spritesheet(transform.flip(load_image("data/p
 SPRITESHEET_CHIP = anim.Spritesheet(load_image('data/chip.png'), (48*6, 48*6))
 SPRITESHEET_ROOFTOP = anim.Spritesheet(load_image('data/rooftop.png'), (320*6,180*6))
 EXCLAMATION_SPRITESHEET = anim.Spritesheet(load_image("data/exclamation_2x9.png"),(2*6,9*6))
-SPRITESHEET_CUTSCENE_2 = anim.Spritesheet(load_image("data/caissier_anim_30frmaes.png"), (320*6, 180*6))
+SPRITESHEET_CUTSCENE_2 = anim.Spritesheet(load_image("data/anim.png"), (320*6, 180*6))
+SPRITESHEET_CUTSCENE_3 = anim.Spritesheet(load_image("data/caissier_anim_30frmaes.png"), (320*6, 180*6))
 
 # Desks
 DESK_FG = anim.Spritesheet(load_image('data/guichet_1.png'), (57*6,66*6))
@@ -303,4 +304,4 @@ PATTERN_LIST = [load_image("data/pattern_storage/pattern_"+str(num)+".png") for 
 DRAWER_LIST = [load_image("data/drawers/bouton_"+str(num)+".png") for num in range(1,16)]
 
 # Cutscenes
-CUTSCENES : dict[str, (anim.Animation, str)] = {"floor0" : (),"floor1" : (), "floor2": (anim.Animation(SPRITESHEET_CUTSCENE_2, 0, 30, 15, False), "2"), "floor3" : (), "floor4" : (), "floor5" : ()}
+CUTSCENES : dict[str, (anim.Animation, str)] = {"floor0" : (),"floor1" : (), "floor2": (anim.Animation(SPRITESHEET_CUTSCENE_2, 0, 41, 10, False), "2"), "floor3" : (), "floor4" : (anim.Animation(SPRITESHEET_CUTSCENE_3, 0, 30, 15, False)), "floor5" : ()}
