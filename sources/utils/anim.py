@@ -10,8 +10,7 @@ Key Features:
 -------------
 - Spritesheet class for loading and extracting images from a spritesheet.
 - Animation class for managing animations with spritesheets.
-- Tests for pickling and unpickling Spritesheet instances.
-
+- Tests for pickling and unpickling Spritesheet instances are in tests/pickling_tests.py.
 
 """
 
