@@ -69,13 +69,15 @@ class BotDistributor:
         self.robot_tiers = [10, 20, 50, 100, 500, 1000]
         self.robot_tiers.sort() # sort the robot tiers in ascending order if they are not already
 
-        
+        self.gold_per_beauty = {0.1 : 1, 1.5: 4, 5:5, 10: 7, 20 : 10, 35 : 10, 55 : 11, 80 : 12, 120: 13, 180 : 14} # gold per second based on beauty
+        self.frequency_per_beauty = {0.1 : 1, 1.5: 1, 5:1, 10: 1, 20 : 1, 35 : 1, 55 : 1, 80 : 1, 120: 1, 180 : 1} # frequency of bot addition based on beauty
+        self.gold_per_beauty = {key: value/4 for key, value in self.gold_per_beauty.items()} # divide the gold amount by 4 because adding gold every 0.25 seconds
         self.game_timer = game_timer
         self.hivemind = hivemind
         self.game = game
 
         self.game_timer.create_timer(0.25, self.add_to_theorical_gold, True)
-        self.game_timer.create_timer(1, self.distribute_to_bot, True, repeat_time_interval=[0.75, 3])
+        self.game_timer.create_timer(1, self.distribute_to_bot)
 
     def add_to_theorical_gold(self):
         """
@@ -83,7 +85,12 @@ class BotDistributor:
         Called periodically by a timer.
         """
         if not self.hivemind.is_line_full():
-            gold_amount = (self.game.beauty) / 4
+            # Calculate the gold amount based on the beauty attribute
+            gold_amount = 0
+            for beauty in self.gold_per_beauty.keys():
+                if self.game.beauty >= beauty:
+                    gold_amount = self.gold_per_beauty[beauty] # max gold amount for the current beauty
+
             self.theorical_gold += gold_amount
 
     def distribute_to_bot(self):
@@ -104,6 +111,12 @@ class BotDistributor:
                     self.game_timer.create_timer(j * 0.5, self.hivemind.add_bot, False, [tier])
                     self.theorical_gold -= tier
                 return
+        
+        next_bot_time = 1
+        for beauty, time in self.frequency_per_beauty.items():
+            if self.game.beauty >= beauty:
+                next_bot_time = time
+        self.game_timer.create_timer(next_bot_time, self.distribute_to_bot)
 
 class Hivemind:
     """Supreme entity governing bots' behavior and interactions."""
