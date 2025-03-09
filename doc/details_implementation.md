@@ -56,8 +56,8 @@ while True:
 
 1. **Définition des besoins** : Nous avons identifié le besoin de gérer des minuteries pour exécuter des fonctions après un certain délai, sans utiliser `sleep`, puisque nous devons continuer à executer la boucle principale.
 2. **Conception de la classe `TimerManager`** : Nous avons approché le probleme d'une maniere à rendre le minuteur le plus facile d'utilisation possible:
-- En s'aidant de la programmation objet, il est facile de mettre en parametre une methode de l'instance d'une classe, une methode conçue pour ne pas prendre de parametre et puiser dans les attributs de la classe pour son fonctionnement.  
-Cela permet d'avoir toujours des paramètres "à jour", puisque rentrer les parametre à l'initialisation d'un minuteur ne nous guarantis pas que à l'execution de la fonction une minute plus tard, que les parametre rentrés (comme la position, couleur ...) sont toujours d'actualité.
+- Grâce à la POO, il est facile de passer en paramètre une méthode d’instance d’une classe. Cette méthode, conçue pour ne pas prendre de paramètres, peut alors utiliser directement les attributs de l’instance pour fonctionner.
+Cela garantit que les valeurs utilisées sont toujours "à jour". Si les paramètres (comme la position ou la couleur) étaient fixés lors de l’initialisation d’un minuteur, rien n’assurerait qu’ils seraient encore valides au moment de l’exécution de la fonction une minute plus tard.
 
-- L'avantage de `create_timer()`, c'est que l'utilisateur n'a rien besoin de faire de plus, mais à l'inconvenient de devoir etre appelé sur une seule instance la classe `TimerManager`, qui doit donc etre passé en parametre de la fonction qui doit créer un minuteur.  
+- L’avantage de `create_timer()`, c’est qu’il simplifie l’utilisation du minuteur, sans nécessiter d’action supplémentaire de l’utilisateur. Son inconvénient est qu’il ne peut être appelé que sur une seule instance de la classe TimerManager, ce qui oblige à passer cette instance en paramètre à toute fonction souhaitant créer un minuteur. 
 3. **Test et validation** : Nous avons testé la classe avec différents scénarios pour nous assurer qu'elle fonctionne correctement, nous avons par exemple trouvé un bug qui ne supprimait pas correctement les minuteurs écoulés quand la durée était très courte.
