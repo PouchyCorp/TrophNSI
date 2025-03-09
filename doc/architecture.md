@@ -39,6 +39,7 @@ Chaque module clé a ses propres responsabilités :
 - **[sound.py](/sources/utils/sound.py)** (effets sonores)
 - **[room_config.py](/sources/utils/room_config.py)** (configuration des pièces)
 - **[database.py](/sources/utils/database.py)** (gestion de la base de données)
+- **[timermanager.py](/sources/utils/timermanager.py)** (création et mise à jour de minuteurs)
 
 Nous pensons architecture modulaire permet une gestion efficace du jeu, facilitant la maintenance et les extensions.
 

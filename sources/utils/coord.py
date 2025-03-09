@@ -45,12 +45,13 @@ class Coord:
         return (x, y)
     
     def __eq__(self, value):
+        '''Compares the x, y and room_num of two Coord instances.'''
         if self.xy == value.xy and self.room_num == value.room_num:
             return True
         return False
-    
-    def bot_movement_compare(self, value):
-        """only compares floor and x axis"""
+     
+    def bot_movement_compare(self, value): 
+        """Compares the x and room_num of two Coord instances."""
         if self.x == value.x and self.room_num == value.room_num:
             return True
         return False

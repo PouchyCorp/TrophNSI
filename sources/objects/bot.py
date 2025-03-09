@@ -44,7 +44,7 @@ Key Features:
 
 from enum import Enum, auto
 from utils.coord import Coord
-from pygame import Surface, draw, Rect, transform, Vector2
+from pygame import Surface, Rect, transform
 from random import choice, randint
 from core.room import Room
 from utils.room_config import R1
@@ -65,16 +65,11 @@ class BotDistributor:
     """Manages the distribution of bots based on theoretical gold and robot tiers."""
 
     def __init__(self, game_timer: TimerManager, hivemind, game):
-        """
-        Initialize the BotDistributor.
-
-        Args:
-            game_timer (TimerManager): TimerManager instance for game timing.
-            hivemind: The Hivemind controlling bots.
-            game: The game instance.
-        """
         self.theorical_gold: float = 0
         self.robot_tiers = [10, 20, 50, 100, 500, 1000]
+        self.robot_tiers.sort() # sort the robot tiers in ascending order if they are not already
+
+        
         self.game_timer = game_timer
         self.hivemind = hivemind
         self.game = game
@@ -117,12 +112,10 @@ class Hivemind:
         """
         Initialize the Hivemind.
 
-        Args:
-            line_start (int): X-coordinate of the line start.
-            line_stop (int): X-coordinate of the line stop.
-            TIMER (TimerManager): TimerManager instance for managing timers.
+        line_start: X-coordinate of the line start.
+        line_stop: X-coordinate of the line stop.
         """
-        self.inline_bots: list[Bot | str] = ["empty", "empty", "empty", "empty", "empty", "empty"]
+        self.inline_bots: list[Bot | str] = ["empty", "empty", "empty", "empty", "empty", "empty"] # list of bots in line, similar to a queue
         self.liberated_bots: list[Bot] = []
         self.line_start_x = line_start
         self.line_stop_x = line_stop
@@ -147,8 +140,7 @@ class Hivemind:
     def get_random_bot_spritesheet(self) -> tuple[Spritesheet, list]:
         """
         Fetch a random bot spritesheet.
-        Returns:
-            tuple: A tuple containing the spritesheet and associated data.
+        Returns a tuple containing the spritesheet and associated data.
         """
         spritesheet_choice = choice(sprite.LIST_SPRITESHEET_ROBOT)
         assert type(spritesheet_choice) is tuple
@@ -189,9 +181,7 @@ class Hivemind:
         
     
     def update(self, rooms, TIMER):
-        """
-        Update the AI logic for the bots in the game.
-        """
+        """Update the AI logic for the bots in the game."""
         for bot in [bot for bot in self.inline_bots if type(bot) is Bot]:
             bot.logic(rooms, TIMER)
 
@@ -205,17 +195,20 @@ class Hivemind:
         self.liberated_bots = new_liberated_bots
     
     def handle_bot_click(self, mouse_pos : Coord, launch_dialogue_func):
+        """Handles the click on a bot."""
         for bot in self.liberated_bots:
             bot.handle_click(mouse_pos, launch_dialogue_func)
             
     def order_inline_bots(self):
-        #print(self.bots)
+        """Orders the inline bots in a line."""
         for i in range(len(self.inline_bots)-1):
-            if type(self.inline_bots[i]) is Bot and type(self.inline_bots[i+1]) is not Bot:
-                self.inline_bots[i].target_coord.x = self.x_lookup_table[i+1]+randint(-30,30)
-                self.inline_bots[i], self.inline_bots[i+1] = self.inline_bots[i+1], self.inline_bots[i]
+            if type(self.inline_bots[i]) is Bot and type(self.inline_bots[i+1]) is not Bot: #if the bot has a empty space in front of it
+                self.inline_bots[i].target_coord.x = self.x_lookup_table[i+1]+randint(-30,30) #randomize the x coord a bit
+                self.inline_bots[i], self.inline_bots[i+1] = self.inline_bots[i+1], self.inline_bots[i] #swap the bots
 
     def draw(self, win : Surface, current_room_num : int, mouse_pos: Coord, transparency_win): 
+        """Draws the bots on the window.  
+        Sorts the bots by y axis to respect perspective when rendering."""
         #list of background bots
         list_of_bots = [bot for bot in self.inline_bots if type(bot) is Bot] + self.liberated_bots
         sorted_bots = self.sorted_bot_by_y(list_of_bots)
@@ -231,8 +224,8 @@ class Hivemind:
                 bot.draw(win, mouse_pos, transparency_win)
     
     def sorted_bot_by_y(self, bots : list):
-        """sorts bots depending on y axis, to be blited in the right order (to respect perspective when rendering)
-        selection sort algorithm"""
+        """Sorts bots depending on y axis, to be blited in the right order (to respect perspective when rendering)  
+        Selection Sort algorithm."""
         sorted_bots : list[Bot] = bots
         for k in range(len(sorted_bots)):
             val = sorted_bots[k].coord.y+sorted_bots[k].rect.h
@@ -246,27 +239,22 @@ class Hivemind:
         return sorted_bots
     
     def first_bot_idle(self) -> bool:
-        
+        """Check if the first bot in the line is idle, as we need to create a clickable to let robots enter."""
         if type(self.inline_bots[-1]) is Bot:
             if self.inline_bots[-1].state is BotStates.IDLE:
                 return True
         return False
 
     def is_line_full(self) -> bool:
-        """
-        Check if the bot line is full.
-
-        Returns:
-            bool: True if no empty spaces are available, False otherwise.
-        """
+        """Check if the bot line is full (all places are taken)."""
         if type(self.inline_bots[0]) is Bot:
             if self.inline_bots[0].state is BotStates.IDLE:
                 return True
         return False
 
     def create_last_bot_clickable(self):
-        #"not R1.name_exists('bot_placeable')" checks if bot placeable already exists
-        if self.first_bot_idle() and not R1.name_exists_in_placed('bot_placeable'):
+        """creates a clickable to let robots enter at the place of the last bot"""
+        if self.first_bot_idle() and not R1.name_exists_in_placed('bot_placeable'): #if the last bot is idle and there is no bot_placeable in the room
             last_bot : Bot = self.inline_bots[-1]
             assert type(last_bot) is Bot
 
@@ -277,24 +265,24 @@ class Hivemind:
             R1.blacklist.append(bot_placeable)
     
     def remove_last_bot_clickable(self, current_room : Room):
+        """removes the clickable that lets robots enter"""
         if self.bot_placeable_pointer and self.bot_placeable_pointer in current_room.placed:
             current_room.placed.remove(self.bot_placeable_pointer)
             current_room.blacklist.remove(self.bot_placeable_pointer)
             self.bot_placeable_pointer = None
 
 class Bot:
-    """Represents an individual bot with unique attributes and behavior."""
+    """An individual bot with an unique behavior."""
 
     def __init__(self, coord: Coord, gold_amount: int, anim_spritesheet: Spritesheet, spritesheet_lengths, particle_spawners: dict, speed) -> None:
         """
-        Initialize the Bot instance.
+        The bot is using a finite state machine (FSM) to manage its behavior.
 
-        Args:
-            coord (Coord): Initial coordinates of the bot.
-            gold_amount (int): Gold value associated with the bot.
-            anim_spritesheet (Spritesheet): Spritesheet for the bot's animations.
-            spritesheet_lengths (list): List of animation lengths for the bot.
-            particle_spawners (dict): Dictionary of particle spawners for the bot.
+        coord: Initial coordinates of the bot.
+        gold_amount: Gold amount that the bot gives when let in.
+        anim_spritesheet: Spritesheet for the bot's animations.
+        spritesheet_lengths: List of animation lengths for the bot (walk right, walk left, idle right, watch).
+        particle_spawners: Dictionary of particle spawners for the bot.
         """
         self.coord = coord
         self.coord.xy = self.coord.get_pixel_perfect()
@@ -337,10 +325,6 @@ class Bot:
     def logic(self, rooms: list[Room], TIMER: TimerManager):
         """
         Implements the finite state machine (FSM) for bot AI.
-
-        Args:
-            rooms (list[Room]): List of all rooms in the game environment.
-            TIMER (TimerManager): Timer manager to handle timed events.
         """
         match self.state:
             case BotStates.IDLE:
@@ -353,40 +337,40 @@ class Bot:
                 raise ValueError
 
     def handle_idle_state(self, rooms: list[Room]):
-
         if not self.is_inline:
-            self.search_for_destination(rooms)
+            self.search_for_destination(rooms) # if the bot is not inline and is idle, it will search for a destination
 
         self.update_idle_animation()
 
-        if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num):
-            self.state = BotStates.WALK
+        if (self.coord.x, self.coord.room_num) != (self.target_coord.x, self.target_coord.room_num): # if the bot is not at its destination
+            self.state = BotStates.WALK # the bot will walk to its destination
 
     def handle_walk_state(self, TIMER: TimerManager):
 
-        if self.coord.bot_movement_compare(self.target_coord):
+        if self.coord.bot_movement_compare(self.target_coord): # if the bot has reached its destination
             if self.is_inline:
-                self.state = BotStates.IDLE
+                self.state = BotStates.IDLE # if the bot is inline, it should be idle
             else:
-                self.state = BotStates.WATCH
-                TIMER.create_timer(2.75, self.set_attribute, False, arguments=('state', BotStates.IDLE))
+                self.state = BotStates.WATCH # if the bot has reached its destination, it should watch it
+                TIMER.create_timer(2.75, self.set_attribute, False, arguments=('state', BotStates.IDLE)) # the bot will return idle, the bot will search for a new destination
                 TIMER.create_timer(2.75, self.anim_watch.reset_frame, False)
 
-        self.move_to_target_coord()
-        self.update_walk_animation()
+        self.move_to_target_coord() # move the bot to its destination if it hasn't reached it yet
+        self.update_walk_animation() # update the bot's animation
 
     def handle_watch_state(self):
         self.surf = self.anim_watch.get_frame()
 
     def search_for_destination(self, rooms: list[Room]):
-        potential_dests = self.get_potential_destinations(rooms)
-        if potential_dests:
+        """decides where the bot should go next"""
+        potential_dests = self.get_potential_destinations(rooms) # get all the potential destinations for the bot
+        if potential_dests: # if there are potential destinations
             destination = choice(potential_dests)
-            self.target_coord = destination[0]
-            self.visited_placeable_id.append(destination[1])
+            self.target_coord = destination[0] # the bot will go to a random destination
+            self.visited_placeable_id.append(destination[1]) 
         else:
-            self.is_leaving = True
-            self.target_coord = self.exit_coords
+            self.is_leaving = True # if there are no potential destinations, the bot will leave the museum
+            self.target_coord = self.exit_coords # the bot will go to the exit
 
     def update_idle_animation(self):
         match self.move_dir:
@@ -403,16 +387,10 @@ class Bot:
                 self.surf = self.anim_walk_left.get_frame()
 
     def handle_click(self, mouse_pos: Coord, launch_dialogue_func):
-        """
-        Handles user interaction when the bot is clicked.
-
-        Args:
-            mouse_pos (Coord): Current mouse position.
-            launch_dialogue_func (callable): Function to launch a dialogue with the bot.
-        """
-        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):
+        """Handles user interaction when the bot is clicked."""
+        if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy): # if the bot is reacting and the mouse is over the bot
             self.is_reacting = False
-            launch_dialogue_func(self.anim_idle_right)
+            launch_dialogue_func(self.anim_idle_right) # launch the dialogue
 
     def get_potential_destinations(self, rooms: list[Room]) -> list[tuple[Coord, str]]:
         """Returns a list of potential destinations for the robot according to some criteria."""
@@ -421,9 +399,9 @@ class Bot:
             for placeable in room.placed:
                 if placeable.tag == "decoration" and placeable.id not in self.visited_placeable_id:
                     placeable_center_coord = placeable.coord.copy()
-                    placeable_center_coord.x += placeable.rect.width // 3
-                    placeable_center_coord.x += randint(-placeable.rect.width // 3, placeable.rect.width // 3)
-                    potential_destinations.append((placeable_center_coord, placeable.id))
+                    placeable_center_coord.x += placeable.rect.width // 3 # get the center of the placeable
+                    placeable_center_coord.x += randint(-placeable.rect.width // 3, placeable.rect.width // 3) # add some randomness to the x coordinate
+                    potential_destinations.append((placeable_center_coord, placeable.id)) # add the placeable x coordinate to the potential destinations
         return potential_destinations
 
     def set_attribute(self, attribute_name, value):
@@ -433,17 +411,20 @@ class Bot:
             raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attribute_name}'")
 
     def move_to_target_coord(self):
+        """Moves the bot to its target coordinates."""
         target_buffer = self.target_coord.copy()
 
-        if self.coord.room_num != self.target_coord.room_num:
+        if self.coord.room_num != self.target_coord.room_num: # if the bot is in a different room than its target coordinates
+            # move the bot to the door of the room to change floor
             if self.coord.x == self.door_x:
                 self.coord.room_num = self.target_coord.room_num
-                for spawner_data in self.particle_spawners.values():
+                for spawner_data in self.particle_spawners.values(): # reset the particles when the bot changes room to not leave particles behind
                     spawner_data[0].particles = []
             else:
                 target_buffer.x = self.door_x
 
-        if self._move_cntr >= self.speed:
+        if self._move_cntr >= self.speed: # if the bot has skipped enough frames
+            # move the bot to the right or to the left depending on the target coordinates
             if self.coord.x < target_buffer.x:
                 self.move_dir = "RIGHT"
                 self.coord.x += 6
@@ -455,7 +436,8 @@ class Bot:
             self._move_cntr += 1
 
     def particle_logic(self):
-        for particle_data in self.particle_spawners.values():
+        """Updates the particles associated with the bot depending on its state."""
+        for particle_data in self.particle_spawners.values(): # update the all particle spawners of the bot
             particle_data[0].coord = Coord(self.coord.room_num, (self.coord.x + particle_data[1][0], self.coord.y + particle_data[1][1]))
             particle_data[0].update_all()
 
@@ -469,13 +451,15 @@ class Bot:
                 particle_data[0].spawn()
 
     def draw(self, win: Surface, mouse_pos: Coord, transparency_win: Surface):
-        """Needs to be called after hivemind.update_bot_ai."""
+        """ Draws the bot on the window.  
+        Needs to be called after hivemind.update_bot_ai."""
         self.draw_outline_if_reacting(win, mouse_pos)
         self.draw_bot(win)
         self.draw_exclamation_if_reacting(win)
         self.draw_particles(transparency_win)
 
     def draw_outline_if_reacting(self, win: Surface, mouse_pos: Coord):
+        """Draws an outline around the bot if it is reacting and the mouse is over it."""
         if self.is_reacting and self.coord.room_num == mouse_pos.room_num and Rect(self.coord.x, self.coord.y, self.rect.width, self.rect.height).collidepoint(mouse_pos.xy):
             temp_surf = sprite.get_outline(self.surf, (170, 170, 230))
             temp_surf.blit(self.surf, (3, 3))
@@ -485,11 +469,13 @@ class Bot:
         win.blit(self.surf, self.coord.xy)
 
     def draw_exclamation_if_reacting(self, win: Surface):
+        """Draws an exclamation mark above the bot if it is reacting."""
         if self.is_reacting:
             coord_over_head_of_bot = (self.coord.x + (self.surf.get_width() // 2) - 6, self.coord.y - 10 * 6)
             win.blit(self.exclamation_anim.get_frame(), coord_over_head_of_bot)
 
     def draw_particles(self, transparency_win: Surface):
+        """Draws the particles eventually associated with the bot."""
         for particle_data in self.particle_spawners.values():
             particle_data[0].draw_all(transparency_win)
 
