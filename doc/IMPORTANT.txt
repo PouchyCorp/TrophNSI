@@ -1,0 +1,1 @@
+Visionez les fichiers Markdown (.md) sur un support adapté pour plus de comfort (par exemple github)
